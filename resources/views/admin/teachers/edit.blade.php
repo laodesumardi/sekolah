@@ -247,13 +247,30 @@
                 <div class="md:col-span-2">
                     <label for="photo" class="block text-sm font-medium text-gray-700 mb-2">Foto</label>
                     <div class="mb-2">
-                        <img id="current-photo" src="{{ $teacher->photo ? Storage::url('teachers/' . $teacher->photo) : asset('images/default-teacher.png') }}" alt="{{ $teacher->name }}" 
-                             class="h-20 w-20 rounded-full object-cover border-2 border-gray-200">
+                        <div class="h-20 w-20 rounded-full border-2 border-gray-200 bg-gray-100 flex items-center justify-center overflow-hidden">
+                            <img id="current-photo" src="{{ $teacher->photo_url }}" alt="{{ $teacher->name }}" 
+                                 class="h-20 w-20 rounded-full object-cover" 
+                                 onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="text-gray-400 text-xs text-center hidden">
+                                <svg class="w-8 h-8 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Foto</span>
+                            </div>
+                        </div>
                         <p class="text-sm text-gray-500 mt-1">Foto saat ini</p>
                     </div>
                     <div class="mb-2">
-                        <img id="photo-preview" src="" alt="Preview" 
-                             class="h-20 w-20 rounded-full object-cover border-2 border-gray-200 hidden">
+                        <div id="photo-preview-container" class="h-20 w-20 rounded-full border-2 border-gray-200 bg-gray-100 flex items-center justify-center overflow-hidden">
+                            <img id="photo-preview" src="{{ get_correct_asset_url('images/default-user.png') }}" alt="Preview" 
+                                 class="h-20 w-20 rounded-full object-cover hidden">
+                            <div id="photo-placeholder" class="text-gray-400 text-xs text-center hidden">
+                                <svg class="w-8 h-8 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Foto</span>
+                            </div>
+                        </div>
                         <p id="photo-preview-text" class="text-sm text-gray-500">Pilih foto baru untuk preview</p>
                     </div>
                     <input type="file" name="photo" id="photo" accept="image/*" 
@@ -313,6 +330,7 @@ function previewImage(input) {
     const preview = document.getElementById('photo-preview');
     const previewText = document.getElementById('photo-preview-text');
     const currentPhoto = document.getElementById('current-photo');
+    const placeholder = document.getElementById('photo-placeholder');
     
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -320,13 +338,19 @@ function previewImage(input) {
         reader.onload = function(e) {
             preview.src = e.target.result;
             preview.classList.remove('hidden');
-            previewText.classList.add('hidden');
+            placeholder.classList.add('hidden');
+            previewText.textContent = 'Preview foto baru yang dipilih:';
+            previewText.classList.remove('hidden');
             currentPhoto.style.opacity = '0.5';
         }
         
         reader.readAsDataURL(input.files[0]);
     } else {
-        preview.classList.add('hidden');
+        // Show default image, hide placeholder
+        preview.src = '{{ get_correct_asset_url('images/default-user.png') }}';
+        preview.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+        previewText.textContent = 'Pilih foto baru untuk preview';
         previewText.classList.remove('hidden');
         currentPhoto.style.opacity = '1';
     }

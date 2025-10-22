@@ -45,7 +45,7 @@ class ProfileController extends Controller
             'class_level' => 'required|string|in:VII,VIII,IX',
             'class_section' => 'nullable|string|in:A,B,C,D',
             'date_of_birth' => 'nullable|date',
-            'gender' => 'nullable|string|in:Laki-laki,Perempuan',
+            'gender' => 'nullable|string|in:male,female',
             'religion' => 'nullable|string|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
             'parent_name' => 'nullable|string|max:255',
             'parent_phone' => 'nullable|string|max:20',

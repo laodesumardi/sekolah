@@ -333,13 +333,6 @@
                             <span class="text-sm">Perpustakaan</span>
                         </a>
                         
-                        <a href="{{ route('admin.vision-missions.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-primary-500 transition-colors {{ request()->routeIs('admin.vision-missions.*') ? 'bg-primary-500' : '' }}">
-                            <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                            <span class="text-sm">Visi & Misi</span>
-                        </a>
                     </div>
                 </div>
 
@@ -452,8 +445,9 @@
                             <!-- Profile Dropdown -->
                             <div class="relative">
                                 <button onclick="toggleProfileDropdown()" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-                                    <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-                                        <span class="text-white font-semibold text-sm">{{ substr(auth()->user()->name, 0, 1) }}</span>
+                                    <div class="w-8 h-8 rounded-full overflow-hidden border border-gray-200 bg-primary-500 flex items-center justify-center">
+                                        <img src="{{ auth()->user()->photo_url }}" alt="{{ auth()->user()->name }}" class="w-8 h-8 object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                                        <span class="text-white font-semibold text-sm hidden">{{ substr(auth()->user()->name, 0, 1) }}</span>
                                     </div>
                                     <div class="text-left hidden sm:block">
                                         <p class="text-sm font-medium text-gray-900">{{ auth()->user()->name }}</p>

@@ -47,14 +47,43 @@ class Library extends Model
             return $this->organization_chart;
         }
         
+        // Check if it's a storage path
+        if (str_starts_with($this->organization_chart, 'libraries/')) {
+            // Check if file exists in public storage
+            $publicPath = public_path('storage/' . $this->organization_chart);
+            if (file_exists($publicPath)) {
+                return get_correct_asset_url('storage/' . $this->organization_chart);
+            }
+            
+            // Check if file exists in storage/app/public
+            $storagePath = storage_path('app/public/' . $this->organization_chart);
+            if (file_exists($storagePath)) {
+                // Try to copy file to public storage
+                $publicDir = dirname($publicPath);
+                if (!is_dir($publicDir)) {
+                    mkdir($publicDir, 0755, true);
+                }
+                copy($storagePath, $publicPath);
+                return get_correct_asset_url('storage/' . $this->organization_chart);
+            }
+            
+            // Fallback to default image
+            return get_correct_asset_url('images/default-struktur.png');
+        }
+        
+        // Check if it's a storage path with storage/ prefix
+        if (str_starts_with($this->organization_chart, 'storage/')) {
+            return get_correct_asset_url($this->organization_chart);
+        }
+        
         // Check if it's a public file (not in storage)
         if (!str_starts_with($this->organization_chart, 'libraries/') && 
             !str_starts_with($this->organization_chart, 'storage/')) {
             // It's a public file
-            return asset($this->organization_chart);
+            return get_correct_asset_url($this->organization_chart);
         }
         
-        // Return the storage URL
-        return asset('storage/' . $this->organization_chart);
+        // Default fallback
+        return get_correct_asset_url('images/default-struktur.png');
     }
 }

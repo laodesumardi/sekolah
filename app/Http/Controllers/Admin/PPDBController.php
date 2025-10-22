@@ -152,6 +152,16 @@ class PPDBController extends Controller
     }
 
     /**
+     * Remove the specified registration.
+     */
+    public function destroyRegistration(PPDBRegistration $registration)
+    {
+        $registration->delete();
+        return redirect()->route('admin.ppdb.registrations')
+                       ->with('success', 'Pendaftaran berhasil dihapus!');
+    }
+
+    /**
      * Download registration documents.
      */
     public function downloadDocument(PPDBRegistration $registration, $type)

@@ -40,16 +40,22 @@ class ProfileController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $teacher->id,
+            'nip' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
             'date_of_birth' => 'nullable|date',
-            'gender' => 'nullable|string|in:Laki-laki,Perempuan',
+            'gender' => 'nullable|string|in:male,female',
             'religion' => 'nullable|string|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
             'subject' => 'nullable|string|max:255',
+            'classes' => 'nullable|array',
+            'classes.*' => 'string|max:10',
             'position' => 'nullable|string|max:255',
-            'employment_status' => 'nullable|string|in:Aktif,Non-Aktif,Cuti',
+            'employment_status' => 'nullable|string|in:PNS,CPNS,Guru Honorer,Guru Kontrak,Guru Bantu',
             'join_date' => 'nullable|date',
             'education' => 'nullable|string|max:255',
+            'education_level' => 'nullable|string|max:255',
+            'type' => 'nullable|string|in:teacher,staff',
+            'is_active' => 'boolean',
             'certification' => 'nullable|string|max:255',
             'experience_years' => 'nullable|integer|min:0',
             'bio' => 'nullable|string|max:1000',
@@ -61,6 +67,7 @@ class ProfileController extends Controller
         // Update basic information
         $teacher->name = $request->name;
         $teacher->email = $request->email;
+        $teacher->nip = $request->nip;
         
         // Update teacher information
         $teacher->phone = $request->phone;
@@ -71,10 +78,14 @@ class ProfileController extends Controller
         
         // Update professional information
         $teacher->subject = $request->subject;
+        $teacher->classes = $request->classes;
         $teacher->position = $request->position;
         $teacher->employment_status = $request->employment_status;
         $teacher->join_date = $request->join_date;
         $teacher->education = $request->education;
+        $teacher->education_level = $request->education_level;
+        $teacher->type = $request->type;
+        $teacher->is_active = $request->has('is_active');
         $teacher->certification = $request->certification;
         $teacher->experience_years = $request->experience_years;
         $teacher->bio = $request->bio;

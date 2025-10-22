@@ -203,17 +203,17 @@ class User extends Authenticatable
         
         // Check if it's a storage path without 'storage/' prefix
         if (str_starts_with($this->photo, 'teachers/') || str_starts_with($this->photo, 'students/')) {
-            return asset('storage/' . $this->photo);
+            return \Illuminate\Support\Facades\Storage::url($this->photo);
         }
         
         // Check if it's just a filename (old format)
         if (!str_contains($this->photo, '/')) {
             if ($this->role === 'student') {
-                return asset('storage/students/photos/' . $this->photo);
+                return \Illuminate\Support\Facades\Storage::url('students/photos/' . $this->photo);
             } elseif ($this->role === 'teacher') {
-                return asset('storage/teachers/' . $this->photo);
+                return \Illuminate\Support\Facades\Storage::url('teachers/' . $this->photo);
             } else {
-                return asset('storage/' . $this->photo);
+                return \Illuminate\Support\Facades\Storage::url($this->photo);
             }
         }
         

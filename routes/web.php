@@ -314,6 +314,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::get('ppdb-registrations', [AdminPPDBController::class, 'registrations'])->name('ppdb.registrations');
         Route::get('ppdb-registrations/{registration}', [AdminPPDBController::class, 'showRegistration'])->name('ppdb.show-registration');
         Route::put('ppdb-registrations/{registration}/status', [AdminPPDBController::class, 'updateRegistrationStatus'])->name('ppdb.update-registration-status');
+        Route::delete('ppdb-registrations/{registration}', [AdminPPDBController::class, 'destroyRegistration'])->name('ppdb.destroy-registration');
         Route::get('ppdb-registrations/{registration}/download/{type}', [AdminPPDBController::class, 'downloadDocument'])->name('ppdb.download-document');
         Route::get('ppdb-export', [AdminPPDBController::class, 'exportRegistrations'])->name('ppdb.export');
         
