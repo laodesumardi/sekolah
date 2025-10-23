@@ -39,7 +39,7 @@ class Library extends Model
     public function getOrganizationChartUrlAttribute()
     {
         if (!$this->organization_chart) {
-            return null;
+            return get_correct_asset_url('images/struktur-organisasi-perpustakaan.png');
         }
         
         // Check if it's already a full URL
