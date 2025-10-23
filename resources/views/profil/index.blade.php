@@ -38,9 +38,6 @@ use Illuminate\Support\Facades\Storage;
                 <button onclick="showSection('sejarah')" class="tab-button active py-4 px-1 border-b-2 border-primary-500 text-primary-600 font-medium text-sm whitespace-nowrap">
                     Sejarah
                 </button>
-                <button onclick="showSection('visi-misi')" class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm whitespace-nowrap">
-                    Visi & Misi
-                </button>
                 <button onclick="showSection('struktur')" class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm whitespace-nowrap">
                     Struktur Organisasi
                 </button>
@@ -125,52 +122,6 @@ use Illuminate\Support\Facades\Storage;
             </div>
         </div>
 
-        <!-- Visi Misi Section -->
-        <div id="visi-misi" class="content-section hidden">
-            <div class="bg-white rounded-lg shadow-lg p-8">
-                <div class="flex items-center mb-6">
-                    <div class="bg-primary-100 p-3 rounded-full mr-4">
-                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                        </svg>
-                    </div>
-                    <h2 class="text-3xl font-bold text-gray-900">Visi & Misi Sekolah</h2>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Visi -->
-                    <div class="bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg p-6 text-white">
-                        <h3 class="text-2xl font-bold mb-4 flex items-center">
-                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                            Visi
-                        </h3>
-                        <p class="text-lg leading-relaxed">{{ $profilData['visi_misi']['visi'] }}</p>
-                    </div>
-
-                    <!-- Misi -->
-                    <div class="bg-gray-50 rounded-lg p-6">
-                        <h3 class="text-2xl font-bold mb-4 text-gray-900 flex items-center">
-                            <svg class="w-6 h-6 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                            </svg>
-                            Misi
-                        </h3>
-                        <ul class="space-y-3">
-                            @foreach($profilData['visi_misi']['misi'] as $index => $misi)
-                            <li class="flex items-start">
-                                <span class="bg-primary-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">{{ $index + 1 }}</span>
-                                <span class="text-gray-700">{{ $misi }}</span>
-                            </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Struktur Organisasi Section -->
         <div id="struktur" class="content-section hidden">
