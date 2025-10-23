@@ -100,13 +100,41 @@ if (!function_exists('get_correct_asset_url')) {
             if (!file_exists($publicFile)) {
                 // Try to copy from storage/app/public
                 @copy_storage_to_public($subPath);
+                // Fallback: serve from legacy public/uploads if exists
+                $legacyPath = str_starts_with($subPath, 'uploads/')
+                    ? public_path($subPath)
+                    : public_path('uploads/' . $subPath);
+                if (file_exists($legacyPath)) {
+                    $legacyUrl = str_starts_with($subPath, 'uploads/')
+                        ? $subPath
+                        : 'uploads/' . $subPath;
+                    return $useHttps ? secure_asset($legacyUrl) : asset($legacyUrl);
+                }
             }
             return $useHttps ? secure_asset($trimmed) : asset($trimmed);
         }
 
+        // Handle legacy uploads paths explicitly (e.g., uploads/school-profiles/...)
+        if (str_starts_with($trimmed, 'uploads/')) {
+            $publicDirectFile = public_path($trimmed);
+            if (file_exists($publicDirectFile)) {
+                return $useHttps ? secure_asset($trimmed) : asset($trimmed);
+            }
+            // Attempt to map to storage if direct file missing
+            $maybeStorage = preg_replace('#^uploads/#', 'storage/', $trimmed);
+            $publicStorageFile = public_path($maybeStorage);
+            if (file_exists($publicStorageFile)) {
+                return $useHttps ? secure_asset($maybeStorage) : asset($maybeStorage);
+            }
+            // Try copying from storage/app/public when uploads was previously mirrored
+            $storageSubPath = preg_replace('#^uploads/#', '', $trimmed);
+            @copy_storage_to_public($storageSubPath);
+            return $useHttps ? secure_asset('storage/' . $storageSubPath) : asset('storage/' . $storageSubPath);
+        }
+
         // Common upload directories that should be served from public/storage
         $uploadDirs = [
-            'libraries', 'gallery', 'gallery-items', 'school-profiles', 'teachers',
+            'libraries', 'gallery', 'gallery-items', 'galleries', 'school-profiles', 'teachers',
             'students', 'admins', 'facilities', 'home-sections', 'documents'
         ];
         foreach ($uploadDirs as $dir) {

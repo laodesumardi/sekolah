@@ -60,31 +60,31 @@ class GalleryItem extends Model
     public function getImageUrlAttribute()
     {
         if (!$this->image) {
-            return asset('images/default-gallery-item.png');
+            return get_correct_asset_url('images/default-gallery-item.png');
         }
-        
+
         if (filter_var($this->image, FILTER_VALIDATE_URL)) {
             return $this->image;
         }
-        
+
         if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
             return $this->image;
         }
-        
+
         if (str_starts_with($this->image, 'gallery-items/')) {
-            return asset('storage/' . $this->image);
+            return get_correct_asset_url('storage/' . $this->image);
         }
-        
+
+        if (str_starts_with($this->image, 'uploads/gallery-items/')) {
+            return get_correct_asset_url($this->image);
+        }
+
         if (str_starts_with($this->image, 'storage/')) {
-            return asset($this->image);
+            return get_correct_asset_url($this->image);
         }
-        
-        if (!str_starts_with($this->image, 'gallery-items/') && 
-            !str_starts_with($this->image, 'storage/')) {
-            return asset('storage/' . $this->image);
-        }
-        
-        return asset('images/default-gallery-item.png');
+
+        // Default: treat as stored under gallery-items
+        return get_correct_asset_url('storage/' . $this->image);
     }
 
     public function getTypeLabelAttribute()
@@ -121,22 +121,26 @@ class GalleryItem extends Model
             if (filter_var($this->file_path, FILTER_VALIDATE_URL)) {
                 return $this->file_path;
             }
-            
+
             if (str_starts_with($this->file_path, 'http://') || str_starts_with($this->file_path, 'https://')) {
                 return $this->file_path;
             }
-            
+
             if (str_starts_with($this->file_path, 'gallery-items/')) {
-                return asset('storage/' . $this->file_path);
+                return get_correct_asset_url('storage/' . $this->file_path);
             }
-            
+
+            if (str_starts_with($this->file_path, 'uploads/gallery-items/')) {
+                return get_correct_asset_url($this->file_path);
+            }
+
             if (str_starts_with($this->file_path, 'storage/')) {
-                return asset($this->file_path);
+                return get_correct_asset_url($this->file_path);
             }
-            
-            return asset('storage/' . $this->file_path);
+
+            return get_correct_asset_url('storage/' . $this->file_path);
         }
-        
+
         return $this->image_url;
     }
 

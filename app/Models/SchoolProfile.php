@@ -63,7 +63,7 @@ class SchoolProfile extends Model
     public function getImageUrlAttribute()
     {
         if (!$this->image) {
-            return asset('images/default-school-profile.png');
+            return get_correct_asset_url('images/default-school-profile.png');
         }
         
         if (filter_var($this->image, FILTER_VALIDATE_URL)) {
@@ -74,28 +74,23 @@ class SchoolProfile extends Model
             return $this->image;
         }
         
-        // If it starts with storage/, use it directly with asset()
         if (str_starts_with($this->image, 'storage/')) {
-            return asset($this->image);
+            return get_correct_asset_url($this->image);
         }
         
-        // If it starts with school-profiles/, add storage/ prefix
         if (str_starts_with($this->image, 'school-profiles/')) {
-            return asset('storage/' . $this->image);
+            return get_correct_asset_url('storage/' . $this->image);
         }
         
-        // If it starts with uploads/school-profiles/, change to storage/school-profiles/
         if (str_starts_with($this->image, 'uploads/school-profiles/')) {
-            return asset(str_replace('uploads/school-profiles/', 'storage/school-profiles/', $this->image));
+            return get_correct_asset_url(str_replace('uploads/school-profiles/', 'storage/school-profiles/', $this->image));
         }
         
-        // If it's just a filename, add the full path
         if (!str_contains($this->image, '/')) {
-            return asset('storage/school-profiles/' . $this->image);
+            return get_correct_asset_url('storage/school-profiles/' . $this->image);
         }
         
-        // Default fallback
-        return asset('images/default-school-profile.png');
+        return get_correct_asset_url('images/default-school-profile.png');
     }
 
     public function getImage2UrlAttribute()
@@ -113,19 +108,19 @@ class SchoolProfile extends Model
         }
         
         if (str_starts_with($this->image_2, 'storage/')) {
-            return asset($this->image_2);
+            return get_correct_asset_url($this->image_2);
         }
         
         if (str_starts_with($this->image_2, 'school-profiles/')) {
-            return asset('storage/' . $this->image_2);
+            return get_correct_asset_url('storage/' . $this->image_2);
         }
         
         if (str_starts_with($this->image_2, 'uploads/school-profiles/')) {
-            return asset(str_replace('uploads/school-profiles/', 'storage/school-profiles/', $this->image_2));
+            return get_correct_asset_url(str_replace('uploads/school-profiles/', 'storage/school-profiles/', $this->image_2));
         }
         
         if (!str_contains($this->image_2, '/')) {
-            return asset('storage/school-profiles/' . $this->image_2);
+            return get_correct_asset_url('storage/school-profiles/' . $this->image_2);
         }
         
         return null;
@@ -146,19 +141,19 @@ class SchoolProfile extends Model
         }
         
         if (str_starts_with($this->image_3, 'storage/')) {
-            return asset($this->image_3);
+            return get_correct_asset_url($this->image_3);
         }
         
         if (str_starts_with($this->image_3, 'school-profiles/')) {
-            return asset('storage/' . $this->image_3);
+            return get_correct_asset_url('storage/' . $this->image_3);
         }
         
         if (str_starts_with($this->image_3, 'uploads/school-profiles/')) {
-            return asset(str_replace('uploads/school-profiles/', 'storage/school-profiles/', $this->image_3));
+            return get_correct_asset_url(str_replace('uploads/school-profiles/', 'storage/school-profiles/', $this->image_3));
         }
         
         if (!str_contains($this->image_3, '/')) {
-            return asset('storage/school-profiles/' . $this->image_3);
+            return get_correct_asset_url('storage/school-profiles/' . $this->image_3);
         }
         
         return null;
@@ -179,19 +174,19 @@ class SchoolProfile extends Model
         }
         
         if (str_starts_with($this->image_4, 'storage/')) {
-            return asset($this->image_4);
+            return get_correct_asset_url($this->image_4);
         }
         
         if (str_starts_with($this->image_4, 'school-profiles/')) {
-            return asset('storage/' . $this->image_4);
+            return get_correct_asset_url('storage/' . $this->image_4);
         }
         
         if (str_starts_with($this->image_4, 'uploads/school-profiles/')) {
-            return asset(str_replace('uploads/school-profiles/', 'storage/school-profiles/', $this->image_4));
+            return get_correct_asset_url(str_replace('uploads/school-profiles/', 'storage/school-profiles/', $this->image_4));
         }
         
         if (!str_contains($this->image_4, '/')) {
-            return asset('storage/school-profiles/' . $this->image_4);
+            return get_correct_asset_url('storage/school-profiles/' . $this->image_4);
         }
         
         return null;
