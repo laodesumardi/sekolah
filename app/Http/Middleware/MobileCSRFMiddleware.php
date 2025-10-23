@@ -27,12 +27,21 @@ class MobileCSRFMiddleware
             $sessionLifetime = config('session.lifetime', 480);
             config(['session.lifetime' => $sessionLifetime * 2]); // Double for mobile
 
+            // Set mobile-specific session settings
+            config(['session.expire_on_close' => false]); // Don't expire on browser close for mobile
+            
+            // Regenerate CSRF token more frequently for mobile
+            if ($request->isMethod('POST') || $request->isMethod('PUT') || $request->isMethod('DELETE')) {
+                $request->session()->regenerateToken();
+            }
+
             // Log mobile requests for debugging
             Log::info('Mobile request detected', [
                 'user_agent' => $userAgent,
                 'ip' => $request->ip(),
                 'url' => $request->url(),
-                'method' => $request->method()
+                'method' => $request->method(),
+                'csrf_token' => $request->session()->token()
             ]);
         }
 
