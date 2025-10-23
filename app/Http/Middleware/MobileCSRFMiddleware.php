@@ -22,30 +22,24 @@ class MobileCSRFMiddleware
         $userAgent = $request->header('User-Agent');
         $isMobile = $this->isMobile($userAgent);
 
+        // Always pass the request first to avoid breaking CSRF verification
+        $response = $next($request);
+
         if ($isMobile) {
-            // More aggressive mobile settings
+            // Increase session lifetime for mobile without regenerating CSRF token pre-verification
             $sessionLifetime = config('session.lifetime', 480);
-            config(['session.lifetime' => $sessionLifetime * 3]); // Triple for mobile
+            config(['session.lifetime' => $sessionLifetime * 3]);
             config(['session.expire_on_close' => false]);
             config(['session.cookie_lifetime' => $sessionLifetime * 3]);
-            
-            // Always regenerate token for mobile to prevent 419
-            if (!$request->session()->has('_token')) {
-                $request->session()->regenerateToken();
-            }
-            
-            // Force token refresh on every mobile request
-            $request->session()->regenerateToken();
-            
+
             // Set mobile-specific headers
-            $response = $next($request);
-            
             if ($response instanceof \Illuminate\Http\Response) {
                 $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
                 $response->headers->set('Pragma', 'no-cache');
                 $response->headers->set('Expires', '0');
                 $response->headers->set('X-Mobile-Optimized', 'true');
-                $response->headers->set('X-CSRF-Token', csrf_token());
+                // Expose current token for clients that read headers; do NOT rotate here
+                $response->headers->set('X-CSRF-Token', $request->session()->token());
             }
 
             // Log mobile requests for debugging
@@ -57,11 +51,9 @@ class MobileCSRFMiddleware
                 'csrf_token' => $request->session()->token(),
                 'session_id' => $request->session()->getId()
             ]);
-            
-            return $response;
         }
 
-        return $next($request);
+        return $response;
     }
 
     /**
