@@ -105,8 +105,17 @@
                         </div>
                     @endif
                     
-                    <form action="{{ route('contact.store') }}" method="POST" class="space-y-6">
+                    <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="space-y-6">
                         @csrf
+                        <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
+                            Jika di HP muncul error 419, tap tombol "Refresh Token" lalu coba kirim lagi.
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button type="button" id="refresh-contact-token" class="px-3 py-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 rounded-md border border-yellow-300 text-sm font-medium">
+                                Refresh Token
+                            </button>
+                            <span id="refresh-status" class="text-xs text-gray-500"></span>
+                        </div>
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
                             <input type="text" id="name" name="name" value="{{ old('name') }}" required
@@ -164,6 +173,32 @@
                             </button>
                         </div>
                     </form>
+
+                    <script>
+                        async function refreshContactCSRFToken() {
+                            const statusEl = document.getElementById('refresh-status');
+                            try {
+                                statusEl.textContent = 'Merefresh token...';
+                                const response = await fetch('/ppdb/refresh-token');
+                                const data = await response.json();
+                                if (data && data.token) {
+                                    const form = document.getElementById('contact-form');
+                                    const tokenInput = form.querySelector('input[name="_token"]');
+                                    if (tokenInput) tokenInput.value = data.token;
+                                    const meta = document.querySelector('meta[name="csrf-token"]');
+                                    if (meta) meta.setAttribute('content', data.token);
+                                    statusEl.textContent = 'Token diperbarui';
+                                } else {
+                                    statusEl.textContent = 'Gagal memperbarui token';
+                                }
+                            } catch (e) {
+                                console.error('Gagal refresh token CSRF', e);
+                                statusEl.textContent = 'Gagal refresh token';
+                            }
+                            setTimeout(() => statusEl.textContent = '', 3000);
+                        }
+                        document.getElementById('refresh-contact-token')?.addEventListener('click', refreshContactCSRFToken);
+                    </script>
                 </div>
             </div>
         </div>

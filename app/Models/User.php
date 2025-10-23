@@ -117,8 +117,7 @@ class User extends Authenticatable
 
     public function ppdbRegistration()
     {
-        return $this->hasOne(PPDBRegistration::class, 'email', 'email')
-            ->orWhere('phone_number', $this->phone);
+        return $this->hasOne(PPDBRegistration::class, 'email', 'email');
     }
 
     // Scopes
