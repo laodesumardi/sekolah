@@ -17,7 +17,15 @@ class GalleryItem extends Model
         'is_featured',
         'is_active',
         'sort_order',
-        'metadata'
+        'metadata',
+        'file_path',
+        'file_type',
+        'mime_type',
+        'file_size',
+        'width',
+        'height',
+        'duration',
+        'thumbnail_path'
     ];
 
     protected $casts = [
@@ -104,5 +112,63 @@ class GalleryItem extends Model
     public function isDocument()
     {
         return $this->type === 'document';
+    }
+
+    // Additional accessors for view compatibility
+    public function getFileUrlAttribute()
+    {
+        if ($this->file_path) {
+            if (filter_var($this->file_path, FILTER_VALIDATE_URL)) {
+                return $this->file_path;
+            }
+            
+            if (str_starts_with($this->file_path, 'http://') || str_starts_with($this->file_path, 'https://')) {
+                return $this->file_path;
+            }
+            
+            if (str_starts_with($this->file_path, 'gallery-items/')) {
+                return asset('storage/' . $this->file_path);
+            }
+            
+            if (str_starts_with($this->file_path, 'storage/')) {
+                return asset($this->file_path);
+            }
+            
+            return asset('storage/' . $this->file_path);
+        }
+        
+        return $this->image_url;
+    }
+
+    public function getFileSizeFormattedAttribute()
+    {
+        if (!$this->file_size) {
+            return null;
+        }
+        
+        $bytes = $this->file_size;
+        $units = ['B', 'KB', 'MB', 'GB'];
+        
+        for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
+            $bytes /= 1024;
+        }
+        
+        return round($bytes, 2) . ' ' . $units[$i];
+    }
+
+    public function getDurationFormattedAttribute()
+    {
+        if (!$this->duration) {
+            return null;
+        }
+        
+        $minutes = floor($this->duration / 60);
+        $seconds = $this->duration % 60;
+        
+        if ($minutes > 0) {
+            return sprintf('%d:%02d', $minutes, $seconds);
+        }
+        
+        return sprintf('0:%02d', $seconds);
     }
 }
