@@ -46,3 +46,4 @@
 #19 D:\\laragon\\www\\website-sekolah-namrole21\\artisan(13): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
 #20 {main}
 "} 
+[2025-10-23 11:21:29] local.INFO: RoleMiddleware {"user_id":23,"user_role":"admin","required_role":"admin","url":"http://localhost:8000/admin/dashboard"} 

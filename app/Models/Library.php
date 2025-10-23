@@ -68,7 +68,7 @@ class Library extends Model
             }
             
             // Fallback to default image
-            return get_correct_asset_url('images/default-struktur.png');
+            return get_correct_asset_url('images/struktur-organisasi-perpustakaan.png');
         }
         
         // Check if it's a storage path with storage/ prefix
@@ -84,6 +84,6 @@ class Library extends Model
         }
         
         // Default fallback
-        return get_correct_asset_url('images/default-struktur.png');
+        return get_correct_asset_url('images/struktur-organisasi-perpustakaan.png');
     }
 }
