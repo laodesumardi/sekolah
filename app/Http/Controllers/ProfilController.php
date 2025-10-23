@@ -36,7 +36,7 @@ class ProfilController extends Controller
                 'gambar' => $this->getVisiMisiImages()
             ],
             'struktur_organisasi' => [
-                'gambar' => ($sections->get('struktur') ? $sections->get('struktur')->image_url : asset('images/default-school-profile.png')),
+                'gambar' => ($sections->get('struktur') && $sections->get('struktur')->image_url ? $sections->get('struktur')->image_url : asset('struktur-organisasi.png')),
                 'judul' => $sections->get('struktur')->title ?? 'Struktur Organisasi SMP Negeri 01 Namrole',
                 'deskripsi' => $sections->get('struktur')->content ?? 'Struktur organisasi sekolah yang menunjukkan hierarki kepemimpinan dan pembagian tugas di SMP Negeri 01 Namrole.'
             ],
