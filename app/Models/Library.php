@@ -39,7 +39,7 @@ class Library extends Model
     public function getOrganizationChartUrlAttribute()
     {
         if (!$this->organization_chart) {
-            return get_correct_asset_url('images/default-section.png');
+            return asset('struktur-organisasi-perpustakaan.png');
         }
         
         // Check if it's already a full URL
@@ -52,13 +52,13 @@ class Library extends Model
             // Check if file exists in public storage symlink
             $publicStoragePath = public_path('storage/' . $this->organization_chart);
             if (file_exists($publicStoragePath)) {
-                return get_correct_asset_url('storage/' . $this->organization_chart);
+                return asset('storage/' . $this->organization_chart);
             }
 
             // Check if file exists in public/libraries (direct symlink mapping)
             $publicLibrariesPath = public_path($this->organization_chart);
             if (file_exists($publicLibrariesPath)) {
-                return get_correct_asset_url($this->organization_chart);
+                return asset($this->organization_chart);
             }
             
             // Check if file exists in storage/app/public
@@ -70,26 +70,26 @@ class Library extends Model
                     mkdir($publicDir, 0755, true);
                 }
                 @copy($storagePath, $publicStoragePath);
-                return get_correct_asset_url('storage/' . $this->organization_chart);
+                return asset('storage/' . $this->organization_chart);
             }
             
-            // Fallback to default image
-            return get_correct_asset_url('images/default-section.png');
+            // Fallback to public file
+            return asset('struktur-organisasi-perpustakaan.png');
         }
         
         // Check if it's a storage path with storage/ prefix
         if (str_starts_with($this->organization_chart, 'storage/')) {
-            return get_correct_asset_url($this->organization_chart);
+            return asset($this->organization_chart);
         }
         
         // Check if it's a public file (not in storage)
         if (!str_starts_with($this->organization_chart, 'libraries/') && 
             !str_starts_with($this->organization_chart, 'storage/')) {
             // It's a public file
-            return get_correct_asset_url($this->organization_chart);
+            return asset($this->organization_chart);
         }
         
         // Default fallback
-        return get_correct_asset_url('images/default-section.png');
+        return asset('struktur-organisasi-perpustakaan.png');
     }
 }

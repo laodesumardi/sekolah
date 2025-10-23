@@ -1338,3 +1338,33 @@
 #59 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('D:\\\\laragon\\\\www\\\\...')
 #60 {main}
 "} 
+[2025-10-23 23:08:33] local.INFO: Login attempt {"email":"admin@smpnamrole.sch.id","ip":"127.0.0.1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","csrf_token":"N9hSRXZJaA7G4RI6qiO3hvW63zLAO0K3PzFQ8iyB","session_token":"N9hSRXZJaA7G4RI6qiO3hvW63zLAO0K3PzFQ8iyB","session_id":"jaByQn4SlxGz0OpSb3ckJkfFmVMJkJqPwZY5STHn"} 
+[2025-10-23 23:08:33] local.INFO: Session after login {"session_id":"e5OQugyhP4MzRzIV5BUxj3qLQf7UYwsCLZNqd0r6","user_id":23,"is_authenticated":true,"session_data":{"_token":"P6qSwYvwE02Fwox1HUuEhqUSkqAVH6A67fOtJNpZ","_previous":{"url":"http://localhost:8000/login"},"_flash":{"old":[],"new":[]},"login_web_59ba36addc2b2f9401580f014c7f58ea4e30989d":23}} 
+[2025-10-23 23:08:33] local.INFO: Final session state {"session_id":"e5OQugyhP4MzRzIV5BUxj3qLQf7UYwsCLZNqd0r6","is_authenticated":true,"user_id":23,"session_data":{"_token":"P6qSwYvwE02Fwox1HUuEhqUSkqAVH6A67fOtJNpZ","_previous":{"url":"http://localhost:8000/login"},"_flash":{"old":[],"new":[]},"login_web_59ba36addc2b2f9401580f014c7f58ea4e30989d":23,"user_id":23,"user_role":"admin"}} 
+[2025-10-23 23:08:33] local.INFO: Login successful {"user_role":"admin","user_name":"Administrator Sekolah","user_email":"admin@smpnamrole.sch.id","user_id":23} 
+[2025-10-23 23:08:33] local.INFO: Redirecting admin to dashboard  
+[2025-10-23 23:08:34] local.INFO: RoleMiddleware {"user_id":23,"user_role":"admin","required_role":"admin","url":"http://localhost:8000/admin/dashboard"} 
+[2025-10-23 23:09:32] local.ERROR: PHP Parse error: Syntax error, unexpected T_NS_SEPARATOR on line 1 {"exception":"[object] (Psy\\Exception\\ParseErrorException(code: 0): PHP Parse error: Syntax error, unexpected T_NS_SEPARATOR on line 1 at D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\psy\\psysh\\src\\Exception\\ParseErrorException.php:44)
+[stacktrace]
+#0 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\psy\\psysh\\src\\CodeCleaner.php(306): Psy\\Exception\\ParseErrorException::fromParseError(Object(PhpParser\\Error))
+#1 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\psy\\psysh\\src\\CodeCleaner.php(240): Psy\\CodeCleaner->parse('<?php echo 'Che...', false)
+#2 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\psy\\psysh\\src\\Shell.php(852): Psy\\CodeCleaner->clean(Array, false)
+#3 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\psy\\psysh\\src\\Shell.php(881): Psy\\Shell->addCode('echo 'Checking ...', true)
+#4 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\psy\\psysh\\src\\Shell.php(1390): Psy\\Shell->setCode('echo 'Checking ...', true)
+#5 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\tinker\\src\\Console\\TinkerCommand.php(76): Psy\\Shell->execute('echo 'Checking ...')
+#6 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(36): Laravel\\Tinker\\Console\\TinkerCommand->handle()
+#7 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php(43): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#8 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(95): Illuminate\\Container\\Util::unwrapIfClosure(Object(Closure))
+#9 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod(Object(Illuminate\\Foundation\\Application), Array, Object(Closure))
+#10 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(694): Illuminate\\Container\\BoundMethod::call(Object(Illuminate\\Foundation\\Application), Array, Array, NULL)
+#11 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(213): Illuminate\\Container\\Container->call(Array)
+#12 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\symfony\\console\\Command\\Command.php(279): Illuminate\\Console\\Command->execute(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#13 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(182): Symfony\\Component\\Console\\Command\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#14 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\symfony\\console\\Application.php(1094): Illuminate\\Console\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#15 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\symfony\\console\\Application.php(342): Symfony\\Component\\Console\\Application->doRunCommand(Object(Laravel\\Tinker\\Console\\TinkerCommand), Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#16 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\symfony\\console\\Application.php(193): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#17 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(198): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#18 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1231): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#19 D:\\laragon\\www\\website-sekolah-namrole21\\artisan(13): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
+#20 {main}
+"} 
