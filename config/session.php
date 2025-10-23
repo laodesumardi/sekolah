@@ -1,7 +1,7 @@
 <?php
 return [
     "driver" => env("SESSION_DRIVER", "database"),
-    "lifetime" => (int) env("SESSION_LIFETIME", 480),
+    "lifetime" => (int) env("SESSION_LIFETIME", 1440), // 24 hours for mobile
     "expire_on_close" => env("SESSION_EXPIRE_ON_CLOSE", false),
     "encrypt" => false,
     "files" => storage_path("framework/sessions"),
@@ -13,6 +13,6 @@ return [
     "path" => "/",
     "domain" => env("SESSION_DOMAIN", null),
     "secure" => env("SESSION_SECURE_COOKIE", false),
-    "http_only" => true,
+    "http_only" => false, // Allow JS access for mobile
     "same_site" => "lax",
 ];

@@ -499,3 +499,33 @@ Route::get("/ppdb/hosting-mobile-refresh", function () {
       ->header('X-Mobile-Optimized', 'true')
       ->header('X-Hosting-Mobile', 'true');
 })->name('ppdb.hosting-mobile-refresh');
+
+// Mobile no-cookie contact route (completely bypass CSRF and cookies)
+Route::post('/contact/mobile-no-cookie', function(\Illuminate\Http\Request $request) {
+    // Validate mobile user agent
+    $userAgent = $request->header('User-Agent');
+    $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i', $userAgent);
+    
+    if (!$isMobile) {
+        return response()->json(['error' => 'This route is for mobile only'], 403);
+    }
+    
+    // Process contact form for mobile without CSRF
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'phone' => 'nullable|string|max:20',
+        'subject' => 'required|string|max:255',
+        'message' => 'required|string|max:2000'
+    ]);
+    
+    // Store message
+    \App\Models\Message::create($validated);
+    
+    return response()->json([
+        'success' => true,
+        'message' => 'Pesan berhasil dikirim! (No Cookie)',
+        'mobile' => true,
+        'no_cookie' => true
+    ]);
+})->name('contact.mobile-no-cookie');

@@ -90,7 +90,7 @@
                         </div>
                     @endif
                     
-                    <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="space-y-6" data-mobile-action="{{ route('contact.mobile') }}" data-hosting-mobile-action="{{ route('contact.hosting-mobile') }}">
+                    <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="space-y-6" data-mobile-action="{{ route('contact.mobile') }}" data-hosting-mobile-action="{{ route('contact.hosting-mobile') }}" data-mobile-no-cookie-action="{{ route('contact.mobile-no-cookie') }}">
                         @csrf
                         <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
                             Jika di HP muncul error 419, tap tombol "Refresh Token" lalu coba kirim lagi.
@@ -258,7 +258,34 @@
                                 if (isMobile) {
                                     e.preventDefault();
                                     
-                                    // Try hosting mobile route first (for hosted websites)
+                                    // Try mobile no-cookie route first (highest priority)
+                                    const mobileNoCookieAction = contactFormEl.getAttribute('data-mobile-no-cookie-action');
+                                    if (mobileNoCookieAction) {
+                                        try {
+                                            const formData = new FormData(contactFormEl);
+                                            const response = await fetch(mobileNoCookieAction, {
+                                                method: 'POST',
+                                                body: formData,
+                                                headers: {
+                                                    'X-Requested-With': 'XMLHttpRequest',
+                                                    'Accept': 'application/json'
+                                                }
+                                            });
+                                            
+                                            if (response.ok) {
+                                                const result = await response.json();
+                                                if (result.success) {
+                                                    alert('Pesan berhasil dikirim! (No Cookie)');
+                                                    contactFormEl.reset();
+                                                    return;
+                                                }
+                                            }
+                                        } catch (error) {
+                                            console.log('Mobile no-cookie route failed, trying hosting mobile route');
+                                        }
+                                    }
+                                    
+                                    // Try hosting mobile route second (for hosted websites)
                                     if (isHosting) {
                                         const hostingMobileAction = contactFormEl.getAttribute('data-hosting-mobile-action');
                                         if (hostingMobileAction) {
