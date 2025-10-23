@@ -67,21 +67,9 @@ class SchoolProfileController extends Controller
             $imageName = time() . '_' . $safeName . '.' . $extension;
             
             try {
-                // Store in uploads directory
-                $uploadsPath = public_path('uploads/school-profiles');
-                if (!is_dir($uploadsPath)) {
-                    mkdir($uploadsPath, 0755, true);
-                }
-                $image->move($uploadsPath, $imageName);
-                
-                // Store in storage directory
-                $storagePath = storage_path('app/public/school-profiles');
-                if (!is_dir($storagePath)) {
-                    mkdir($storagePath, 0755, true);
-                }
-                copy($uploadsPath . '/' . $imageName, $storagePath . '/' . $imageName);
-                
-                $data['image'] = 'storage/school-profiles/' . $imageName;
+                // Store directly in storage (public disk)
+                $path = $image->storeAs('school-profiles', $imageName, 'public');
+                $data['image'] = $path;
             } catch (Exception $e) {
                 return redirect()->back()->withErrors(['image' => 'Failed to upload image: ' . $e->getMessage()]);
             }
@@ -150,12 +138,18 @@ class SchoolProfileController extends Controller
                     return redirect()->back()->withErrors(['image' => 'File gambar tidak valid.']);
                 }
                 
-                // Delete old image if exists
-                if ($schoolProfile->image && Storage::disk('public')->exists($schoolProfile->image)) {
-                    Storage::disk('public')->delete($schoolProfile->image);
+                // Delete old image if exists (normalize path)
+                if ($schoolProfile->image) {
+                    $oldPath = $schoolProfile->image;
+                    if (str_starts_with($oldPath, 'storage/')) {
+                        $oldPath = str_replace('storage/', '', $oldPath);
+                    }
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
                 }
                 
-                // Store new image
+                // Store new image in storage (public disk)
                 $imagePath = $image->store('school-profiles', 'public');
                 $data['image'] = $imagePath;
             }
@@ -216,16 +210,16 @@ class SchoolProfileController extends Controller
                     return redirect()->back()->withErrors(['image' => 'Invalid file upload.']);
                 }
                 
-                // Delete old image if exists
+                // Delete old image if exists (storage only)
                 if ($schoolProfile->image) {
-                    $oldImagePath = public_path($schoolProfile->image);
-                    $oldStoragePath = storage_path('app/public/school-profiles/' . basename($schoolProfile->image));
-                    
-                    if (file_exists($oldImagePath)) {
-                        unlink($oldImagePath);
+                    $oldPath = $schoolProfile->image;
+                    if (str_starts_with($oldPath, 'storage/')) {
+                        $oldPath = str_replace('storage/', '', $oldPath);
+                    } elseif (str_starts_with($oldPath, 'uploads/school-profiles/')) {
+                        $oldPath = 'school-profiles/' . basename($oldPath);
                     }
-                    if (file_exists($oldStoragePath)) {
-                        unlink($oldStoragePath);
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
                     }
                 }
                 
@@ -236,21 +230,9 @@ class SchoolProfileController extends Controller
                 $imageName = time() . '_' . $safeName . '.' . $extension;
                 
                 try {
-                    // Store in uploads directory
-                    $uploadsPath = public_path('uploads/school-profiles');
-                    if (!is_dir($uploadsPath)) {
-                        mkdir($uploadsPath, 0755, true);
-                    }
-                    $image->move($uploadsPath, $imageName);
-                    
-                    // Store in storage directory
-                    $storagePath = storage_path('app/public/school-profiles');
-                    if (!is_dir($storagePath)) {
-                        mkdir($storagePath, 0755, true);
-                    }
-                    copy($uploadsPath . '/' . $imageName, $storagePath . '/' . $imageName);
-                    
-                    $data['image'] = 'storage/school-profiles/' . $imageName;
+                    // Store directly in storage (public disk)
+                    $path = $image->storeAs('school-profiles', $imageName, 'public');
+                    $data['image'] = $path;
                 } catch (Exception $e) {
                     return redirect()->back()->withErrors(['image' => 'Failed to upload image: ' . $e->getMessage()]);
                 }
@@ -267,17 +249,17 @@ class SchoolProfileController extends Controller
                         return redirect()->back()->withErrors([$imageField => 'Invalid file upload.']);
                     }
                     
-                    // Delete old image if exists
+                    // Delete old image if exists (storage only)
                     $oldImagePath = $schoolProfile->$imageField;
                     if ($oldImagePath) {
-                        $oldPublicPath = public_path($oldImagePath);
-                        $oldStoragePath = storage_path('app/public/school-profiles/' . basename($oldImagePath));
-                        
-                        if (file_exists($oldPublicPath)) {
-                            unlink($oldPublicPath);
+                        $normalized = $oldImagePath;
+                        if (str_starts_with($normalized, 'storage/')) {
+                            $normalized = str_replace('storage/', '', $normalized);
+                        } elseif (str_starts_with($normalized, 'uploads/school-profiles/')) {
+                            $normalized = 'school-profiles/' . basename($normalized);
                         }
-                        if (file_exists($oldStoragePath)) {
-                            unlink($oldStoragePath);
+                        if (Storage::disk('public')->exists($normalized)) {
+                            Storage::disk('public')->delete($normalized);
                         }
                     }
                     
@@ -288,21 +270,9 @@ class SchoolProfileController extends Controller
                     $imageName = time() . '_' . $imageField . '_' . $safeName . '.' . $extension;
                     
                     try {
-                        // Store in uploads directory
-                        $uploadsPath = public_path('uploads/school-profiles');
-                        if (!is_dir($uploadsPath)) {
-                            mkdir($uploadsPath, 0755, true);
-                        }
-                        $image->move($uploadsPath, $imageName);
-                        
-                        // Store in storage directory
-                        $storagePath = storage_path('app/public/school-profiles');
-                        if (!is_dir($storagePath)) {
-                            mkdir($storagePath, 0755, true);
-                        }
-                        copy($uploadsPath . '/' . $imageName, $storagePath . '/' . $imageName);
-                        
-                        $data[$imageField] = 'storage/school-profiles/' . $imageName;
+                        // Store directly in storage (public disk)
+                        $path = $image->storeAs('school-profiles', $imageName, 'public');
+                        $data[$imageField] = $path;
                     } catch (Exception $e) {
                         return redirect()->back()->withErrors([$imageField => 'Failed to upload image: ' . $e->getMessage()]);
                     }
@@ -311,41 +281,9 @@ class SchoolProfileController extends Controller
 
             $schoolProfile->update($data);
 
-            // Copy uploaded files to public/storage for immediate access
-            if ($request->hasFile('image')) {
-                $sourcePath = storage_path('app/public/school-profiles/' . basename($data['image']));
-                $destPath = public_path('storage/school-profiles/' . basename($data['image']));
-                $destDir = dirname($destPath);
-                
-                if (!is_dir($destDir)) {
-                    mkdir($destDir, 0755, true);
-                }
-                
-                if (copy($sourcePath, $destPath)) {
-                    Log::info('School profile image copied to public storage: ' . basename($data['image']));
-                } else {
-                    Log::error('Failed to copy school profile image to public storage: ' . basename($data['image']));
-                }
-            }
+            // Files served via storage symlink; no manual copy to public needed.
 
-            // Copy additional uploaded files to public/storage for immediate access
-            foreach ($additionalImages as $imageField) {
-                if ($request->hasFile($imageField) && isset($data[$imageField])) {
-                    $sourcePath = storage_path('app/public/school-profiles/' . basename($data[$imageField]));
-                    $destPath = public_path('storage/school-profiles/' . basename($data[$imageField]));
-                    $destDir = dirname($destPath);
-                    
-                    if (!is_dir($destDir)) {
-                        mkdir($destDir, 0755, true);
-                    }
-                    
-                    if (copy($sourcePath, $destPath)) {
-                        Log::info('School profile ' . $imageField . ' copied to public storage: ' . basename($data[$imageField]));
-                    } else {
-                        Log::error('Failed to copy school profile ' . $imageField . ' to public storage: ' . basename($data[$imageField]));
-                    }
-                }
-            }
+            // Files served via storage symlink; no manual copy to public needed for additional images.
 
             return redirect()->route('admin.school-profile.index')
                 ->with('success', 'Section berhasil diperbarui!');
@@ -459,22 +397,9 @@ class SchoolProfileController extends Controller
             $imageName = time() . '_' . $safeName . '.' . $extension;
             
             try {
-                // Store in storage using Laravel Storage facade
+                // Store in storage using Laravel Storage facade (no copy to public)
                 $path = $image->storeAs('school-profiles', $imageName, 'public');
                 $data['image'] = $path;
-                
-                // Copy file to public storage for immediate access
-                $sourcePath = storage_path('app/public/' . $path);
-                $destPath = public_path('storage/' . $path);
-                $destDir = dirname($destPath);
-                if (!is_dir($destDir)) {
-                    mkdir($destDir, 0755, true);
-                }
-                if (copy($sourcePath, $destPath)) {
-                    Log::info('Hero image uploaded and copied to public storage: ' . $path);
-                } else {
-                    Log::error('Failed to copy hero image to public storage: ' . $path);
-                }
             } catch (Exception $e) {
                 return redirect()->back()->withErrors(['image' => 'Failed to upload image: ' . $e->getMessage()]);
             }
@@ -543,16 +468,16 @@ class SchoolProfileController extends Controller
                 return redirect()->back()->withErrors(['image' => 'Invalid file upload.']);
             }
             
-            // Delete old image if exists
+            // Delete old image if exists (storage only)
             if ($strukturSection->image) {
-                $oldImagePath = public_path($strukturSection->image);
-                $oldStoragePath = storage_path('app/public/school-profiles/' . basename($strukturSection->image));
-                
-                if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath);
+                $oldPath = $strukturSection->image;
+                if (str_starts_with($oldPath, 'storage/')) {
+                    $oldPath = str_replace('storage/', '', $oldPath);
+                } elseif (str_starts_with($oldPath, 'uploads/school-profiles/')) {
+                    $oldPath = 'school-profiles/' . basename($oldPath);
                 }
-                if (file_exists($oldStoragePath)) {
-                    unlink($oldStoragePath);
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
                 }
             }
             
@@ -563,21 +488,9 @@ class SchoolProfileController extends Controller
             $imageName = time() . '_' . $safeName . '.' . $extension;
             
             try {
-                // Store in uploads directory
-                $uploadsPath = public_path('uploads/school-profiles');
-                if (!is_dir($uploadsPath)) {
-                    mkdir($uploadsPath, 0755, true);
-                }
-                $image->move($uploadsPath, $imageName);
-                
-                // Store in storage directory
-                $storagePath = storage_path('app/public/school-profiles');
-                if (!is_dir($storagePath)) {
-                    mkdir($storagePath, 0755, true);
-                }
-                copy($uploadsPath . '/' . $imageName, $storagePath . '/' . $imageName);
-                
-                $data['image'] = 'storage/school-profiles/' . $imageName;
+                // Store directly in storage (public disk)
+                $path = $image->storeAs('school-profiles', $imageName, 'public');
+                $data['image'] = $path;
             } catch (Exception $e) {
                 return redirect()->back()->withErrors(['image' => 'Failed to upload image: ' . $e->getMessage()]);
             }
@@ -585,22 +498,7 @@ class SchoolProfileController extends Controller
 
         $strukturSection->update($data);
 
-        // Copy uploaded files to public/storage for immediate access
-        if ($request->hasFile('image')) {
-            $sourcePath = storage_path('app/public/school-profiles/' . basename($data['image']));
-            $destPath = public_path('storage/school-profiles/' . basename($data['image']));
-            $destDir = dirname($destPath);
-            
-            if (!is_dir($destDir)) {
-                mkdir($destDir, 0755, true);
-            }
-            
-            if (copy($sourcePath, $destPath)) {
-                Log::info('Struktur image copied to public storage: ' . basename($data['image']));
-            } else {
-                Log::error('Failed to copy struktur image to public storage: ' . basename($data['image']));
-            }
-        }
+        // Files served via storage symlink; no manual copy to public needed.
 
         return redirect()->route('admin.school-profile.index')
             ->with('success', 'Struktur organisasi updated successfully.');

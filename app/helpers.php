@@ -1,22 +1,56 @@
 <?php
 
-if (!function_exists('get_correct_asset_url')) {
+if (!function_exists('vision_mission_image_url')) {
     /**
-     * Get the correct asset URL regardless of APP_URL configuration
+     * Get the URL for a vision mission image
+     * 
+     * @param string|null $imagePath
+     * @return string|null
      */
-    function get_correct_asset_url($path)
+    function vision_mission_image_url($imagePath)
     {
-        // Force the correct port for development
-        $scheme = request()->getScheme();
-        $host = request()->getHost();
-        $port = request()->getPort();
-        
-        // Override port for development
-        if ($host === 'localhost' && $port !== 8000) {
-            $port = 8000;
+        if (!$imagePath) {
+            return null;
         }
         
-        $baseUrl = $scheme . '://' . $host . ':' . $port;
-        return $baseUrl . '/' . ltrim($path, '/');
+        // Check if file exists in storage
+        if (Storage::disk('public')->exists($imagePath)) {
+            return Storage::url($imagePath);
+        }
+        
+        // Fallback: try to access via public path
+        $publicPath = public_path('storage/' . $imagePath);
+        if (file_exists($publicPath)) {
+            return asset('storage/' . $imagePath);
+        }
+        
+        return null;
+    }
+}
+
+if (!function_exists('copy_storage_to_public')) {
+    /**
+     * Copy file from storage to public directory
+     * 
+     * @param string $storagePath
+     * @return bool
+     */
+    function copy_storage_to_public($storagePath)
+    {
+        $sourcePath = storage_path('app/public/' . $storagePath);
+        $destPath = public_path('storage/' . $storagePath);
+        $destDir = dirname($destPath);
+        
+        // Create destination directory if it doesn't exist
+        if (!is_dir($destDir)) {
+            mkdir($destDir, 0755, true);
+        }
+        
+        // Copy file if source exists
+        if (file_exists($sourcePath)) {
+            return copy($sourcePath, $destPath);
+        }
+        
+        return false;
     }
 }

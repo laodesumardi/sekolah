@@ -9,7 +9,8 @@ class VisionMission extends Model
     protected $fillable = [
         'vision',
         'missions',
-        'is_active'
+        'is_active',
+        'image'
     ];
 
     protected $casts = [

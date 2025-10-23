@@ -36,7 +36,7 @@ class ProfilController extends Controller
                 'gambar' => $this->getVisiMisiImages()
             ],
             'struktur_organisasi' => [
-                'gambar' => $sections->get('struktur')->image ?? 'uploads/school-profiles/1761124325_Struktur_Organisasi.png',
+                'gambar' => ($sections->get('struktur') ? $sections->get('struktur')->image_url : asset('images/default-school-profile.png')),
                 'judul' => $sections->get('struktur')->title ?? 'Struktur Organisasi SMP Negeri 01 Namrole',
                 'deskripsi' => $sections->get('struktur')->content ?? 'Struktur organisasi sekolah yang menunjukkan hierarki kepemimpinan dan pembagian tugas di SMP Negeri 01 Namrole.'
             ],
@@ -142,17 +142,17 @@ class ProfilController extends Controller
         if (empty($images)) {
             $images = [
                 [
-                    'url' => asset('WhatsApp Image 2025-10-23 at 17.16.29_1bc98572.jpg'),
+                    'url' => asset('visi-misi-1.jpg'),
                     'alt' => 'Dokumentasi Visi Misi SMP Negeri 01 Namrole',
                     'title' => 'Profil Sekolah'
                 ],
                 [
-                    'url' => asset('WhatsApp Image 2025-10-23 at 17.16.30_9bd4caf6.jpg'),
+                    'url' => asset('visi-misi-2.jpg'),
                     'alt' => 'Visi dan Misi SMP Negeri 01 Namrole',
                     'title' => 'Visi & Misi'
                 ],
                 [
-                    'url' => asset('WhatsApp Image 2025-10-23 at 17.16.30_a0f5753c.jpg'),
+                    'url' => asset('visi-misi-3.jpg'),
                     'alt' => 'Tujuan Sekolah SMP Negeri 01 Namrole',
                     'title' => 'Tujuan Sekolah'
                 ]

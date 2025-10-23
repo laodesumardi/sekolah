@@ -223,8 +223,8 @@
                                 </div>
                                 @else
                                 <div class="mb-2">
-                                    <img src="{{ asset('WhatsApp Image 2025-10-23 at 17.16.29_1bc98572.jpg') }}" alt="Gambar Default 1" class="h-24 w-32 object-cover rounded-lg">
-                                    <p class="text-xs text-gray-500 mt-1">WhatsApp Image 2025-10-23 at 17.16.29_1bc98572.jpg</p>
+                                    <img src="{{ asset('visi-misi-1.jpg') }}" alt="Gambar Default 1" class="h-24 w-32 object-cover rounded-lg">
+                                    <p class="text-xs text-gray-500 mt-1">visi-misi-1.jpg</p>
                                 </div>
                                 @endif
                                 <input type="file" name="image_2" id="image_2" accept="image/*"
@@ -247,8 +247,8 @@
                                 </div>
                                 @else
                                 <div class="mb-2">
-                                    <img src="{{ asset('WhatsApp Image 2025-10-23 at 17.16.30_9bd4caf6.jpg') }}" alt="Gambar Default 2" class="h-24 w-32 object-cover rounded-lg">
-                                    <p class="text-xs text-gray-500 mt-1">WhatsApp Image 2025-10-23 at 17.16.30_9bd4caf6.jpg</p>
+                                    <img src="{{ asset('visi-misi-2.jpg') }}" alt="Gambar Default 2" class="h-24 w-32 object-cover rounded-lg">
+                                    <p class="text-xs text-gray-500 mt-1">visi-misi-2.jpg</p>
                                 </div>
                                 @endif
                                 <input type="file" name="image_3" id="image_3" accept="image/*"
@@ -271,8 +271,8 @@
                                 </div>
                                 @else
                                 <div class="mb-2">
-                                    <img src="{{ asset('WhatsApp Image 2025-10-23 at 17.16.30_a0f5753c.jpg') }}" alt="Gambar Default 3" class="h-24 w-32 object-cover rounded-lg">
-                                    <p class="text-xs text-gray-500 mt-1">WhatsApp Image 2025-10-23 at 17.16.30_a0f5753c.jpg</p>
+                                    <img src="{{ asset('visi-misi-3.jpg') }}" alt="Gambar Default 3" class="h-24 w-32 object-cover rounded-lg">
+                                    <p class="text-xs text-gray-500 mt-1">visi-misi-3.jpg</p>
                                 </div>
                                 @endif
                                 <input type="file" name="image_4" id="image_4" accept="image/*"
