@@ -168,7 +168,8 @@ use Illuminate\Support\Facades\Storage;
                 @if(isset($profilData['visi_misi']['gambar']) && count($profilData['visi_misi']['gambar']) > 0)
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     @foreach($profilData['visi_misi']['gambar'] as $index => $gambar)
-                    <div class="bg-gray-50 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <div class="bg-gray-50 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer" 
+                         onclick="openImageModal('{{ $gambar['url'] }}', '{{ $gambar['alt'] ?: 'Dokumentasi Visi Misi ' . ($index + 1) }}', '{{ $gambar['title'] ?: 'Dokumentasi Visi Misi ' . ($index + 1) }}')">
                         <div class="aspect-w-16 aspect-h-12">
                             <img src="{{ $gambar['url'] }}" 
                                  alt="{{ $gambar['alt'] ?: 'Dokumentasi Visi Misi ' . ($index + 1) }}" 
@@ -180,6 +181,12 @@ use Illuminate\Support\Facades\Storage;
                             @if($gambar['alt'])
                             <p class="text-sm text-gray-600">{{ $gambar['alt'] }}</p>
                             @endif
+                            <div class="mt-2 flex items-center text-blue-600 text-sm">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                </svg>
+                                Klik untuk memperbesar
+                            </div>
                         </div>
                     </div>
                     @endforeach
@@ -361,6 +368,67 @@ document.addEventListener('DOMContentLoaded', function() {
                 button.click();
             }
         });
+    }
+});
+</script>
+
+<!-- Image Modal -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
+    <div class="relative max-w-4xl max-h-full w-full h-full flex items-center justify-center">
+        <!-- Close button -->
+        <button onclick="closeImageModal()" class="absolute top-4 right-4 z-10 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-full p-2 transition-all duration-200">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        
+        <!-- Image container -->
+        <div class="relative w-full h-full flex items-center justify-center">
+            <img id="modalImage" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
+        </div>
+        
+        <!-- Image info -->
+        <div id="modalImageInfo" class="absolute bottom-4 left-4 right-4 bg-black bg-opacity-50 text-white p-4 rounded-lg">
+            <h3 id="modalImageTitle" class="text-lg font-semibold mb-2"></h3>
+            <p id="modalImageAlt" class="text-sm opacity-90"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Image modal functions
+function openImageModal(imageUrl, imageAlt, imageTitle) {
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalImageTitle = document.getElementById('modalImageTitle');
+    const modalImageAlt = document.getElementById('modalImageAlt');
+    
+    modalImage.src = imageUrl;
+    modalImage.alt = imageAlt;
+    modalImageTitle.textContent = imageTitle;
+    modalImageAlt.textContent = imageAlt;
+    
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto'; // Restore scrolling
+}
+
+// Close modal when clicking outside the image
+document.getElementById('imageModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeImageModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeImageModal();
     }
 });
 </script>
