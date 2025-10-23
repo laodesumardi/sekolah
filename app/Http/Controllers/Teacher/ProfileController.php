@@ -100,6 +100,9 @@ class ProfileController extends Controller
             // Store new photo
             $photoPath = $request->file('photo')->store('teachers/photos', 'public');
             $teacher->photo = $photoPath;
+            
+            // Ensure the file is accessible via public storage
+            $this->syncFileToPublicStorage($photoPath);
         }
 
         // Update password if provided
@@ -119,6 +122,26 @@ class ProfileController extends Controller
 
         return redirect()->route('teacher.profile')
             ->with('success', 'Profil berhasil diperbarui!');
+    }
+
+    /**
+     * Sync file from storage to public storage
+     */
+    private function syncFileToPublicStorage($filePath)
+    {
+        $sourcePath = storage_path('app/public/' . $filePath);
+        $targetPath = public_path('storage/' . $filePath);
+        
+        // Create target directory if it doesn't exist
+        $targetDir = dirname($targetPath);
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0755, true);
+        }
+        
+        // Copy file if source exists and target doesn't
+        if (file_exists($sourcePath) && !file_exists($targetPath)) {
+            copy($sourcePath, $targetPath);
+        }
     }
 
     /**

@@ -142,10 +142,26 @@ class PPDBController extends Controller
             'notes' => 'nullable|string'
         ]);
 
+        $oldStatus = $registration->status;
+        
         $registration->update([
             'status' => $request->status,
             'notes' => $request->notes
         ]);
+
+        // If status changed to approved, create student account automatically
+        if ($request->status === 'approved' && $oldStatus !== 'approved') {
+            try {
+                $ppdbController = new \App\Http\Controllers\PPDBController();
+                $user = $ppdbController->createStudentAccount($registration);
+                
+                return redirect()->route('admin.ppdb.registrations')
+                               ->with('success', 'Status pendaftaran berhasil diperbarui dan akun siswa telah dibuat! NIS: ' . $user->nip);
+            } catch (\Exception $e) {
+                return redirect()->route('admin.ppdb.registrations')
+                               ->with('error', 'Status berhasil diperbarui, tetapi gagal membuat akun siswa: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->route('admin.ppdb.registrations')
                        ->with('success', 'Status pendaftaran berhasil diperbarui!');

@@ -49,11 +49,17 @@ class User extends Authenticatable
         'employment_status',
         'join_date',
         'education',
+        'education_level',
+        'type',
         'certification',
         'experience_years',
         'bio',
         'photo',
         'classes',
+        // Student fields
+        'student_class',
+        'parent_occupation',
+        'parent_address',
     ];
 
     /**
@@ -202,7 +208,7 @@ class User extends Authenticatable
         }
         
         // Check if it's a storage path without 'storage/' prefix
-        if (str_starts_with($this->photo, 'teachers/') || str_starts_with($this->photo, 'students/')) {
+        if (str_starts_with($this->photo, 'teachers/') || str_starts_with($this->photo, 'students/') || str_starts_with($this->photo, 'admins/')) {
             return \Illuminate\Support\Facades\Storage::url($this->photo);
         }
         

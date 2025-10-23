@@ -67,6 +67,9 @@ class LessonController extends Controller
             foreach ($request->file('attachments') as $file) {
                 $path = $file->store('lessons/attachments', 'public');
                 $attachments[] = $path;
+                
+                // Sync to public/storage
+                $this->syncAttachmentToPublic($path);
             }
         }
 
@@ -147,6 +150,9 @@ class LessonController extends Controller
             foreach ($request->file('attachments') as $file) {
                 $path = $file->store('lessons/attachments', 'public');
                 $attachments[] = $path;
+                
+                // Sync to public/storage
+                $this->syncAttachmentToPublic($path);
             }
         }
 
@@ -237,5 +243,66 @@ class LessonController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Delete a specific attachment from lesson
+     */
+    public function deleteAttachment(Course $course, Lesson $lesson, $index)
+    {
+        // Check if user is the teacher of this course
+        if ($course->teacher_id !== Auth::id()) {
+            abort(403, 'Unauthorized access to this course.');
+        }
+        
+        $attachments = $lesson->attachments ?? [];
+        $index = (int) $index;
+        
+        if (!isset($attachments[$index])) {
+            abort(404, 'Attachment not found.');
+        }
+        
+        $attachmentToDelete = $attachments[$index];
+        
+        // Delete file from storage
+        if (Storage::disk('public')->exists($attachmentToDelete)) {
+            Storage::disk('public')->delete($attachmentToDelete);
+        }
+        
+        // Also delete from public/storage if exists
+        $publicPath = public_path('storage/' . $attachmentToDelete);
+        if (file_exists($publicPath)) {
+            unlink($publicPath);
+        }
+        
+        // Remove attachment from array
+        unset($attachments[$index]);
+        $attachments = array_values($attachments); // Re-index array
+        
+        // Update lesson with new attachments array
+        $lesson->update(['attachments' => $attachments]);
+        
+        return redirect()->back()
+                        ->with('success', 'Lampiran berhasil dihapus!');
+    }
+
+    /**
+     * Sync attachment to public/storage directory
+     */
+    private function syncAttachmentToPublic($attachmentPath)
+    {
+        $sourcePath = storage_path('app/public/' . $attachmentPath);
+        $targetPath = public_path('storage/' . $attachmentPath);
+        $targetDir = dirname($targetPath);
+        
+        // Create target directory if it doesn't exist
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0755, true);
+        }
+        
+        // Copy file if source exists and target doesn't
+        if (file_exists($sourcePath) && !file_exists($targetPath)) {
+            copy($sourcePath, $targetPath);
+        }
     }
 }

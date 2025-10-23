@@ -34,7 +34,7 @@
 
     <!-- Form -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-        <form action="{{ route('admin.user-management.update', $user) }}" method="POST" class="space-y-6">
+        <form action="{{ route('admin.user-management.update', $user) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
 
@@ -64,6 +64,54 @@
                     @error('email')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
+                </div>
+
+                <!-- Photo Profile -->
+                <div>
+                    <label for="photo" class="block text-sm font-medium text-gray-700 mb-2">Foto Profile</label>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0">
+                            @if($user->photo)
+                                <img src="{{ $user->photo_url }}" alt="{{ $user->name }}" 
+                                     class="h-16 w-16 rounded-full object-cover border-2 border-gray-200" 
+                                     id="current-photo-preview"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="h-16 w-16 rounded-full bg-gray-300 flex items-center justify-center hidden" id="current-photo-fallback">
+                                    <span class="text-lg font-medium text-gray-700">
+                                        {{ strtoupper(substr($user->name, 0, 2)) }}
+                                    </span>
+                                </div>
+                            @else
+                                <div class="h-16 w-16 rounded-full bg-gray-300 flex items-center justify-center" id="current-photo-preview">
+                                    <span class="text-lg font-medium text-gray-700">
+                                        {{ strtoupper(substr($user->name, 0, 2)) }}
+                                    </span>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="flex-1">
+                            <div class="mb-2">
+                                <div id="new-photo-preview-container" class="h-20 w-20 rounded-full border-2 border-gray-200 bg-gray-100 flex items-center justify-center overflow-hidden">
+                                    <img id="new-photo-preview" src="{{ $user->photo_url }}" alt="Preview" 
+                                         class="h-20 w-20 rounded-full object-cover hidden">
+                                    <div id="new-photo-placeholder" class="text-gray-400 text-xs text-center">
+                                        <svg class="w-8 h-8 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>Foto</span>
+                                    </div>
+                                </div>
+                                <p id="new-photo-preview-text" class="text-sm text-gray-500">Foto saat ini</p>
+                            </div>
+                            <input type="file" id="photo" name="photo" accept="image/*" 
+                                   class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('photo') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror"
+                                   onchange="previewPhoto(event)">
+                            <p class="mt-1 text-xs text-gray-500">JPG, PNG, GIF, SVG (Max 2MB)</p>
+                            @error('photo')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Password -->
@@ -271,5 +319,36 @@
         // Initial call to set visibility based on old input or current user role
         toggleRoleSpecificFields();
     });
+
+    function previewPhoto(event) {
+        const input = event.target;
+        const preview = document.getElementById('new-photo-preview');
+        const previewText = document.getElementById('new-photo-preview-text');
+        const placeholder = document.getElementById('new-photo-placeholder');
+        const currentPhoto = document.getElementById('current-photo-preview');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                previewText.textContent = 'Preview foto baru yang dipilih:';
+                previewText.classList.remove('hidden');
+                if (currentPhoto) currentPhoto.style.opacity = '0.5';
+            };
+            
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            // Show current photo, hide placeholder
+            preview.src = '{{ $user->photo_url }}';
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+            previewText.textContent = 'Foto saat ini';
+            previewText.classList.remove('hidden');
+            if (currentPhoto) currentPhoto.style.opacity = '1';
+        }
+    }
 </script>
 @endsection

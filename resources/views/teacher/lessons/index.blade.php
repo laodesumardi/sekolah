@@ -13,15 +13,14 @@
                 <p class="text-sm text-gray-600">{{ $course->code }} • {{ $course->subject }}</p>
                 <p class="text-sm text-gray-500">Kelas: {{ $course->class_level }}{{ $course->class_section ? ' - ' . $course->class_section : '' }}</p>
             </div>
-            <div class="flex items-center space-x-4">
-                <a href="{{ route('teacher.courses.lessons.create', $course) }}" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                    Tambah Materi
+            <div class="flex flex-col sm:flex-row gap-3">
+                <a href="{{ route('teacher.courses.lessons.create', $course) }}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                    <i class="fas fa-plus-circle mr-2"></i>
+                    <span>Tambah Materi</span>
                 </a>
-                <a href="{{ route('teacher.courses.show', $course) }}" class="text-gray-600 hover:text-gray-800 font-medium">
-                    Kembali ke Kelas
+                <a href="{{ route('teacher.courses.show', $course) }}" class="inline-flex items-center bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    <span>Kembali ke Kelas</span>
                 </a>
             </div>
         </div>
@@ -154,22 +153,28 @@
                         </div>
                     </div>
                     
-                    <div class="flex items-center space-x-2">
-                        <a href="{{ route('teacher.courses.lessons.show', [$course, $lesson]) }}" class="text-primary-600 hover:text-primary-700 font-medium">
-                            Lihat
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <a href="{{ route('teacher.courses.lessons.show', [$course, $lesson]) }}" class="inline-flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                            <i class="fas fa-eye mr-2"></i>
+                            <span>Lihat</span>
                         </a>
-                        <span class="text-gray-300">•</span>
-                        <a href="{{ route('teacher.courses.lessons.edit', [$course, $lesson]) }}" class="text-gray-600 hover:text-gray-800">
-                            Edit
+                        
+                        <a href="{{ route('teacher.courses.lessons.edit', [$course, $lesson]) }}" class="inline-flex items-center justify-center bg-orange-600 hover:bg-orange-700 text-black px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                            <i class="fas fa-edit mr-2"></i>
+                            <span>Edit</span>
                         </a>
-                        <span class="text-gray-300">•</span>
+                        
                         <form action="{{ route('teacher.courses.lessons.toggle-published', [$course, $lesson]) }}" method="POST" class="inline">
                             @csrf
-                            <button type="submit" class="text-sm text-gray-600 hover:text-gray-800">
+                            <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg
+                                @if($lesson->is_published) bg-yellow-600 hover:bg-yellow-700 text-white
+                                @else bg-green-600 hover:bg-green-700 text-white
+                                @endif">
+                                <i class="fas fa-power-off mr-2"></i>
                                 @if($lesson->is_published)
-                                    Sembunyikan
+                                    <span>Sembunyikan</span>
                                 @else
-                                    Publikasikan
+                                    <span>Publikasikan</span>
                                 @endif
                             </button>
                         </form>
@@ -184,8 +189,9 @@
                 <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada materi</h3>
                 <p class="mt-1 text-sm text-gray-500">Mulai dengan membuat materi pertama Anda.</p>
                 <div class="mt-6">
-                    <a href="{{ route('teacher.courses.lessons.create', $course) }}" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
-                        Tambah Materi
+                    <a href="{{ route('teacher.courses.lessons.create', $course) }}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-plus-circle mr-3"></i>
+                        <span>Tambah Materi</span>
                     </a>
                 </div>
             </div>

@@ -10,6 +10,8 @@ class PPDBRegistration extends Model
     
     protected $fillable = [
         'registration_number',
+        'user_id',
+        'nis',
         'student_name',
         'birth_place',
         'birth_date',
@@ -69,7 +71,6 @@ class PPDBRegistration extends Model
     // Relationships
     public function user()
     {
-        return $this->belongsTo(User::class, 'email', 'email')
-            ->orWhere('phone', $this->phone_number);
+        return $this->belongsTo(User::class);
     }
 }

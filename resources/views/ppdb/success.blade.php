@@ -92,6 +92,32 @@
                 </div>
             </div>
 
+            <!-- Download Form Section -->
+            @if(session('success') && str_contains(session('success'), 'Nomor pendaftaran'))
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-yellow-900 mb-4 flex items-center">
+                        <svg class="w-6 h-6 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Download Formulir Pendaftaran
+                    </h3>
+                    <p class="text-sm text-yellow-800 mb-4">
+                        Anda dapat mengunduh formulir pendaftaran dalam format PDF untuk keperluan administrasi.
+                    </p>
+                    <form action="{{ route('ppdb.download-form') }}" method="POST" class="inline">
+                        @csrf
+                        <input type="hidden" name="registration_number" value="{{ session('registration_number') ?? '' }}">
+                        <button type="submit" 
+                                class="bg-yellow-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-yellow-700 transition-colors flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Download PDF
+                        </button>
+                    </form>
+                </div>
+            @endif
+
             <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="{{ route('ppdb.check-status') }}" 

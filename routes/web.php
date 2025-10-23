@@ -167,6 +167,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('courses.lessons', App\Http\Controllers\Teacher\LessonController::class);
         Route::post('courses/{course}/lessons/{lesson}/toggle-published', [App\Http\Controllers\Teacher\LessonController::class, 'togglePublished'])->name('courses.lessons.toggle-published');
         Route::post('courses/{course}/lessons/reorder', [App\Http\Controllers\Teacher\LessonController::class, 'reorder'])->name('courses.lessons.reorder');
+        Route::delete('courses/{course}/lessons/{lesson}/attachments/{index}', [App\Http\Controllers\Teacher\LessonController::class, 'deleteAttachment'])->name('courses.lessons.attachments.delete');
         
         // Course Assignments
         Route::resource('courses.assignments', App\Http\Controllers\Teacher\AssignmentController::class);
@@ -220,6 +221,7 @@ Route::prefix('ppdb')->name('ppdb.')->group(function () {
     Route::get('/success', [PPDBController::class, 'success'])->name('success');
     Route::get('/check-status', [PPDBController::class, 'checkStatus'])->name('check-status');
     Route::post('/check-status', [PPDBController::class, 'checkStatus'])->name('check-status.post');
+    Route::post('/download-form', [PPDBController::class, 'downloadForm'])->name('download-form');
     Route::get('/refresh-token', [PPDBController::class, 'refreshToken'])->name('refresh-token');
 });
 

@@ -159,9 +159,55 @@
                                     </svg>
                                     <div>
                                         <h4 class="font-semibold text-green-800">Selamat! Anda Diterima</h4>
-                                        <p class="text-sm text-green-700 mt-1">Pendaftaran Anda telah disetujui. Silakan hubungi panitia untuk informasi lebih lanjut.</p>
+                                        <p class="text-sm text-green-700 mt-1">Pendaftaran Anda telah disetujui. Akun siswa telah dibuat untuk Anda.</p>
                                     </div>
                                 </div>
+                                
+                                <!-- Account Information -->
+                                @if($registration->user)
+                                <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <h5 class="font-semibold text-blue-900 mb-3 flex items-center">
+                                        <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                        </svg>
+                                        Informasi Akun Siswa
+                                    </h5>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="bg-white p-3 rounded border">
+                                            <label class="text-sm font-medium text-gray-500">NIS (Nomor Induk Siswa):</label>
+                                            <p class="text-lg font-bold text-gray-900">{{ $registration->user->nip }}</p>
+                                        </div>
+                                        <div class="bg-white p-3 rounded border">
+                                            <label class="text-sm font-medium text-gray-500">Username:</label>
+                                            <p class="text-lg font-bold text-gray-900">{{ $registration->user->email }}</p>
+                                        </div>
+                                        <div class="bg-white p-3 rounded border">
+                                            <label class="text-sm font-medium text-gray-500">Password:</label>
+                                            <p class="text-lg font-bold text-gray-900">{{ $registration->user->nip }}</p>
+                                        </div>
+                                        <div class="bg-white p-3 rounded border">
+                                            <label class="text-sm font-medium text-gray-500">Status Akun:</label>
+                                            <p class="text-lg font-bold text-green-600">Aktif</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                                        <div class="flex items-start">
+                                            <svg class="w-5 h-5 text-yellow-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                            </svg>
+                                            <div>
+                                                <p class="text-sm text-yellow-800 font-medium">Catatan Penting:</p>
+                                                <ul class="text-sm text-yellow-700 mt-1 list-disc list-inside">
+                                                    <li>Username dan password sama dengan NIS</li>
+                                                    <li>Simpan informasi akun ini dengan baik</li>
+                                                    <li>Gunakan akun ini untuk login ke sistem sekolah</li>
+                                                    <li>Hubungi admin jika mengalami kesulitan login</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
                             @elseif($registration->status == 'rejected')
                                 <div class="flex items-center">
                                     <svg class="w-6 h-6 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
