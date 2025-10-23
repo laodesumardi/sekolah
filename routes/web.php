@@ -529,3 +529,78 @@ Route::post('/contact/mobile-no-cookie', function(\Illuminate\Http\Request $requ
         'no_cookie' => true
     ]);
 })->name('contact.mobile-no-cookie');
+
+// Hosting mobile contact route (completely bypass all middleware and CSRF)
+Route::post('/contact/hosting-mobile-bypass', function(\Illuminate\Http\Request $request) {
+    // Validate mobile user agent
+    $userAgent = $request->header('User-Agent');
+    $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i', $userAgent);
+    
+    if (!$isMobile) {
+        return response()->json(['error' => 'This route is for mobile only'], 403);
+    }
+    
+    // Check if we're in hosting environment
+    $host = $request->getHost();
+    $isHosting = !in_array($host, ['localhost', '127.0.0.1', '::1']) || 
+                 $request->header('CF-Ray') || 
+                 $request->header('X-Forwarded-For') ||
+                 $request->header('X-Real-IP');
+    
+    if (!$isHosting) {
+        return response()->json(['error' => 'This route is for hosting only'], 403);
+    }
+    
+    // Process contact form for hosting mobile without any validation
+    try {
+        $message = new \App\Models\Message();
+        $message->name = $request->input('name', '');
+        $message->email = $request->input('email', '');
+        $message->phone = $request->input('phone', '');
+        $message->subject = $request->input('subject', '');
+        $message->message = $request->input('message', '');
+        $message->save();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Pesan berhasil dikirim! (Hosting Bypass)',
+            'hosting' => true,
+            'mobile' => true,
+            'bypass' => true
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => 'Gagal menyimpan pesan: ' . $e->getMessage()
+        ], 500);
+    }
+})->name('contact.hosting-mobile-bypass');
+
+// Test route for hosting mobile bypass
+Route::get('/test-hosting-mobile', function(\Illuminate\Http\Request $request) {
+    $userAgent = $request->header('User-Agent');
+    $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i', $userAgent);
+    $host = $request->getHost();
+    $isHosting = !in_array($host, ['localhost', '127.0.0.1', '::1']) || 
+                 $request->header('CF-Ray') || 
+                 $request->header('X-Forwarded-For') ||
+                 $request->header('X-Real-IP');
+    
+    return response()->json([
+        'mobile' => $isMobile,
+        'hosting' => $isHosting,
+        'host' => $host,
+        'user_agent' => $userAgent,
+        'headers' => [
+            'CF-Ray' => $request->header('CF-Ray'),
+            'X-Forwarded-For' => $request->header('X-Forwarded-For'),
+            'X-Real-IP' => $request->header('X-Real-IP')
+        ],
+        'routes' => [
+            'hosting_mobile_bypass' => route('contact.hosting-mobile-bypass'),
+            'mobile_no_cookie' => route('contact.mobile-no-cookie'),
+            'hosting_mobile' => route('contact.hosting-mobile'),
+            'mobile' => route('contact.mobile')
+        ]
+    ]);
+})->name('test.hosting-mobile');
