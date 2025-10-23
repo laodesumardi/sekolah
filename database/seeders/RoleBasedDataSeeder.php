@@ -15,13 +15,17 @@ class RoleBasedDataSeeder extends Seeder
      */
     public function run(): void
     {
+        // Admin credentials configurable via env
+        $adminEmail = env('ADMIN_EMAIL', 'admin@smpnamrole.sch.id');
+        $adminPassword = env('ADMIN_PASSWORD', 'admin123');
+
         // Create 1 Admin User
         User::updateOrCreate(
-            ['email' => 'admin@smpnamrole.sch.id'],
+            ['email' => $adminEmail],
             [
                 'name' => 'Administrator Sekolah',
-                'email' => 'admin@smpnamrole.sch.id',
-                'password' => Hash::make('admin123'),
+                'email' => $adminEmail,
+                'password' => Hash::make($adminPassword),
                 'role' => 'admin',
                 'phone' => '081234567000',
                 'address' => 'Jl. Pendidikan No. 1, Namrole',
@@ -74,7 +78,7 @@ class RoleBasedDataSeeder extends Seeder
 
         $this->command->info('Role-based data created successfully!');
         $this->command->info('=== LOGIN CREDENTIALS ===');
-        $this->command->info('Admin: admin@smpnamrole.sch.id / admin123');
+        $this->command->info("Admin: {$adminEmail} / {$adminPassword}");
         $this->command->info('Teacher: guru@smpnamrole.sch.id / guru123');
         $this->command->info('Students: Must register at /register');
         $this->command->info('========================');

@@ -389,15 +389,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Save before form submit
-    document.getElementById('ppdbForm').addEventListener('submit', function() {
-        clearInterval(autoSaveInterval);
-        clearInterval(csrfRefreshInterval);
-        saveFormData();
-        
-        // Refresh CSRF token before submit
-        refreshCSRFToken();
-    });
+    // Unified submit handler to avoid parallel refresh fetches
+    const ppdbFormEl = document.getElementById('ppdbForm');
+    if (ppdbFormEl) {
+        ppdbFormEl.addEventListener('submit', async function(e) {
+            clearInterval(autoSaveInterval);
+            clearInterval(csrfRefreshInterval);
+            saveFormData();
+            
+            const ua = navigator.userAgent || '';
+            const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i.test(ua);
+            if (isMobile) {
+                e.preventDefault();
+                await refreshCSRFToken(false);
+                setTimeout(() => ppdbFormEl.submit(), 0);
+            }
+        });
+    }
 });
 
 // Auto-save function
@@ -447,7 +455,7 @@ function loadSavedData() {
 
 // Refresh CSRF token
 function refreshCSRFToken(showNotification = true) {
-    const tokenUrl = (window?.location?.origin || '') + '/ppdb/refresh-token';
+    const tokenUrl = "{{ route('ppdb.refresh-token') }}";
     return fetch(tokenUrl, {
         method: 'GET',
         headers: {
@@ -457,7 +465,8 @@ function refreshCSRFToken(showNotification = true) {
         },
         cache: 'no-store',
         credentials: 'same-origin',
-        mode: 'same-origin'
+        mode: 'same-origin',
+        keepalive: true
     })
     .then(response => {
         if (!response.ok) {
@@ -475,26 +484,14 @@ function refreshCSRFToken(showNotification = true) {
         }
         throw new Error('Invalid response format');
     })
-    .catch(error => { console.error('Error refreshing CSRF token:', error); if (showNotification) { showNotification('Gagal memperbarui token: ' + error.message, 'error'); } return null; });
+    .catch(error => { if (showNotification) { console.error('Error refreshing CSRF token:', error); showNotification('Gagal memperbarui token: ' + error.message, 'error'); } return null; });
 }
 document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
         refreshCSRFToken(false);
     }
 });
-const ppdbFormEl = document.getElementById('ppdbForm');
-if (ppdbFormEl) {
-    ppdbFormEl.addEventListener('submit', async (e) => {
-        const ua = navigator.userAgent || '';
-        const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i.test(ua);
-        if (isMobile) {
-            e.preventDefault();
-            await refreshCSRFToken(false);
-            setTimeout(() => ppdbFormEl.submit(), 50);
-        }
-    });
-}
-csrfRefreshInterval = setInterval(() => refreshCSRFToken(false), 300000);
+// Removed duplicate submit handler; interval already set on DOMContentLoaded
 
 // Show notification
 function showNotification(message, type) {
