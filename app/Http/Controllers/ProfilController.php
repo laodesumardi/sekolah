@@ -33,14 +33,7 @@ class ProfilController extends Controller
                 'lokasi' => 'Namrole, Maluku Tengah'
             ],
             'visi_misi' => [
-                'visi' => $sections->get('visi-misi')->content ?? 'Menjadi sekolah unggul yang menghasilkan lulusan berkarakter, berprestasi, dan berdaya saing global',
-                'misi' => [
-                    'Menyelenggarakan pendidikan yang berkualitas dengan mengintegrasikan nilai-nilai karakter',
-                    'Mengembangkan potensi siswa melalui pembelajaran yang kreatif dan inovatif',
-                    'Membina hubungan yang harmonis antara sekolah, orang tua, dan masyarakat',
-                    'Menyediakan fasilitas pembelajaran yang memadai dan modern',
-                    'Membentuk siswa yang memiliki kepedulian sosial dan lingkungan'
-                ]
+                'gambar' => $this->getVisiMisiImages()
             ],
             'struktur_organisasi' => [
                 'gambar' => $sections->get('struktur')->image ?? 'uploads/school-profiles/1761124325_Struktur_Organisasi.png',
@@ -98,4 +91,75 @@ class ProfilController extends Controller
 
         return view('profil.index', compact('profilData'));
     }
+
+    /**
+     * Get Visi Misi images from database
+     */
+    private function getVisiMisiImages()
+    {
+        $images = [];
+        
+        // Get the main school profile (ID 3)
+        $mainProfile = SchoolProfile::find(3);
+        
+        if ($mainProfile) {
+            // Add main image
+            if ($mainProfile->image) {
+                $images[] = [
+                    'url' => $mainProfile->image_url,
+                    'alt' => $mainProfile->image_alt ?: 'Dokumentasi Visi Misi SMP Negeri 01 Namrole',
+                    'title' => 'Profil Sekolah'
+                ];
+            }
+            
+            // Add additional images
+            if ($mainProfile->image_2) {
+                $images[] = [
+                    'url' => $mainProfile->image_2_url,
+                    'alt' => $mainProfile->image_2_alt ?: 'Visi dan Misi SMP Negeri 01 Namrole',
+                    'title' => 'Visi & Misi'
+                ];
+            }
+            
+            if ($mainProfile->image_3) {
+                $images[] = [
+                    'url' => $mainProfile->image_3_url,
+                    'alt' => $mainProfile->image_3_alt ?: 'Tujuan Sekolah SMP Negeri 01 Namrole',
+                    'title' => 'Tujuan Sekolah'
+                ];
+            }
+            
+            if ($mainProfile->image_4) {
+                $images[] = [
+                    'url' => $mainProfile->image_4_url,
+                    'alt' => $mainProfile->image_4_alt ?: 'Dokumentasi Tambahan SMP Negeri 01 Namrole',
+                    'title' => 'Dokumentasi Tambahan'
+                ];
+            }
+        }
+        
+        // If no images in database, use default WhatsApp images
+        if (empty($images)) {
+            $images = [
+                [
+                    'url' => asset('WhatsApp Image 2025-10-23 at 17.16.29_1bc98572.jpg'),
+                    'alt' => 'Dokumentasi Visi Misi SMP Negeri 01 Namrole',
+                    'title' => 'Profil Sekolah'
+                ],
+                [
+                    'url' => asset('WhatsApp Image 2025-10-23 at 17.16.30_9bd4caf6.jpg'),
+                    'alt' => 'Visi dan Misi SMP Negeri 01 Namrole',
+                    'title' => 'Visi & Misi'
+                ],
+                [
+                    'url' => asset('WhatsApp Image 2025-10-23 at 17.16.30_a0f5753c.jpg'),
+                    'alt' => 'Tujuan Sekolah SMP Negeri 01 Namrole',
+                    'title' => 'Tujuan Sekolah'
+                ]
+            ];
+        }
+        
+        return $images;
+    }
+
 }

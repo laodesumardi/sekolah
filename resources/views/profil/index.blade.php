@@ -41,6 +41,9 @@ use Illuminate\Support\Facades\Storage;
                 <button onclick="showSection('struktur')" class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm whitespace-nowrap">
                     Struktur Organisasi
                 </button>
+                <button onclick="showSection('visi-misi')" class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm whitespace-nowrap">
+                    Visi & Misi
+                </button>
                 <button onclick="showSection('akreditasi')" class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm whitespace-nowrap">
                     Akreditasi & Prestasi
                 </button>
@@ -148,6 +151,50 @@ use Illuminate\Support\Facades\Storage;
             </div>
         </div>
 
+        <!-- Visi & Misi Section -->
+        <div id="visi-misi" class="content-section hidden">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <div class="flex items-center mb-6">
+                    <div class="bg-primary-100 p-3 rounded-full mr-4">
+                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900">Visi & Misi</h2>
+                </div>
+
+                <!-- Gambar Visi Misi -->
+                @if(isset($profilData['visi_misi']['gambar']) && count($profilData['visi_misi']['gambar']) > 0)
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    @foreach($profilData['visi_misi']['gambar'] as $index => $gambar)
+                    <div class="bg-gray-50 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <div class="aspect-w-16 aspect-h-12">
+                            <img src="{{ $gambar['url'] }}" 
+                                 alt="{{ $gambar['alt'] ?: 'Dokumentasi Visi Misi ' . ($index + 1) }}" 
+                                 class="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
+                                 onerror="this.src='{{ asset('images/default-school-image.png') }}'">
+                        </div>
+                        <div class="p-4">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ $gambar['title'] ?: 'Dokumentasi Visi Misi ' . ($index + 1) }}</h4>
+                            @if($gambar['alt'])
+                            <p class="text-sm text-gray-600">{{ $gambar['alt'] }}</p>
+                            @endif
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @else
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada gambar</h3>
+                    <p class="mt-1 text-sm text-gray-500">Gambar Visi & Misi akan ditampilkan di sini.</p>
+                </div>
+                @endif
+            </div>
+        </div>
 
         <!-- Akreditasi & Prestasi Section -->
         <div id="akreditasi" class="content-section hidden">
@@ -274,6 +321,7 @@ use Illuminate\Support\Facades\Storage;
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 

@@ -183,11 +183,26 @@ class SchoolProfileController extends Controller
                 'content' => 'required|string',
                 'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
                 'image_alt' => 'nullable|string|max:255',
+                'image_2' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+                'image_2_alt' => 'nullable|string|max:255',
+                'image_3' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+                'image_3_alt' => 'nullable|string|max:255',
+                'image_4' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+                'image_4_alt' => 'nullable|string|max:255',
                 'is_active' => 'boolean'
             ], [
                 'image.file' => 'The image must be a valid file.',
                 'image.mimes' => 'The image must be a file of type: jpeg, png, jpg, gif, svg, webp.',
                 'image.max' => 'The image may not be greater than 5MB.',
+                'image_2.file' => 'The image 2 must be a valid file.',
+                'image_2.mimes' => 'The image 2 must be a file of type: jpeg, png, jpg, gif, svg, webp.',
+                'image_2.max' => 'The image 2 may not be greater than 5MB.',
+                'image_3.file' => 'The image 3 must be a valid file.',
+                'image_3.mimes' => 'The image 3 must be a file of type: jpeg, png, jpg, gif, svg, webp.',
+                'image_3.max' => 'The image 3 may not be greater than 5MB.',
+                'image_4.file' => 'The image 4 must be a valid file.',
+                'image_4.mimes' => 'The image 4 must be a file of type: jpeg, png, jpg, gif, svg, webp.',
+                'image_4.max' => 'The image 4 may not be greater than 5MB.',
             ]);
 
             $data = $request->all();
@@ -241,6 +256,59 @@ class SchoolProfileController extends Controller
                 }
             }
 
+            // Handle additional image uploads
+            $additionalImages = ['image_2', 'image_3', 'image_4'];
+            foreach ($additionalImages as $imageField) {
+                if ($request->hasFile($imageField)) {
+                    $image = $request->file($imageField);
+                    
+                    // Validate file
+                    if (!$image->isValid()) {
+                        return redirect()->back()->withErrors([$imageField => 'Invalid file upload.']);
+                    }
+                    
+                    // Delete old image if exists
+                    $oldImagePath = $schoolProfile->$imageField;
+                    if ($oldImagePath) {
+                        $oldPublicPath = public_path($oldImagePath);
+                        $oldStoragePath = storage_path('app/public/school-profiles/' . basename($oldImagePath));
+                        
+                        if (file_exists($oldPublicPath)) {
+                            unlink($oldPublicPath);
+                        }
+                        if (file_exists($oldStoragePath)) {
+                            unlink($oldStoragePath);
+                        }
+                    }
+                    
+                    // Generate safe filename
+                    $originalName = $image->getClientOriginalName();
+                    $extension = $image->getClientOriginalExtension();
+                    $safeName = preg_replace('/[^a-zA-Z0-9._-]/', '_', pathinfo($originalName, PATHINFO_FILENAME));
+                    $imageName = time() . '_' . $imageField . '_' . $safeName . '.' . $extension;
+                    
+                    try {
+                        // Store in uploads directory
+                        $uploadsPath = public_path('uploads/school-profiles');
+                        if (!is_dir($uploadsPath)) {
+                            mkdir($uploadsPath, 0755, true);
+                        }
+                        $image->move($uploadsPath, $imageName);
+                        
+                        // Store in storage directory
+                        $storagePath = storage_path('app/public/school-profiles');
+                        if (!is_dir($storagePath)) {
+                            mkdir($storagePath, 0755, true);
+                        }
+                        copy($uploadsPath . '/' . $imageName, $storagePath . '/' . $imageName);
+                        
+                        $data[$imageField] = 'storage/school-profiles/' . $imageName;
+                    } catch (Exception $e) {
+                        return redirect()->back()->withErrors([$imageField => 'Failed to upload image: ' . $e->getMessage()]);
+                    }
+                }
+            }
+
             $schoolProfile->update($data);
 
             // Copy uploaded files to public/storage for immediate access
@@ -257,6 +325,25 @@ class SchoolProfileController extends Controller
                     Log::info('School profile image copied to public storage: ' . basename($data['image']));
                 } else {
                     Log::error('Failed to copy school profile image to public storage: ' . basename($data['image']));
+                }
+            }
+
+            // Copy additional uploaded files to public/storage for immediate access
+            foreach ($additionalImages as $imageField) {
+                if ($request->hasFile($imageField) && isset($data[$imageField])) {
+                    $sourcePath = storage_path('app/public/school-profiles/' . basename($data[$imageField]));
+                    $destPath = public_path('storage/school-profiles/' . basename($data[$imageField]));
+                    $destDir = dirname($destPath);
+                    
+                    if (!is_dir($destDir)) {
+                        mkdir($destDir, 0755, true);
+                    }
+                    
+                    if (copy($sourcePath, $destPath)) {
+                        Log::info('School profile ' . $imageField . ' copied to public storage: ' . basename($data[$imageField]));
+                    } else {
+                        Log::error('Failed to copy school profile ' . $imageField . ' to public storage: ' . basename($data[$imageField]));
+                    }
                 }
             }
 
