@@ -386,12 +386,19 @@ require __DIR__ . '/auth.php';
 
 // Mobile PPDB Fix Routes
 Route::get("/ppdb/refresh-token", function () {
+    // Regenerate session and token for mobile
+    session()->regenerate();
+    $token = csrf_token();
+    
     return response()->json([
-        "token" => csrf_token(),
+        "token" => $token,
         "success" => true,
-        "timestamp" => time()
+        "timestamp" => time(),
+        "session_id" => session()->getId()
     ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-      ->header('Pragma', 'no-cache');
+      ->header('Pragma', 'no-cache')
+      ->header('Expires', '0')
+      ->header('X-Mobile-Optimized', 'true');
 })->name('ppdb.refresh-token');
 
 Route::get("/ppdb/auto-refresh", function () {
@@ -403,3 +410,31 @@ Route::get("/ppdb/auto-refresh", function () {
     ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
       ->header('Pragma', 'no-cache');
 })->name('ppdb.auto-refresh');
+
+// Mobile-specific contact route with relaxed CSRF
+Route::post('/contact/mobile', function(\Illuminate\Http\Request $request) {
+    // Validate mobile user agent
+    $userAgent = $request->header('User-Agent');
+    $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i', $userAgent);
+    
+    if (!$isMobile) {
+        return response()->json(['error' => 'This route is for mobile only'], 403);
+    }
+    
+    // Process contact form for mobile
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'phone' => 'nullable|string|max:20',
+        'subject' => 'required|string|max:255',
+        'message' => 'required|string|max:2000'
+    ]);
+    
+    // Store message
+    \App\Models\Message::create($validated);
+    
+    return response()->json([
+        'success' => true,
+        'message' => 'Pesan berhasil dikirim!'
+    ]);
+})->name('contact.mobile');

@@ -90,7 +90,7 @@
                         </div>
                     @endif
                     
-                    <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="space-y-6">
+                    <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="space-y-6" data-mobile-action="{{ route('contact.mobile') }}">
                         @csrf
                         <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
                             Jika di HP muncul error 419, tap tombol "Refresh Token" lalu coba kirim lagi.
@@ -160,22 +160,41 @@
                     </form>
 
                     <script>
+                        // More aggressive mobile CSRF handling
                         async function refreshContactCSRFToken() {
                             const statusEl = document.getElementById('refresh-status');
                             try {
                                 statusEl.textContent = 'Merefresh token...';
+                                
+                                // Force page reload for mobile to get fresh token
+                                const ua = navigator.userAgent || '';
+                                const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i.test(ua);
+                                
+                                if (isMobile) {
+                                    // For mobile, do a full page refresh to get fresh session
+                                    window.location.reload();
+                                    return;
+                                }
+                                
                                 const tokenUrl = (window?.location?.origin || '') + '/ppdb/refresh-token';
                                 const response = await fetch(tokenUrl, {
                                     method: 'GET',
                                     headers: {
                                         'X-Requested-With': 'XMLHttpRequest',
                                         'Accept': 'application/json',
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                                        'Cache-Control': 'no-cache',
+                                        'Pragma': 'no-cache'
                                     },
                                     cache: 'no-store',
                                     credentials: 'same-origin',
                                     mode: 'same-origin'
                                 });
+                                
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                
                                 const data = await response.json();
                                 if (data && data.token) {
                                     const form = document.getElementById('contact-form');
@@ -189,17 +208,44 @@
                                 }
                             } catch (e) {
                                 console.error('Gagal refresh token CSRF', e);
-                                statusEl.textContent = 'Gagal refresh token';
+                                statusEl.textContent = 'Gagal refresh token - Coba refresh halaman';
+                                
+                                // For mobile, suggest page refresh
+                                const ua = navigator.userAgent || '';
+                                const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i.test(ua);
+                                if (isMobile) {
+                                    setTimeout(() => {
+                                        if (confirm('Token gagal diperbarui. Refresh halaman?')) {
+                                            window.location.reload();
+                                        }
+                                    }, 2000);
+                                }
                             }
-                            setTimeout(() => statusEl.textContent = '', 3000);
+                            setTimeout(() => statusEl.textContent = '', 5000);
                         }
+                        
                         document.getElementById('refresh-contact-token')?.addEventListener('click', refreshContactCSRFToken);
-                        // Auto-refresh on visibility change and before submit (mobile)
+                        
+                        // More aggressive auto-refresh for mobile
                         document.addEventListener('visibilitychange', () => {
                             if (document.visibilityState === 'visible') {
-                                refreshContactCSRFToken();
+                                const ua = navigator.userAgent || '';
+                                const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i.test(ua);
+                                if (isMobile) {
+                                    refreshContactCSRFToken();
+                                }
                             }
                         });
+                        
+                        // Auto-refresh every 30 seconds for mobile
+                        const ua = navigator.userAgent || '';
+                        const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i.test(ua);
+                        if (isMobile) {
+                            setInterval(() => {
+                                refreshContactCSRFToken();
+                            }, 30000); // Refresh every 30 seconds
+                        }
+                        
                         const contactFormEl = document.getElementById('contact-form');
                         if (contactFormEl) {
                             contactFormEl.addEventListener('submit', async (e) => {
@@ -207,13 +253,44 @@
                                 const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i.test(ua);
                                 if (isMobile) {
                                     e.preventDefault();
+                                    
+                                    // Use mobile-specific route
+                                    const mobileAction = contactFormEl.getAttribute('data-mobile-action');
+                                    if (mobileAction) {
+                                        contactFormEl.action = mobileAction;
+                                    }
+                                    
+                                    // Try mobile route first
+                                    try {
+                                        const formData = new FormData(contactFormEl);
+                                        const response = await fetch(mobileAction, {
+                                            method: 'POST',
+                                            body: formData,
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest',
+                                                'Accept': 'application/json'
+                                            }
+                                        });
+                                        
+                                        if (response.ok) {
+                                            const result = await response.json();
+                                            if (result.success) {
+                                                alert('Pesan berhasil dikirim!');
+                                                contactFormEl.reset();
+                                                return;
+                                            }
+                                        }
+                                    } catch (error) {
+                                        console.log('Mobile route failed, trying regular route');
+                                    }
+                                    
+                                    // Fallback to regular route
+                                    contactFormEl.action = '{{ route("contact.store") }}';
                                     await refreshContactCSRFToken();
-                                    setTimeout(() => contactFormEl.submit(), 50);
+                                    setTimeout(() => contactFormEl.submit(), 100);
                                 }
                             });
                         }
-                        // Removed auto-load refresh to avoid aborted fetch in some webview environments
-
                     </script>
                 </div>
             </div>

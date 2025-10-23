@@ -23,26 +23,42 @@ class MobileCSRFMiddleware
         $isMobile = $this->isMobile($userAgent);
 
         if ($isMobile) {
-            // Extend session lifetime for mobile
+            // More aggressive mobile settings
             $sessionLifetime = config('session.lifetime', 480);
-            config(['session.lifetime' => $sessionLifetime * 2]); // Double for mobile
-
-            // Set mobile-specific session settings
-            config(['session.expire_on_close' => false]); // Don't expire on browser close for mobile
+            config(['session.lifetime' => $sessionLifetime * 3]); // Triple for mobile
+            config(['session.expire_on_close' => false]);
+            config(['session.cookie_lifetime' => $sessionLifetime * 3]);
             
-            // Regenerate CSRF token more frequently for mobile
-            if ($request->isMethod('POST') || $request->isMethod('PUT') || $request->isMethod('DELETE')) {
+            // Always regenerate token for mobile to prevent 419
+            if (!$request->session()->has('_token')) {
                 $request->session()->regenerateToken();
+            }
+            
+            // Force token refresh on every mobile request
+            $request->session()->regenerateToken();
+            
+            // Set mobile-specific headers
+            $response = $next($request);
+            
+            if ($response instanceof \Illuminate\Http\Response) {
+                $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+                $response->headers->set('Pragma', 'no-cache');
+                $response->headers->set('Expires', '0');
+                $response->headers->set('X-Mobile-Optimized', 'true');
+                $response->headers->set('X-CSRF-Token', csrf_token());
             }
 
             // Log mobile requests for debugging
-            Log::info('Mobile request detected', [
+            Log::info('Mobile request processed', [
                 'user_agent' => $userAgent,
                 'ip' => $request->ip(),
                 'url' => $request->url(),
                 'method' => $request->method(),
-                'csrf_token' => $request->session()->token()
+                'csrf_token' => $request->session()->token(),
+                'session_id' => $request->session()->getId()
             ]);
+            
+            return $response;
         }
 
         return $next($request);
