@@ -438,3 +438,64 @@ Route::post('/contact/mobile', function(\Illuminate\Http\Request $request) {
         'message' => 'Pesan berhasil dikirim!'
     ]);
 })->name('contact.mobile');
+
+// Hosting mobile contact route (bypass CSRF completely)
+Route::post('/contact/hosting-mobile', function(\Illuminate\Http\Request $request) {
+    // Validate mobile user agent
+    $userAgent = $request->header('User-Agent');
+    $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i', $userAgent);
+    
+    if (!$isMobile) {
+        return response()->json(['error' => 'This route is for mobile only'], 403);
+    }
+    
+    // Check if we're in hosting environment
+    $host = $request->getHost();
+    $isHosting = !in_array($host, ['localhost', '127.0.0.1', '::1']) || 
+                 $request->header('CF-Ray') || 
+                 $request->header('X-Forwarded-For') ||
+                 $request->header('X-Real-IP');
+    
+    if (!$isHosting) {
+        return response()->json(['error' => 'This route is for hosting only'], 403);
+    }
+    
+    // Process contact form for hosting mobile
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'phone' => 'nullable|string|max:20',
+        'subject' => 'required|string|max:255',
+        'message' => 'required|string|max:2000'
+    ]);
+    
+    // Store message
+    \App\Models\Message::create($validated);
+    
+    return response()->json([
+        'success' => true,
+        'message' => 'Pesan berhasil dikirim!',
+        'hosting' => true,
+        'mobile' => true
+    ]);
+})->name('contact.hosting-mobile');
+
+// Hosting mobile refresh token route
+Route::get("/ppdb/hosting-mobile-refresh", function () {
+    // Regenerate session and token for hosting mobile
+    session()->regenerate();
+    $token = csrf_token();
+    
+    return response()->json([
+        "token" => $token,
+        "success" => true,
+        "timestamp" => time(),
+        "session_id" => session()->getId(),
+        "hosting" => true,
+        "mobile" => true
+    ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+      ->header('Pragma', 'no-cache')
+      ->header('Expires', '0')
+      ->header('X-Mobile-Optimized', 'true')
+      ->header('X-Hosting-Mobile', 'true');
+})->name('ppdb.hosting-mobile-refresh');

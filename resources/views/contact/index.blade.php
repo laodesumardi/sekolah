@@ -90,7 +90,7 @@
                         </div>
                     @endif
                     
-                    <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="space-y-6" data-mobile-action="{{ route('contact.mobile') }}">
+                    <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="space-y-6" data-mobile-action="{{ route('contact.mobile') }}" data-hosting-mobile-action="{{ route('contact.hosting-mobile') }}">
                         @csrf
                         <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
                             Jika di HP muncul error 419, tap tombol "Refresh Token" lalu coba kirim lagi.
@@ -251,40 +251,70 @@
                             contactFormEl.addEventListener('submit', async (e) => {
                                 const ua = navigator.userAgent || '';
                                 const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i.test(ua);
+                                const isHosting = window.location.hostname !== 'localhost' && 
+                                                window.location.hostname !== '127.0.0.1' && 
+                                                !window.location.hostname.includes('::1');
+                                
                                 if (isMobile) {
                                     e.preventDefault();
                                     
-                                    // Use mobile-specific route
-                                    const mobileAction = contactFormEl.getAttribute('data-mobile-action');
-                                    if (mobileAction) {
-                                        contactFormEl.action = mobileAction;
-                                    }
-                                    
-                                    // Try mobile route first
-                                    try {
-                                        const formData = new FormData(contactFormEl);
-                                        const response = await fetch(mobileAction, {
-                                            method: 'POST',
-                                            body: formData,
-                                            headers: {
-                                                'X-Requested-With': 'XMLHttpRequest',
-                                                'Accept': 'application/json'
-                                            }
-                                        });
-                                        
-                                        if (response.ok) {
-                                            const result = await response.json();
-                                            if (result.success) {
-                                                alert('Pesan berhasil dikirim!');
-                                                contactFormEl.reset();
-                                                return;
+                                    // Try hosting mobile route first (for hosted websites)
+                                    if (isHosting) {
+                                        const hostingMobileAction = contactFormEl.getAttribute('data-hosting-mobile-action');
+                                        if (hostingMobileAction) {
+                                            try {
+                                                const formData = new FormData(contactFormEl);
+                                                const response = await fetch(hostingMobileAction, {
+                                                    method: 'POST',
+                                                    body: formData,
+                                                    headers: {
+                                                        'X-Requested-With': 'XMLHttpRequest',
+                                                        'Accept': 'application/json'
+                                                    }
+                                                });
+                                                
+                                                if (response.ok) {
+                                                    const result = await response.json();
+                                                    if (result.success) {
+                                                        alert('Pesan berhasil dikirim! (Hosting Mobile)');
+                                                        contactFormEl.reset();
+                                                        return;
+                                                    }
+                                                }
+                                            } catch (error) {
+                                                console.log('Hosting mobile route failed, trying mobile route');
                                             }
                                         }
-                                    } catch (error) {
-                                        console.log('Mobile route failed, trying regular route');
                                     }
                                     
-                                    // Fallback to regular route
+                                    // Try regular mobile route
+                                    const mobileAction = contactFormEl.getAttribute('data-mobile-action');
+                                    if (mobileAction) {
+                                        try {
+                                            const formData = new FormData(contactFormEl);
+                                            const response = await fetch(mobileAction, {
+                                                method: 'POST',
+                                                body: formData,
+                                                headers: {
+                                                    'X-Requested-With': 'XMLHttpRequest',
+                                                    'Accept': 'application/json'
+                                                }
+                                            });
+                                            
+                                            if (response.ok) {
+                                                const result = await response.json();
+                                                if (result.success) {
+                                                    alert('Pesan berhasil dikirim! (Mobile)');
+                                                    contactFormEl.reset();
+                                                    return;
+                                                }
+                                            }
+                                        } catch (error) {
+                                            console.log('Mobile route failed, trying regular route');
+                                        }
+                                    }
+                                    
+                                    // Final fallback to regular route
                                     contactFormEl.action = '{{ route("contact.store") }}';
                                     await refreshContactCSRFToken();
                                     setTimeout(() => contactFormEl.submit(), 100);

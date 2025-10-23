@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'student.ppdb.approved' => \App\Http\Middleware\EnsureStudentPPDBApproved::class,
             // Tambahkan alias middleware untuk CSRF mobile
             'mobile.csrf' => \App\Http\Middleware\MobileCSRFMiddleware::class,
+            'hosting.mobile.csrf' => \App\Http\Middleware\HostingMobileCSRFMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
