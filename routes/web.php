@@ -29,6 +29,7 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
 Route::get('/kontak', [ContactController::class, 'index'])->name('contact.index');
 Route::post('/kontak', [ContactController::class, 'store'])->name('contact.store')->middleware('mobile.csrf');
+
 Route::get('/perpustakaan', [App\Http\Controllers\LibraryController::class, 'index'])->name('library');
 Route::get('/tenaga-pendidik', [App\Http\Controllers\StaffController::class, 'index'])->name('staff');
 Route::get('/fasilitas', [App\Http\Controllers\FacilityController::class, 'index'])->name('facilities');

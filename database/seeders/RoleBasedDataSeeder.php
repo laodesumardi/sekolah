@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use App\Models\Teacher;
 use Illuminate\Support\Facades\Hash;
 
 class RoleBasedDataSeeder extends Seeder
@@ -51,16 +50,15 @@ class RoleBasedDataSeeder extends Seeder
             ]
         );
 
-        // Create corresponding Teacher record
-        Teacher::updateOrCreate(
-            ['nip' => '198505151990031001'],
+        // Tambahkan detail guru pada User yang sudah dibuat
+        User::updateOrCreate(
+            ['email' => 'guru@smpnamrole.sch.id'],
             [
                 'nip' => '198505151990031001',
                 'name' => 'Budi Santoso, S.Pd',
-                'email' => 'guru@smpnamrole.sch.id',
                 'phone' => '081234567001',
                 'address' => 'Jl. Guru No. 1, Namrole',
-                'birth_date' => '1985-05-15',
+                'date_of_birth' => '1985-05-15',
                 'gender' => 'male',
                 'subject' => 'Matematika',
                 'education' => 'S1 Pendidikan Matematika',
