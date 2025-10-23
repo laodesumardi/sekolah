@@ -106,6 +106,11 @@ class SchoolProfileController extends Controller
      */
     public function edit(SchoolProfile $schoolProfile)
     {
+        // Check if this is the visi-misi section (ID 3)
+        if ($schoolProfile->id == 3 && $schoolProfile->section_key == 'visi-misi') {
+            return view('admin.school-profile.edit-visi-misi', compact('schoolProfile'));
+        }
+        
         // Determine if this is a section-based profile or complete profile
         $isSectionBased = !empty($schoolProfile->section_key);
         
@@ -123,6 +128,51 @@ class SchoolProfileController extends Controller
      */
     public function update(Request $request, SchoolProfile $schoolProfile)
     {
+        // Check if this is the visi-misi section (ID 3) - only allow image upload
+        if ($schoolProfile->id == 3 && $schoolProfile->section_key == 'visi-misi') {
+            $request->validate([
+                'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+                'image_alt' => 'nullable|string|max:255',
+            ], [
+                'image.file' => 'The image must be a valid file.',
+                'image.mimes' => 'The image must be a file of type: jpeg, png, jpg, gif, svg, webp.',
+                'image.max' => 'The image may not be greater than 5MB.',
+            ]);
+
+            // Only update image-related fields, preserve all other content
+            $data = [];
+            
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                
+                // Validate file
+                if (!$image->isValid()) {
+                    return redirect()->back()->withErrors(['image' => 'File gambar tidak valid.']);
+                }
+                
+                // Delete old image if exists
+                if ($schoolProfile->image && Storage::disk('public')->exists($schoolProfile->image)) {
+                    Storage::disk('public')->delete($schoolProfile->image);
+                }
+                
+                // Store new image
+                $imagePath = $image->store('school-profiles', 'public');
+                $data['image'] = $imagePath;
+            }
+            
+            if ($request->filled('image_alt')) {
+                $data['image_alt'] = $request->image_alt;
+            }
+            
+            // Update only the image fields
+            if (!empty($data)) {
+                $schoolProfile->update($data);
+            }
+            
+            return redirect()->route('admin.school-profile.index')
+                ->with('success', 'Gambar Visi & Misi berhasil diperbarui!');
+        }
+        
         // Determine if this is a section-based profile or complete profile
         $isSectionBased = !empty($schoolProfile->section_key);
         
