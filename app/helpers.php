@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Support\Facades\Storage;
 
 if (!function_exists('vision_mission_image_url')) {
     /**
@@ -52,5 +53,82 @@ if (!function_exists('copy_storage_to_public')) {
         }
         
         return false;
+    }
+}
+
+if (!function_exists('get_correct_asset_url')) {
+    /**
+     * Build a correct asset URL that works on hosting (HTTPS, no symlink)
+     *
+     * - Accepts relative paths like `images/foo.png`, `libraries/file.jpg`, or `storage/libraries/file.jpg`
+     * - If `public/storage` symlink is missing, attempts to copy from `storage/app/public`
+     * - Forces HTTPS when app URL or proxy indicates secure requests
+     *
+     * @param string $path
+     * @return string
+     */
+    function get_correct_asset_url($path)
+    {
+        if (!$path) {
+            return asset('images/default-section.png');
+        }
+
+        // Already a full URL
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
+        }
+
+        $trimmed = ltrim($path, '/');
+
+        // Helper to decide HTTPS vs HTTP
+        $useHttps = false;
+        if (function_exists('config') && is_string(config('app.url')) && str_starts_with((string)config('app.url'), 'https://')) {
+            $useHttps = true;
+        }
+        // Respect proxy headers if present
+        if (!$useHttps && function_exists('request')) {
+            $proto = request()->header('X-Forwarded-Proto');
+            if ($proto && strtolower($proto) === 'https') {
+                $useHttps = true;
+            }
+        }
+
+        // If the path starts with storage/, ensure file exists in public/storage
+        if (str_starts_with($trimmed, 'storage/')) {
+            $subPath = substr($trimmed, strlen('storage/'));
+            $publicFile = public_path($trimmed);
+            if (!file_exists($publicFile)) {
+                // Try to copy from storage/app/public
+                @copy_storage_to_public($subPath);
+            }
+            return $useHttps ? secure_asset($trimmed) : asset($trimmed);
+        }
+
+        // Common upload directories that should be served from public/storage
+        $uploadDirs = [
+            'libraries', 'gallery', 'gallery-items', 'school-profiles', 'teachers',
+            'students', 'admins', 'facilities', 'home-sections', 'documents'
+        ];
+        foreach ($uploadDirs as $dir) {
+            if (str_starts_with($trimmed, $dir . '/')) {
+                $publicStorageFile = public_path('storage/' . $trimmed);
+                if (file_exists($publicStorageFile)) {
+                    return $useHttps ? secure_asset('storage/' . $trimmed) : asset('storage/' . $trimmed);
+                }
+
+                // If the file exists directly under public (in case of manual upload), use it
+                $publicDirectFile = public_path($trimmed);
+                if (file_exists($publicDirectFile)) {
+                    return $useHttps ? secure_asset($trimmed) : asset($trimmed);
+                }
+
+                // Attempt to copy from storage to public/storage for hosts without symlink support
+                @copy_storage_to_public($trimmed);
+                return $useHttps ? secure_asset('storage/' . $trimmed) : asset('storage/' . $trimmed);
+            }
+        }
+
+        // Default: treat as a normal public asset
+        return $useHttps ? secure_asset($trimmed) : asset($trimmed);
     }
 }

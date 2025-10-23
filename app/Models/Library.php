@@ -39,7 +39,7 @@ class Library extends Model
     public function getOrganizationChartUrlAttribute()
     {
         if (!$this->organization_chart) {
-            return get_correct_asset_url('images/struktur-organisasi-perpustakaan.png');
+            return get_correct_asset_url('images/default-section.png');
         }
         
         // Check if it's already a full URL
@@ -49,26 +49,32 @@ class Library extends Model
         
         // Check if it's a storage path
         if (str_starts_with($this->organization_chart, 'libraries/')) {
-            // Check if file exists in public storage
-            $publicPath = public_path('storage/' . $this->organization_chart);
-            if (file_exists($publicPath)) {
+            // Check if file exists in public storage symlink
+            $publicStoragePath = public_path('storage/' . $this->organization_chart);
+            if (file_exists($publicStoragePath)) {
                 return get_correct_asset_url('storage/' . $this->organization_chart);
+            }
+
+            // Check if file exists in public/libraries (direct symlink mapping)
+            $publicLibrariesPath = public_path($this->organization_chart);
+            if (file_exists($publicLibrariesPath)) {
+                return get_correct_asset_url($this->organization_chart);
             }
             
             // Check if file exists in storage/app/public
             $storagePath = storage_path('app/public/' . $this->organization_chart);
             if (file_exists($storagePath)) {
-                // Try to copy file to public storage
-                $publicDir = dirname($publicPath);
+                // Try to copy file to public storage for hosting without symlink
+                $publicDir = dirname($publicStoragePath);
                 if (!is_dir($publicDir)) {
                     mkdir($publicDir, 0755, true);
                 }
-                copy($storagePath, $publicPath);
+                @copy($storagePath, $publicStoragePath);
                 return get_correct_asset_url('storage/' . $this->organization_chart);
             }
             
             // Fallback to default image
-            return get_correct_asset_url('images/struktur-organisasi-perpustakaan.png');
+            return get_correct_asset_url('images/default-section.png');
         }
         
         // Check if it's a storage path with storage/ prefix
@@ -84,6 +90,6 @@ class Library extends Model
         }
         
         // Default fallback
-        return get_correct_asset_url('images/struktur-organisasi-perpustakaan.png');
+        return get_correct_asset_url('images/default-section.png');
     }
 }
