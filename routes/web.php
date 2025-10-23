@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\DocumentController as AdminDocumentController;
 use App\Http\Controllers\SetupController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -51,7 +52,7 @@ Route::post('/login', function (Illuminate\Http\Request $request) {
         $request->session()->regenerate();
 
         // Debug info (remove in production)
-        \Log::info('Login successful', [
+        Log::info('Login successful', [
             'user_role' => $user->role ?? 'NULL',
             'user_name' => $user->name ?? 'NULL',
             'user_email' => $user->email ?? 'NULL',
@@ -60,25 +61,25 @@ Route::post('/login', function (Illuminate\Http\Request $request) {
 
         // Force redirect based on user role
         if ($user->role === 'teacher') {
-            \Log::info('Redirecting teacher to dashboard');
+            Log::info('Redirecting teacher to dashboard');
             return response()->view('auth.redirect', [
                 'url' => '/teacher/dashboard',
                 'message' => 'Login berhasil! Selamat datang di Dashboard Guru.'
             ]);
         } elseif ($user->role === 'admin') {
-            \Log::info('Redirecting admin to dashboard');
+            Log::info('Redirecting admin to dashboard');
             return response()->view('auth.redirect', [
                 'url' => '/admin/dashboard',
                 'message' => 'Login berhasil! Selamat datang di Admin Dashboard.'
             ]);
         } elseif ($user->role === 'student') {
-            \Log::info('Redirecting student to dashboard');
+            Log::info('Redirecting student to dashboard');
             return response()->view('auth.redirect', [
                 'url' => '/student/dashboard',
                 'message' => 'Login berhasil! Selamat datang di Student Dashboard.'
             ]);
         } else {
-            \Log::info('Redirecting to fallback dashboard');
+            Log::info('Redirecting to fallback dashboard');
             return response()->view('auth.redirect', [
                 'url' => '/dashboard',
                 'message' => 'Login berhasil!'
@@ -389,7 +390,8 @@ Route::get("/ppdb/refresh-token", function () {
         "token" => csrf_token(),
         "success" => true,
         "timestamp" => time()
-    ]);
+    ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+      ->header('Pragma', 'no-cache');
 })->name('ppdb.refresh-token');
 
 Route::get("/ppdb/auto-refresh", function () {
@@ -398,5 +400,6 @@ Route::get("/ppdb/auto-refresh", function () {
         "success" => true,
         "auto_refresh" => true,
         "timestamp" => time()
-    ]);
+    ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+      ->header('Pragma', 'no-cache');
 })->name('ppdb.auto-refresh');

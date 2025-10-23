@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class AttachmentController extends Controller
@@ -19,7 +20,7 @@ class AttachmentController extends Controller
         $user = Auth::user();
         
         // Debug logging
-        \Log::info('Download attempt', [
+        Log::info('Download attempt', [
             'user_id' => $user->id,
             'course_id' => $course->id,
             'lesson_id' => $lesson->id,
@@ -34,21 +35,21 @@ class AttachmentController extends Controller
             ->first();
 
         if (!$enrollment) {
-            \Log::warning('User not enrolled', ['user_id' => $user->id, 'course_id' => $course->id]);
+            Log::warning('User not enrolled', ['user_id' => $user->id, 'course_id' => $course->id]);
             return redirect()->route('student.courses.index')
                 ->with('error', 'Anda belum terdaftar di kelas ini.');
         }
 
         // Check if lesson is published
         if (!$lesson->is_published) {
-            \Log::warning('Lesson not published', ['lesson_id' => $lesson->id]);
+            Log::warning('Lesson not published', ['lesson_id' => $lesson->id]);
             return redirect()->route('student.courses.show', $course)
                 ->with('error', 'Materi ini belum tersedia.');
         }
 
         // Check if lesson belongs to the course
         if ($lesson->course_id !== $course->id) {
-            \Log::warning('Lesson not belongs to course', ['lesson_id' => $lesson->id, 'course_id' => $course->id]);
+            Log::warning('Lesson not belongs to course', ['lesson_id' => $lesson->id, 'course_id' => $course->id]);
             return redirect()->route('student.courses.show', $course)
                 ->with('error', 'Materi tidak ditemukan.');
         }
@@ -65,7 +66,7 @@ class AttachmentController extends Controller
         }
         
         if (!$fullAttachmentPath) {
-            \Log::warning('Attachment not found in lesson', [
+            Log::warning('Attachment not found in lesson', [
                 'filename' => $filename,
                 'attachments' => $lesson->attachments
             ]);
@@ -75,15 +76,15 @@ class AttachmentController extends Controller
         
         // Check if file exists in storage
         if (!Storage::disk('public')->exists($fullAttachmentPath)) {
-            \Log::warning('File not found in storage', ['path' => $fullAttachmentPath]);
+            Log::warning('File not found in storage', ['path' => $fullAttachmentPath]);
             return redirect()->route('student.courses.lessons.show', [$course, $lesson])
                 ->with('error', 'File lampiran tidak ditemukan.');
         }
 
-        \Log::info('File download successful', ['path' => $fullAttachmentPath]);
+        Log::info('File download successful', ['path' => $fullAttachmentPath]);
         
         // Return file download
-        return Storage::disk('public')->download($fullAttachmentPath, basename($filename));
+        return response()->download(storage_path('app/public/' . $fullAttachmentPath), basename($filename));
     }
 
     /**
@@ -129,6 +130,6 @@ class AttachmentController extends Controller
         }
 
         // Return file download
-        return Storage::disk('public')->download($attachmentPath, basename($filename));
+        return response()->download(storage_path('app/public/' . $attachmentPath), basename($filename));
     }
 }

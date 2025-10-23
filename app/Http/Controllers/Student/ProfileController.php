@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -34,7 +37,7 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = User::findOrFail(Auth::id());
         
         $request->validate([
             'name' => 'required|string|max:255',
@@ -107,8 +110,8 @@ class ProfileController extends Controller
         // Handle photo upload
         if ($request->hasFile('photo')) {
             // Delete old photo if exists
-            if ($user->photo && \Storage::disk('public')->exists($user->photo)) {
-                \Storage::disk('public')->delete($user->photo);
+            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+                Storage::disk('public')->delete($user->photo);
             }
             
             // Store new photo
@@ -125,9 +128,9 @@ class ProfileController extends Controller
             }
             
             if (copy($sourcePath, $destPath)) {
-                \Log::info('Student photo copied to public storage: ' . $path);
+                Log::info('Student photo copied to public storage: ' . $path);
             } else {
-                \Log::error('Failed to copy student photo to public storage: ' . $path);
+                Log::error('Failed to copy student photo to public storage: ' . $path);
             }
         }
 
@@ -155,10 +158,10 @@ class ProfileController extends Controller
      */
     public function deletePhoto()
     {
-        $user = Auth::user();
+        $user = User::findOrFail(Auth::id());
 
-        if ($user->photo && \Storage::disk('public')->exists($user->photo)) {
-            \Storage::disk('public')->delete($user->photo);
+        if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+            Storage::disk('public')->delete($user->photo);
             $user->photo = null;
             $user->save();
             return redirect()->route('student.profile.edit')->with('success', 'Foto profil berhasil dihapus.');

@@ -9,6 +9,7 @@ use App\Models\HomeSection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class GalleryController extends Controller
 {
@@ -130,9 +131,9 @@ class GalleryController extends Controller
             }
             
             if (copy($sourcePath, $destPath)) {
-                \Log::info('Gallery cover image copied to public storage: ' . $data['cover_image']);
+                Log::info('Gallery cover image copied to public storage: ' . $data['cover_image']);
             } else {
-                \Log::error('Failed to copy gallery cover image to public storage: ' . $data['cover_image']);
+                Log::error('Failed to copy gallery cover image to public storage: ' . $data['cover_image']);
             }
         }
 
@@ -221,9 +222,9 @@ class GalleryController extends Controller
             }
             
             if (copy($sourcePath, $destPath)) {
-                \Log::info('Gallery cover image copied to public storage: ' . $data['cover_image']);
+                Log::info('Gallery cover image copied to public storage: ' . $data['cover_image']);
             } else {
-                \Log::error('Failed to copy gallery cover image to public storage: ' . $data['cover_image']);
+                Log::error('Failed to copy gallery cover image to public storage: ' . $data['cover_image']);
             }
         }
 

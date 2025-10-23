@@ -446,23 +446,18 @@ function loadSavedData() {
 }
 
 // Refresh CSRF token
-
-// Enhanced mobile CSRF refresh
-function refreshCSRFToken() {
-    // Show loading indicator
-    const button = event.target;
-    const originalText = button.innerHTML;
-    button.innerHTML = '🔄 Refreshing...';
-    button.disabled = true;
-    
-    fetch('/ppdb/refresh-token', {
+function refreshCSRFToken(showNotification = true) {
+    const tokenUrl = (window?.location?.origin || '') + '/ppdb/refresh-token';
+    return fetch(tokenUrl, {
         method: 'GET',
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
         },
-        cache: 'no-cache'
+        cache: 'no-store',
+        credentials: 'same-origin',
+        mode: 'same-origin'
     })
     .then(response => {
         if (!response.ok) {
@@ -472,64 +467,34 @@ function refreshCSRFToken() {
     })
     .then(data => {
         if (data.success && data.token) {
-            // Update CSRF token in all form inputs
-            document.querySelectorAll('input[name="_token"]').forEach(input => {
-                input.value = data.token;
-            });
-            document.getElementById('csrf-token').value = data.token;
-            
-            // Update meta tag
-            const metaTag = document.querySelector('meta[name="csrf-token"]');
-            if (metaTag) {
-                metaTag.setAttribute('content', data.token);
-            }
-            
-            showNotification('Token CSRF diperbarui untuk mobile', 'success');
-        } else {
-            throw new Error('Invalid response format');
+            document.querySelectorAll('input[name="_token"]').forEach(input => { input.value = data.token; });
+            const hidden = document.getElementById('csrf-token'); if (hidden) hidden.value = data.token;
+            const metaTag = document.querySelector('meta[name="csrf-token"]'); if (metaTag) metaTag.setAttribute('content', data.token);
+            if (showNotification) { showNotification('Token CSRF diperbarui', 'success'); }
+            return data.token;
         }
+        throw new Error('Invalid response format');
     })
-    .catch(error => {
-        console.error('Error refreshing CSRF token:', error);
-        showNotification('Gagal memperbarui token: ' + error.message, 'error');
-    })
-    .finally(() => {
-        // Restore button
-        button.innerHTML = originalText;
-        button.disabled = false;
+    .catch(error => { console.error('Error refreshing CSRF token:', error); if (showNotification) { showNotification('Gagal memperbarui token: ' + error.message, 'error'); } return null; });
+}
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        refreshCSRFToken(false);
+    }
+});
+const ppdbFormEl = document.getElementById('ppdbForm');
+if (ppdbFormEl) {
+    ppdbFormEl.addEventListener('submit', async (e) => {
+        const ua = navigator.userAgent || '';
+        const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i.test(ua);
+        if (isMobile) {
+            e.preventDefault();
+            await refreshCSRFToken(false);
+            setTimeout(() => ppdbFormEl.submit(), 50);
+        }
     });
 }
-    fetch('/ppdb/refresh-token', {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success && data.token) {
-            // Update CSRF token in all form inputs
-            document.querySelectorAll('input[name="_token"]').forEach(input => {
-                input.value = data.token;
-            });
-            document.getElementById('csrf-token').value = data.token;
-            showNotification('Token CSRF diperbarui', 'success');
-        } else {
-            throw new Error('Invalid response format');
-        }
-    })
-    .catch(error => {
-        console.error('Error refreshing CSRF token:', error);
-        showNotification('Gagal memperbarui token: ' + error.message, 'error');
-    });
-}
+csrfRefreshInterval = setInterval(() => refreshCSRFToken(false), 300000);
 
 // Show notification
 function showNotification(message, type) {

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\SchoolProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class SchoolProfileController extends Controller
 {
@@ -202,9 +204,9 @@ class SchoolProfileController extends Controller
                 }
                 
                 if (copy($sourcePath, $destPath)) {
-                    \Log::info('School profile image copied to public storage: ' . basename($data['image']));
+                    Log::info('School profile image copied to public storage: ' . basename($data['image']));
                 } else {
-                    \Log::error('Failed to copy school profile image to public storage: ' . basename($data['image']));
+                    Log::error('Failed to copy school profile image to public storage: ' . basename($data['image']));
                 }
             }
 
@@ -332,9 +334,9 @@ class SchoolProfileController extends Controller
                     mkdir($destDir, 0755, true);
                 }
                 if (copy($sourcePath, $destPath)) {
-                    \Log::info('Hero image uploaded and copied to public storage: ' . $path);
+                    Log::info('Hero image uploaded and copied to public storage: ' . $path);
                 } else {
-                    \Log::error('Failed to copy hero image to public storage: ' . $path);
+                    Log::error('Failed to copy hero image to public storage: ' . $path);
                 }
             } catch (Exception $e) {
                 return redirect()->back()->withErrors(['image' => 'Failed to upload image: ' . $e->getMessage()]);
@@ -457,9 +459,9 @@ class SchoolProfileController extends Controller
             }
             
             if (copy($sourcePath, $destPath)) {
-                \Log::info('Struktur image copied to public storage: ' . basename($data['image']));
+                Log::info('Struktur image copied to public storage: ' . basename($data['image']));
             } else {
-                \Log::error('Failed to copy struktur image to public storage: ' . basename($data['image']));
+                Log::error('Failed to copy struktur image to public storage: ' . basename($data['image']));
             }
         }
 

@@ -179,7 +179,18 @@
                             const statusEl = document.getElementById('refresh-status');
                             try {
                                 statusEl.textContent = 'Merefresh token...';
-                                const response = await fetch('/ppdb/refresh-token');
+                                const tokenUrl = (window?.location?.origin || '') + '/ppdb/refresh-token';
+                                const response = await fetch(tokenUrl, {
+                                    method: 'GET',
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest',
+                                        'Accept': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                                    },
+                                    cache: 'no-store',
+                                    credentials: 'same-origin',
+                                    mode: 'same-origin'
+                                });
                                 const data = await response.json();
                                 if (data && data.token) {
                                     const form = document.getElementById('contact-form');
@@ -198,6 +209,26 @@
                             setTimeout(() => statusEl.textContent = '', 3000);
                         }
                         document.getElementById('refresh-contact-token')?.addEventListener('click', refreshContactCSRFToken);
+                        // Auto-refresh on visibility change and before submit (mobile)
+                        document.addEventListener('visibilitychange', () => {
+                            if (document.visibilityState === 'visible') {
+                                refreshContactCSRFToken();
+                            }
+                        });
+                        const contactFormEl = document.getElementById('contact-form');
+                        if (contactFormEl) {
+                            contactFormEl.addEventListener('submit', async (e) => {
+                                const ua = navigator.userAgent || '';
+                                const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i.test(ua);
+                                if (isMobile) {
+                                    e.preventDefault();
+                                    await refreshContactCSRFToken();
+                                    setTimeout(() => contactFormEl.submit(), 50);
+                                }
+                            });
+                        }
+                        // Removed auto-load refresh to avoid aborted fetch in some webview environments
+
                     </script>
                 </div>
             </div>
