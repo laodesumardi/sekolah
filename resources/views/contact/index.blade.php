@@ -90,7 +90,7 @@
                         </div>
                     @endif
                     
-                    <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="space-y-6" data-mobile-action="{{ route('contact.mobile') }}" data-hosting-mobile-action="{{ route('contact.hosting-mobile') }}" data-mobile-no-cookie-action="{{ route('contact.mobile-no-cookie') }}" data-hosting-mobile-bypass-action="{{ route('contact.hosting-mobile-bypass') }}">
+                    <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="space-y-6" data-mobile-action="{{ route('contact.mobile') }}" data-hosting-mobile-action="{{ route('contact.hosting-mobile') }}" data-mobile-no-cookie-action="{{ route('contact.mobile-no-cookie') }}" data-hosting-mobile-bypass-action="{{ route('contact.hosting-mobile-bypass') }}" data-mobile-cookie-fix-action="{{ route('contact.mobile-cookie-fix') }}">
                         @csrf
                         <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
                             Jika di HP muncul error 419, tap tombol "Refresh Token" lalu coba kirim lagi.
@@ -258,7 +258,34 @@
                                 if (isMobile) {
                                     e.preventDefault();
                                     
-                                    // Try hosting mobile bypass route first (highest priority for hosting)
+                                    // Try mobile cookie fix route first (highest priority for mobile cookie/session issues)
+                                    const mobileCookieFixAction = contactFormEl.getAttribute('data-mobile-cookie-fix-action');
+                                    if (mobileCookieFixAction) {
+                                        try {
+                                            const formData = new FormData(contactFormEl);
+                                            const response = await fetch(mobileCookieFixAction, {
+                                                method: 'POST',
+                                                body: formData,
+                                                headers: {
+                                                    'X-Requested-With': 'XMLHttpRequest',
+                                                    'Accept': 'application/json'
+                                                }
+                                            });
+                                            
+                                            if (response.ok) {
+                                                const result = await response.json();
+                                                if (result.success) {
+                                                    alert('Pesan berhasil dikirim! (Cookie Fix)');
+                                                    contactFormEl.reset();
+                                                    return;
+                                                }
+                                            }
+                                        } catch (error) {
+                                            console.log('Mobile cookie fix route failed, trying hosting mobile bypass route');
+                                        }
+                                    }
+                                    
+                                    // Try hosting mobile bypass route second (for hosting)
                                     if (isHosting) {
                                         const hostingMobileBypassAction = contactFormEl.getAttribute('data-hosting-mobile-bypass-action');
                                         if (hostingMobileBypassAction) {

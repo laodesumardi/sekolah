@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'mobile.csrf' => \App\Http\Middleware\MobileCSRFMiddleware::class,
             'hosting.mobile.csrf' => \App\Http\Middleware\HostingMobileCSRFMiddleware::class,
             'mobile.no.cookie' => \App\Http\Middleware\MobileNoCookieMiddleware::class,
+            'mobile.cookie.fix' => \App\Http\Middleware\MobileCookieSessionFix::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

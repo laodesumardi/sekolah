@@ -50,7 +50,7 @@ Route::post('/login', function (Illuminate\Http\Request $request) {
     if (Auth::attempt($credentials)) {
         $user = Auth::user();
         $request->session()->regenerate();
-
+        
         // Debug info (remove in production)
         Log::info('Login successful', [
             'user_role' => $user->role ?? 'NULL',
@@ -58,7 +58,7 @@ Route::post('/login', function (Illuminate\Http\Request $request) {
             'user_email' => $user->email ?? 'NULL',
             'user_id' => $user->id ?? 'NULL'
         ]);
-
+        
         // Force redirect based on user role
         if ($user->role === 'teacher') {
             Log::info('Redirecting teacher to dashboard');
@@ -95,7 +95,7 @@ Route::post('/login', function (Illuminate\Http\Request $request) {
 Route::post('/logout', function (Illuminate\Http\Request $request) {
     // Logout from web guard
     Auth::logout();
-
+    
     $request->session()->invalidate();
     $request->session()->regenerateToken();
     return redirect('/login');
@@ -112,21 +112,21 @@ Route::middleware(['auth'])->group(function () {
     // Student Dashboard
     Route::prefix('student')->name('student.')->middleware(['auth', 'role:student', 'student.ppdb.approved'])->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\Student\DashboardController::class, 'index'])->name('dashboard');
-
+        
         // Student Courses
         Route::get('/courses', [App\Http\Controllers\Student\CourseController::class, 'index'])->name('courses.index');
         Route::get('/courses/enrolled', [App\Http\Controllers\Student\CourseController::class, 'enrolled'])->name('courses.enrolled');
         Route::get('/courses/{course}', [App\Http\Controllers\Student\CourseController::class, 'show'])->name('courses.show');
         Route::post('/courses/{course}/enroll', [App\Http\Controllers\Student\CourseController::class, 'enroll'])->name('courses.enroll');
-
+        
         // Student Lessons
         Route::get('/courses/{course}/lessons/{lesson}', [App\Http\Controllers\Student\LessonController::class, 'show'])->name('courses.lessons.show');
         Route::post('/courses/{course}/lessons/{lesson}/complete', [App\Http\Controllers\Student\LessonController::class, 'complete'])->name('courses.lessons.complete');
-
+        
         // Student Attachments
         Route::get('/courses/{course}/lessons/{lesson}/attachments/{filename}', [App\Http\Controllers\Student\AttachmentController::class, 'downloadLessonAttachment'])->name('courses.lessons.attachments.download');
         Route::get('/assignments/{assignment}/attachments/{filename}', [App\Http\Controllers\Student\AttachmentController::class, 'downloadAssignmentAttachment'])->name('assignments.attachments.download');
-
+        
         // Student Assignments
         Route::get('/assignments', [App\Http\Controllers\Student\AssignmentController::class, 'index'])->name('assignments.index');
         Route::get('/assignments/submitted', [App\Http\Controllers\Student\AssignmentController::class, 'submitted'])->name('assignments.submitted');
@@ -134,52 +134,52 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/assignments/{assignment}', [App\Http\Controllers\Student\AssignmentController::class, 'show'])->name('assignments.show');
         Route::post('/assignments/{assignment}/submit', [App\Http\Controllers\Student\AssignmentController::class, 'submit'])->name('assignments.submit');
         Route::get('/assignments/{assignment}/download/{filename}', [App\Http\Controllers\Student\AssignmentController::class, 'downloadAttachment'])->name('assignments.download-attachment');
-
+        
         // Student Forums
         Route::get('/forums', [App\Http\Controllers\Student\ForumController::class, 'index'])->name('forums.index');
         Route::get('/forums/{forum}', [App\Http\Controllers\Student\ForumController::class, 'show'])->name('forums.show');
         Route::post('/forums/{forum}/replies', [App\Http\Controllers\Student\ForumController::class, 'storeReply'])->name('forums.replies.store');
-
+        
         // Student Grades
         Route::get('/grades', [App\Http\Controllers\Student\GradeController::class, 'index'])->name('grades.index');
-
+        
         // Student Profile
         Route::get('/profile', [App\Http\Controllers\Student\ProfileController::class, 'show'])->name('profile');
         Route::get('/profile/edit', [App\Http\Controllers\Student\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [App\Http\Controllers\Student\ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile/photo', [App\Http\Controllers\Student\ProfileController::class, 'deletePhoto'])->name('profile.photo.delete');
     });
-
+    
     // Teacher Dashboard
     Route::prefix('teacher')->name('teacher.')->middleware(['auth', 'role:teacher'])->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\Teacher\DashboardController::class, 'index'])->name('dashboard');
-
+        
         // Profile Routes
         Route::get('/profile', [App\Http\Controllers\Teacher\ProfileController::class, 'show'])->name('profile');
         Route::get('/profile/edit', [App\Http\Controllers\Teacher\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [App\Http\Controllers\Teacher\ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile/photo', [App\Http\Controllers\Teacher\ProfileController::class, 'deletePhoto'])->name('profile.photo.delete');
-
+        
         // LMS Routes
         Route::resource('courses', App\Http\Controllers\Teacher\CourseController::class);
         Route::post('courses/{course}/toggle-status', [App\Http\Controllers\Teacher\CourseController::class, 'toggleStatus'])->name('courses.toggle-status');
         Route::post('courses/{course}/archive', [App\Http\Controllers\Teacher\CourseController::class, 'archive'])->name('courses.archive');
-
+        
         // Course Lessons
         Route::resource('courses.lessons', App\Http\Controllers\Teacher\LessonController::class);
         Route::post('courses/{course}/lessons/{lesson}/toggle-published', [App\Http\Controllers\Teacher\LessonController::class, 'togglePublished'])->name('courses.lessons.toggle-published');
         Route::post('courses/{course}/lessons/reorder', [App\Http\Controllers\Teacher\LessonController::class, 'reorder'])->name('courses.lessons.reorder');
         Route::delete('courses/{course}/lessons/{lesson}/attachments/{index}', [App\Http\Controllers\Teacher\LessonController::class, 'deleteAttachment'])->name('courses.lessons.attachments.delete');
-
+        
         // Course Assignments
         Route::resource('courses.assignments', App\Http\Controllers\Teacher\AssignmentController::class);
         Route::post('courses/{course}/assignments/{assignment}/toggle-published', [App\Http\Controllers\Teacher\AssignmentController::class, 'togglePublished'])->name('courses.assignments.toggle-published');
         Route::post('courses/{course}/assignments/{assignment}/submissions/{submission}/grade', [App\Http\Controllers\Teacher\AssignmentController::class, 'gradeSubmission'])->name('courses.assignments.submissions.grade');
         Route::get('courses/{course}/assignments/{assignment}/download-submissions', [App\Http\Controllers\Teacher\AssignmentController::class, 'downloadAllSubmissions'])->name('courses.assignments.download-submissions');
-
+        
         // Assignments Overview
         Route::get('assignments', [App\Http\Controllers\Teacher\AssignmentController::class, 'overview'])->name('assignments.overview');
-
+        
         // Course Forums
         Route::resource('courses.forums', App\Http\Controllers\Teacher\ForumController::class);
         Route::post('courses/{course}/forums/{forum}/toggle-pin', [App\Http\Controllers\Teacher\ForumController::class, 'togglePin'])->name('courses.forums.toggle-pin');
@@ -187,7 +187,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('courses/{course}/forums/{forum}/replies', [App\Http\Controllers\Teacher\ForumController::class, 'storeReply'])->name('courses.forums.replies.store');
         Route::delete('courses/{course}/forums/{forum}/replies/{reply}', [App\Http\Controllers\Teacher\ForumController::class, 'deleteReply'])->name('courses.forums.replies.delete');
     });
-
+    
     // Admin Dashboard
     Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
@@ -292,91 +292,91 @@ Route::middleware('auth')->group(function () {
 // Admin Routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard'); // Removed duplicate
-
+    
     // Specific routes first (before resource routes)
     Route::get('school-profile/hero/edit', [SchoolProfileController::class, 'editHero'])->name('school-profile.edit-hero');
     Route::put('school-profile/hero/update', [SchoolProfileController::class, 'updateHero'])->name('school-profile.update-hero');
     Route::get('school-profile/struktur/edit', [SchoolProfileController::class, 'editStruktur'])->name('school-profile.edit-struktur');
     Route::put('school-profile/struktur/update', [SchoolProfileController::class, 'updateStruktur'])->name('school-profile.update-struktur');
-
+    
     // Resource routes
     Route::resource('school-profile', SchoolProfileController::class);
     Route::resource('teachers', TeacherController::class);
     Route::post('teachers/{teacher}/transfer-courses', [TeacherController::class, 'transferCourses'])->name('teachers.transfer-courses');
-    Route::resource('achievements', AchievementController::class);
-    Route::post('achievements/{achievement}/toggle-featured', [AchievementController::class, 'toggleFeatured'])->name('achievements.toggle-featured');
-    Route::resource('accreditations', App\Http\Controllers\Admin\AccreditationController::class);
-    Route::resource('facilities', App\Http\Controllers\Admin\FacilityController::class);
-
-    // Subject routes
-    Route::resource('subjects', SubjectController::class);
-    Route::post('subjects/{subject}/toggle-active', [SubjectController::class, 'toggleActive'])->name('subjects.toggle-active');
+        Route::resource('achievements', AchievementController::class);
+        Route::post('achievements/{achievement}/toggle-featured', [AchievementController::class, 'toggleFeatured'])->name('achievements.toggle-featured');
+        Route::resource('accreditations', App\Http\Controllers\Admin\AccreditationController::class);
+        Route::resource('facilities', App\Http\Controllers\Admin\FacilityController::class);
+        
+        // Subject routes
+        Route::resource('subjects', SubjectController::class);
+        Route::post('subjects/{subject}/toggle-active', [SubjectController::class, 'toggleActive'])->name('subjects.toggle-active');
     Route::resource('home-sections', HomeSectionController::class);
-
-    // PPDB Admin Routes
-    Route::resource('ppdb', AdminPPDBController::class);
-    Route::get('ppdb-registrations', [AdminPPDBController::class, 'registrations'])->name('ppdb.registrations');
-    Route::get('ppdb-registrations/{registration}', [AdminPPDBController::class, 'showRegistration'])->name('ppdb.show-registration');
-    Route::put('ppdb-registrations/{registration}/status', [AdminPPDBController::class, 'updateRegistrationStatus'])->name('ppdb.update-registration-status');
+    
+        // PPDB Admin Routes
+        Route::resource('ppdb', AdminPPDBController::class);
+        Route::get('ppdb-registrations', [AdminPPDBController::class, 'registrations'])->name('ppdb.registrations');
+        Route::get('ppdb-registrations/{registration}', [AdminPPDBController::class, 'showRegistration'])->name('ppdb.show-registration');
+        Route::put('ppdb-registrations/{registration}/status', [AdminPPDBController::class, 'updateRegistrationStatus'])->name('ppdb.update-registration-status');
     Route::delete('ppdb-registrations/{registration}', [AdminPPDBController::class, 'destroyRegistration'])->name('ppdb.destroy-registration');
-    Route::get('ppdb-registrations/{registration}/download/{type}', [AdminPPDBController::class, 'downloadDocument'])->name('ppdb.download-document');
-    Route::get('ppdb-export', [AdminPPDBController::class, 'exportRegistrations'])->name('ppdb.export');
+        Route::get('ppdb-registrations/{registration}/download/{type}', [AdminPPDBController::class, 'downloadDocument'])->name('ppdb.download-document');
+        Route::get('ppdb-export', [AdminPPDBController::class, 'exportRegistrations'])->name('ppdb.export');
+        
+        // News Admin Routes
+        Route::resource('news', AdminNewsController::class);
+        Route::post('news/{news}/toggle-featured', [AdminNewsController::class, 'toggleFeatured'])->name('news.toggle-featured');
+        Route::post('news/{news}/toggle-pinned', [AdminNewsController::class, 'togglePinned'])->name('news.toggle-pinned');
+        Route::get('news-section/edit', [AdminNewsController::class, 'editSection'])->name('news.edit-section');
+        Route::put('news-section/update', [AdminNewsController::class, 'updateSection'])->name('news.update-section');
+        
+        // Academic Calendar Admin Routes
+        Route::resource('academic-calendar', AdminAcademicCalendarController::class);
+        Route::get('academic-calendar-section/edit', [AdminAcademicCalendarController::class, 'editSection'])->name('academic-calendar.edit-section');
+        Route::put('academic-calendar-section/update', [AdminAcademicCalendarController::class, 'updateSection'])->name('academic-calendar.update-section');
+        
+        // Gallery Admin Routes
+        Route::resource('gallery', AdminGalleryController::class);
+        Route::get('gallery-section/edit', [AdminGalleryController::class, 'editSection'])->name('gallery.edit-section');
+        Route::put('gallery-section/update', [AdminGalleryController::class, 'updateSection'])->name('gallery.update-section');
 
-    // News Admin Routes
-    Route::resource('news', AdminNewsController::class);
-    Route::post('news/{news}/toggle-featured', [AdminNewsController::class, 'toggleFeatured'])->name('news.toggle-featured');
-    Route::post('news/{news}/toggle-pinned', [AdminNewsController::class, 'togglePinned'])->name('news.toggle-pinned');
-    Route::get('news-section/edit', [AdminNewsController::class, 'editSection'])->name('news.edit-section');
-    Route::put('news-section/update', [AdminNewsController::class, 'updateSection'])->name('news.update-section');
-
-    // Academic Calendar Admin Routes
-    Route::resource('academic-calendar', AdminAcademicCalendarController::class);
-    Route::get('academic-calendar-section/edit', [AdminAcademicCalendarController::class, 'editSection'])->name('academic-calendar.edit-section');
-    Route::put('academic-calendar-section/update', [AdminAcademicCalendarController::class, 'updateSection'])->name('academic-calendar.update-section');
-
-    // Gallery Admin Routes
-    Route::resource('gallery', AdminGalleryController::class);
-    Route::get('gallery-section/edit', [AdminGalleryController::class, 'editSection'])->name('gallery.edit-section');
-    Route::put('gallery-section/update', [AdminGalleryController::class, 'updateSection'])->name('gallery.update-section');
-
-    // Document Admin Routes
-    Route::resource('documents', AdminDocumentController::class);
-    Route::post('documents/{document}/toggle-featured', [AdminDocumentController::class, 'toggleFeatured'])->name('documents.toggle-featured');
-    Route::get('documents-section/edit', [AdminDocumentController::class, 'editSection'])->name('documents.edit-section');
-    Route::put('documents-section/update', [AdminDocumentController::class, 'updateSection'])->name('documents.update-section');
-
-    // Library Admin Routes
-    Route::resource('libraries', App\Http\Controllers\Admin\LibraryController::class);
-
-    // Vision Mission Admin Routes
-    Route::resource('vision-missions', App\Http\Controllers\Admin\VisionMissionController::class);
-
-    // Message Admin Routes
-    Route::resource('messages', App\Http\Controllers\Admin\MessageController::class)->only(['index', 'show', 'update', 'destroy']);
-    Route::post('messages/{message}/mark-as-read', [App\Http\Controllers\Admin\MessageController::class, 'markAsRead'])->name('messages.mark-as-read');
-
-    // Headmaster Greeting Admin Routes
-    Route::resource('headmaster-greetings', App\Http\Controllers\Admin\HeadmasterGreetingController::class);
-
-    // Notification Admin Routes
-    Route::get('notifications', [App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
-    Route::get('notifications/unread-count', [App\Http\Controllers\Admin\NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
-    Route::post('notifications/{notification}/mark-as-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
-    Route::post('notifications/mark-all-as-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
-    Route::delete('notifications/{notification}', [App\Http\Controllers\Admin\NotificationController::class, 'destroy'])->name('notifications.destroy');
-
-    // Contact Admin Routes
-    Route::get('contact', [App\Http\Controllers\Admin\ContactController::class, 'index'])->name('contact.index');
-    Route::put('contact', [App\Http\Controllers\Admin\ContactController::class, 'update'])->name('contact.update');
-
-    // Social Media Admin Routes
-    Route::resource('social-media', App\Http\Controllers\Admin\SocialMediaController::class);
-    Route::post('social-media/{socialMedia}/toggle-active', [App\Http\Controllers\Admin\SocialMediaController::class, 'toggleActive'])->name('social-media.toggle-active');
-
-    // User Management Admin Routes
-    Route::resource('user-management', App\Http\Controllers\Admin\UserManagementController::class)->parameters(['user-management' => 'user']);
-    Route::post('user-management/{user}/toggle-active', [App\Http\Controllers\Admin\UserManagementController::class, 'toggleActive'])->name('user-management.toggle-active');
-    Route::delete('notifications', [App\Http\Controllers\Admin\NotificationController::class, 'clearAll'])->name('notifications.clear-all');
+        // Document Admin Routes
+        Route::resource('documents', AdminDocumentController::class);
+        Route::post('documents/{document}/toggle-featured', [AdminDocumentController::class, 'toggleFeatured'])->name('documents.toggle-featured');
+        Route::get('documents-section/edit', [AdminDocumentController::class, 'editSection'])->name('documents.edit-section');
+        Route::put('documents-section/update', [AdminDocumentController::class, 'updateSection'])->name('documents.update-section');
+        
+        // Library Admin Routes
+        Route::resource('libraries', App\Http\Controllers\Admin\LibraryController::class);
+        
+        // Vision Mission Admin Routes
+        Route::resource('vision-missions', App\Http\Controllers\Admin\VisionMissionController::class);
+        
+        // Message Admin Routes
+        Route::resource('messages', App\Http\Controllers\Admin\MessageController::class)->only(['index', 'show', 'update', 'destroy']);
+        Route::post('messages/{message}/mark-as-read', [App\Http\Controllers\Admin\MessageController::class, 'markAsRead'])->name('messages.mark-as-read');
+        
+        // Headmaster Greeting Admin Routes
+        Route::resource('headmaster-greetings', App\Http\Controllers\Admin\HeadmasterGreetingController::class);
+        
+        // Notification Admin Routes
+        Route::get('notifications', [App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
+        Route::get('notifications/unread-count', [App\Http\Controllers\Admin\NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+        Route::post('notifications/{notification}/mark-as-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+        Route::post('notifications/mark-all-as-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
+        Route::delete('notifications/{notification}', [App\Http\Controllers\Admin\NotificationController::class, 'destroy'])->name('notifications.destroy');
+        
+        // Contact Admin Routes
+        Route::get('contact', [App\Http\Controllers\Admin\ContactController::class, 'index'])->name('contact.index');
+        Route::put('contact', [App\Http\Controllers\Admin\ContactController::class, 'update'])->name('contact.update');
+        
+        // Social Media Admin Routes
+        Route::resource('social-media', App\Http\Controllers\Admin\SocialMediaController::class);
+        Route::post('social-media/{socialMedia}/toggle-active', [App\Http\Controllers\Admin\SocialMediaController::class, 'toggleActive'])->name('social-media.toggle-active');
+        
+        // User Management Admin Routes
+        Route::resource('user-management', App\Http\Controllers\Admin\UserManagementController::class)->parameters(['user-management' => 'user']);
+        Route::post('user-management/{user}/toggle-active', [App\Http\Controllers\Admin\UserManagementController::class, 'toggleActive'])->name('user-management.toggle-active');
+        Route::delete('notifications', [App\Http\Controllers\Admin\NotificationController::class, 'clearAll'])->name('notifications.clear-all');
 });
 
 
@@ -604,3 +604,51 @@ Route::get('/test-hosting-mobile', function(\Illuminate\Http\Request $request) {
         ]
     ]);
 })->name('test.hosting-mobile');
+
+// Mobile cookie/session fix contact route
+Route::post('/contact/mobile-cookie-fix', function(\Illuminate\Http\Request $request) {
+    // Validate mobile user agent
+    $userAgent = $request->header('User-Agent');
+    $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i', $userAgent);
+    
+    if (!$isMobile) {
+        return response()->json(['error' => 'This route is for mobile only'], 403);
+    }
+    
+    // Process contact form for mobile with cookie/session fix
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'phone' => 'nullable|string|max:20',
+        'subject' => 'required|string|max:255',
+        'message' => 'required|string|max:2000'
+    ]);
+    
+    // Store message
+    \App\Models\Message::create($validated);
+    
+    // Set mobile-specific response headers
+    $response = response()->json([
+        'success' => true,
+        'message' => 'Pesan berhasil dikirim! (Cookie Fix)',
+        'mobile' => true,
+        'cookie_fix' => true,
+        'session_id' => $request->session()->getId(),
+        'csrf_token' => $request->session()->token()
+    ]);
+    
+    // Set mobile cookie headers
+    $sessionId = $request->session()->getId();
+    $csrfToken = $request->session()->token();
+    
+    $response->headers->set('Set-Cookie', [
+        'laravel_session=' . $sessionId . '; Path=/; Max-Age=518400; SameSite=None; Secure=false; HttpOnly=false',
+        'XSRF-TOKEN=' . $csrfToken . '; Path=/; Max-Age=518400; SameSite=None; Secure=false; HttpOnly=false',
+        'mobile_session=' . $sessionId . '; Path=/; Max-Age=518400; SameSite=None; Secure=false; HttpOnly=false'
+    ]);
+    
+    $response->headers->set('X-Mobile-Cookie-Fix', 'true');
+    $response->headers->set('X-Mobile-Session-Fix', 'true');
+    
+    return $response;
+})->name('contact.mobile-cookie-fix');
