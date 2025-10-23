@@ -155,7 +155,7 @@ use Illuminate\Support\Facades\Storage;
                             <img src="{{ $gambar['url'] }}" 
                                  alt="{{ $gambar['alt'] ?: 'Dokumentasi Visi Misi ' . ($index + 1) }}" 
                                  class="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-                                 onerror="this.src='{{ asset('images/default-school-image.png') }}'">
+                                 onerror="this.src='{{ asset('images/default-school-profile.png') }}'">
                         </div>
                         <div class="p-4">
                             <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ $gambar['title'] ?: 'Dokumentasi Visi Misi ' . ($index + 1) }}</h4>
