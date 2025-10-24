@@ -102,7 +102,7 @@ use Illuminate\Support\Facades\Storage;
                             <img src="{{ Storage::url($schoolProfile->image) }}" 
                                  alt="{{ $schoolProfile->image_alt ?: $schoolProfile->title }}" 
                                  class="h-32 w-48 object-cover rounded-lg border"
-                                 onerror="this.src='{{ asset('images/default-section.png') }}'">
+                                 onerror="this.onerror=null; this.src='{{ asset('logo.png') }}'">
                             <div>
                                 <p class="text-sm text-gray-600">Path: {{ $schoolProfile->image }}</p>
                                 <p class="text-sm text-blue-600">URL: {{ Storage::url($schoolProfile->image) }}</p>
