@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\SchoolProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class SchoolProfileController extends Controller
 {
@@ -65,21 +67,9 @@ class SchoolProfileController extends Controller
             $imageName = time() . '_' . $safeName . '.' . $extension;
             
             try {
-                // Store in uploads directory
-                $uploadsPath = public_path('uploads/school-profiles');
-                if (!is_dir($uploadsPath)) {
-                    mkdir($uploadsPath, 0755, true);
-                }
-                $image->move($uploadsPath, $imageName);
-                
-                // Store in storage directory
-                $storagePath = storage_path('app/public/school-profiles');
-                if (!is_dir($storagePath)) {
-                    mkdir($storagePath, 0755, true);
-                }
-                copy($uploadsPath . '/' . $imageName, $storagePath . '/' . $imageName);
-                
-                $data['image'] = 'storage/school-profiles/' . $imageName;
+                // Store directly in storage (public disk)
+                $path = $image->storeAs('school-profiles', $imageName, 'public');
+                $data['image'] = $path;
             } catch (Exception $e) {
                 return redirect()->back()->withErrors(['image' => 'Failed to upload image: ' . $e->getMessage()]);
             }
@@ -104,6 +94,11 @@ class SchoolProfileController extends Controller
      */
     public function edit(SchoolProfile $schoolProfile)
     {
+        // Check if this is the visi-misi section (ID 3)
+        if ($schoolProfile->id == 3 && $schoolProfile->section_key == 'visi-misi') {
+            return view('admin.school-profile.edit-visi-misi', compact('schoolProfile'));
+        }
+        
         // Determine if this is a section-based profile or complete profile
         $isSectionBased = !empty($schoolProfile->section_key);
         
@@ -121,6 +116,57 @@ class SchoolProfileController extends Controller
      */
     public function update(Request $request, SchoolProfile $schoolProfile)
     {
+        // Check if this is the visi-misi section (ID 3) - only allow image upload
+        if ($schoolProfile->id == 3 && $schoolProfile->section_key == 'visi-misi') {
+            $request->validate([
+                'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+                'image_alt' => 'nullable|string|max:255',
+            ], [
+                'image.file' => 'The image must be a valid file.',
+                'image.mimes' => 'The image must be a file of type: jpeg, png, jpg, gif, svg, webp.',
+                'image.max' => 'The image may not be greater than 5MB.',
+            ]);
+
+            // Only update image-related fields, preserve all other content
+            $data = [];
+            
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                
+                // Validate file
+                if (!$image->isValid()) {
+                    return redirect()->back()->withErrors(['image' => 'File gambar tidak valid.']);
+                }
+                
+                // Delete old image if exists (normalize path)
+                if ($schoolProfile->image) {
+                    $oldPath = $schoolProfile->image;
+                    if (str_starts_with($oldPath, 'storage/')) {
+                        $oldPath = str_replace('storage/', '', $oldPath);
+                    }
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
+                }
+                
+                // Store new image in storage (public disk)
+                $imagePath = $image->store('school-profiles', 'public');
+                $data['image'] = $imagePath;
+            }
+            
+            if ($request->filled('image_alt')) {
+                $data['image_alt'] = $request->image_alt;
+            }
+            
+            // Update only the image fields
+            if (!empty($data)) {
+                $schoolProfile->update($data);
+            }
+            
+            return redirect()->route('admin.school-profile.index')
+                ->with('success', 'Gambar Visi & Misi berhasil diperbarui!');
+        }
+        
         // Determine if this is a section-based profile or complete profile
         $isSectionBased = !empty($schoolProfile->section_key);
         
@@ -131,11 +177,26 @@ class SchoolProfileController extends Controller
                 'content' => 'required|string',
                 'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
                 'image_alt' => 'nullable|string|max:255',
+                'image_2' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+                'image_2_alt' => 'nullable|string|max:255',
+                'image_3' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+                'image_3_alt' => 'nullable|string|max:255',
+                'image_4' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+                'image_4_alt' => 'nullable|string|max:255',
                 'is_active' => 'boolean'
             ], [
                 'image.file' => 'The image must be a valid file.',
                 'image.mimes' => 'The image must be a file of type: jpeg, png, jpg, gif, svg, webp.',
                 'image.max' => 'The image may not be greater than 5MB.',
+                'image_2.file' => 'The image 2 must be a valid file.',
+                'image_2.mimes' => 'The image 2 must be a file of type: jpeg, png, jpg, gif, svg, webp.',
+                'image_2.max' => 'The image 2 may not be greater than 5MB.',
+                'image_3.file' => 'The image 3 must be a valid file.',
+                'image_3.mimes' => 'The image 3 must be a file of type: jpeg, png, jpg, gif, svg, webp.',
+                'image_3.max' => 'The image 3 may not be greater than 5MB.',
+                'image_4.file' => 'The image 4 must be a valid file.',
+                'image_4.mimes' => 'The image 4 must be a file of type: jpeg, png, jpg, gif, svg, webp.',
+                'image_4.max' => 'The image 4 may not be greater than 5MB.',
             ]);
 
             $data = $request->all();
@@ -149,16 +210,16 @@ class SchoolProfileController extends Controller
                     return redirect()->back()->withErrors(['image' => 'Invalid file upload.']);
                 }
                 
-                // Delete old image if exists
+                // Delete old image if exists (storage only)
                 if ($schoolProfile->image) {
-                    $oldImagePath = public_path($schoolProfile->image);
-                    $oldStoragePath = storage_path('app/public/school-profiles/' . basename($schoolProfile->image));
-                    
-                    if (file_exists($oldImagePath)) {
-                        unlink($oldImagePath);
+                    $oldPath = $schoolProfile->image;
+                    if (str_starts_with($oldPath, 'storage/')) {
+                        $oldPath = str_replace('storage/', '', $oldPath);
+                    } elseif (str_starts_with($oldPath, 'uploads/school-profiles/')) {
+                        $oldPath = 'school-profiles/' . basename($oldPath);
                     }
-                    if (file_exists($oldStoragePath)) {
-                        unlink($oldStoragePath);
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
                     }
                 }
                 
@@ -169,44 +230,60 @@ class SchoolProfileController extends Controller
                 $imageName = time() . '_' . $safeName . '.' . $extension;
                 
                 try {
-                    // Store in uploads directory
-                    $uploadsPath = public_path('uploads/school-profiles');
-                    if (!is_dir($uploadsPath)) {
-                        mkdir($uploadsPath, 0755, true);
-                    }
-                    $image->move($uploadsPath, $imageName);
-                    
-                    // Store in storage directory
-                    $storagePath = storage_path('app/public/school-profiles');
-                    if (!is_dir($storagePath)) {
-                        mkdir($storagePath, 0755, true);
-                    }
-                    copy($uploadsPath . '/' . $imageName, $storagePath . '/' . $imageName);
-                    
-                    $data['image'] = 'storage/school-profiles/' . $imageName;
+                    // Store directly in storage (public disk)
+                    $path = $image->storeAs('school-profiles', $imageName, 'public');
+                    $data['image'] = $path;
                 } catch (Exception $e) {
                     return redirect()->back()->withErrors(['image' => 'Failed to upload image: ' . $e->getMessage()]);
                 }
             }
 
-            $schoolProfile->update($data);
-
-            // Copy uploaded files to public/storage for immediate access
-            if ($request->hasFile('image')) {
-                $sourcePath = storage_path('app/public/school-profiles/' . basename($data['image']));
-                $destPath = public_path('storage/school-profiles/' . basename($data['image']));
-                $destDir = dirname($destPath);
-                
-                if (!is_dir($destDir)) {
-                    mkdir($destDir, 0755, true);
-                }
-                
-                if (copy($sourcePath, $destPath)) {
-                    \Log::info('School profile image copied to public storage: ' . basename($data['image']));
-                } else {
-                    \Log::error('Failed to copy school profile image to public storage: ' . basename($data['image']));
+            // Handle additional image uploads
+            $additionalImages = ['image_2', 'image_3', 'image_4'];
+            foreach ($additionalImages as $imageField) {
+                if ($request->hasFile($imageField)) {
+                    $image = $request->file($imageField);
+                    
+                    // Validate file
+                    if (!$image->isValid()) {
+                        return redirect()->back()->withErrors([$imageField => 'Invalid file upload.']);
+                    }
+                    
+                    // Delete old image if exists (storage only)
+                    $oldImagePath = $schoolProfile->$imageField;
+                    if ($oldImagePath) {
+                        $normalized = $oldImagePath;
+                        if (str_starts_with($normalized, 'storage/')) {
+                            $normalized = str_replace('storage/', '', $normalized);
+                        } elseif (str_starts_with($normalized, 'uploads/school-profiles/')) {
+                            $normalized = 'school-profiles/' . basename($normalized);
+                        }
+                        if (Storage::disk('public')->exists($normalized)) {
+                            Storage::disk('public')->delete($normalized);
+                        }
+                    }
+                    
+                    // Generate safe filename
+                    $originalName = $image->getClientOriginalName();
+                    $extension = $image->getClientOriginalExtension();
+                    $safeName = preg_replace('/[^a-zA-Z0-9._-]/', '_', pathinfo($originalName, PATHINFO_FILENAME));
+                    $imageName = time() . '_' . $imageField . '_' . $safeName . '.' . $extension;
+                    
+                    try {
+                        // Store directly in storage (public disk)
+                        $path = $image->storeAs('school-profiles', $imageName, 'public');
+                        $data[$imageField] = $path;
+                    } catch (Exception $e) {
+                        return redirect()->back()->withErrors([$imageField => 'Failed to upload image: ' . $e->getMessage()]);
+                    }
                 }
             }
+
+            $schoolProfile->update($data);
+
+            // Files served via storage symlink; no manual copy to public needed.
+
+            // Files served via storage symlink; no manual copy to public needed for additional images.
 
             return redirect()->route('admin.school-profile.index')
                 ->with('success', 'Section berhasil diperbarui!');
@@ -320,22 +397,9 @@ class SchoolProfileController extends Controller
             $imageName = time() . '_' . $safeName . '.' . $extension;
             
             try {
-                // Store in storage using Laravel Storage facade
+                // Store in storage using Laravel Storage facade (no copy to public)
                 $path = $image->storeAs('school-profiles', $imageName, 'public');
                 $data['image'] = $path;
-                
-                // Copy file to public storage for immediate access
-                $sourcePath = storage_path('app/public/' . $path);
-                $destPath = public_path('storage/' . $path);
-                $destDir = dirname($destPath);
-                if (!is_dir($destDir)) {
-                    mkdir($destDir, 0755, true);
-                }
-                if (copy($sourcePath, $destPath)) {
-                    \Log::info('Hero image uploaded and copied to public storage: ' . $path);
-                } else {
-                    \Log::error('Failed to copy hero image to public storage: ' . $path);
-                }
             } catch (Exception $e) {
                 return redirect()->back()->withErrors(['image' => 'Failed to upload image: ' . $e->getMessage()]);
             }
@@ -404,16 +468,16 @@ class SchoolProfileController extends Controller
                 return redirect()->back()->withErrors(['image' => 'Invalid file upload.']);
             }
             
-            // Delete old image if exists
+            // Delete old image if exists (storage only)
             if ($strukturSection->image) {
-                $oldImagePath = public_path($strukturSection->image);
-                $oldStoragePath = storage_path('app/public/school-profiles/' . basename($strukturSection->image));
-                
-                if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath);
+                $oldPath = $strukturSection->image;
+                if (str_starts_with($oldPath, 'storage/')) {
+                    $oldPath = str_replace('storage/', '', $oldPath);
+                } elseif (str_starts_with($oldPath, 'uploads/school-profiles/')) {
+                    $oldPath = 'school-profiles/' . basename($oldPath);
                 }
-                if (file_exists($oldStoragePath)) {
-                    unlink($oldStoragePath);
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
                 }
             }
             
@@ -424,21 +488,9 @@ class SchoolProfileController extends Controller
             $imageName = time() . '_' . $safeName . '.' . $extension;
             
             try {
-                // Store in uploads directory
-                $uploadsPath = public_path('uploads/school-profiles');
-                if (!is_dir($uploadsPath)) {
-                    mkdir($uploadsPath, 0755, true);
-                }
-                $image->move($uploadsPath, $imageName);
-                
-                // Store in storage directory
-                $storagePath = storage_path('app/public/school-profiles');
-                if (!is_dir($storagePath)) {
-                    mkdir($storagePath, 0755, true);
-                }
-                copy($uploadsPath . '/' . $imageName, $storagePath . '/' . $imageName);
-                
-                $data['image'] = 'storage/school-profiles/' . $imageName;
+                // Store directly in storage (public disk)
+                $path = $image->storeAs('school-profiles', $imageName, 'public');
+                $data['image'] = $path;
             } catch (Exception $e) {
                 return redirect()->back()->withErrors(['image' => 'Failed to upload image: ' . $e->getMessage()]);
             }
@@ -446,22 +498,7 @@ class SchoolProfileController extends Controller
 
         $strukturSection->update($data);
 
-        // Copy uploaded files to public/storage for immediate access
-        if ($request->hasFile('image')) {
-            $sourcePath = storage_path('app/public/school-profiles/' . basename($data['image']));
-            $destPath = public_path('storage/school-profiles/' . basename($data['image']));
-            $destDir = dirname($destPath);
-            
-            if (!is_dir($destDir)) {
-                mkdir($destDir, 0755, true);
-            }
-            
-            if (copy($sourcePath, $destPath)) {
-                \Log::info('Struktur image copied to public storage: ' . basename($data['image']));
-            } else {
-                \Log::error('Failed to copy struktur image to public storage: ' . basename($data['image']));
-            }
-        }
+        // Files served via storage symlink; no manual copy to public needed.
 
         return redirect()->route('admin.school-profile.index')
             ->with('success', 'Struktur organisasi updated successfully.');

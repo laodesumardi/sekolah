@@ -15,7 +15,7 @@
             <!-- Library Profile -->
             <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                 <!-- Organization Chart Section -->
-                @if($library->organization_chart)
+                @if($library->organization_chart_url)
                 <div class="bg-white p-8">
                     <h2 class="text-2xl font-bold text-gray-900 mb-4">Struktur Organisasi Perpustakaan</h2>
                     <div class="text-center">

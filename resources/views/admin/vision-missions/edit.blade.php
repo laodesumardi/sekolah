@@ -2,6 +2,10 @@
 
 @section('title', 'Edit Visi & Misi Sekolah')
 
+@php
+use Illuminate\Support\Facades\Storage;
+@endphp
+
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <div class="max-w-4xl mx-auto">
@@ -19,7 +23,7 @@
 
         <!-- Form -->
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <form action="{{ route('admin.vision-missions.update', $visionMission->id) }}" method="POST" class="p-8">
+            <form action="{{ route('admin.vision-missions.update', $visionMission->id) }}" method="POST" enctype="multipart/form-data" class="p-8">
                 @csrf
                 @method('PUT')
                 
@@ -120,6 +124,51 @@
                     </div>
                 </div>
 
+                <!-- Image Upload -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-image text-orange-600 mr-3"></i>
+                        Gambar Visi & Misi
+                    </h3>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <!-- Current Image -->
+                        @if($visionMission->image)
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Saat Ini:</label>
+                                <div class="flex items-center space-x-4">
+                                    <img src="{{ vision_mission_image_url($visionMission->image) }}" alt="Current Image" class="max-w-xs h-auto rounded-lg border border-gray-300">
+                                    <div>
+                                        <p class="text-sm text-gray-600">File: {{ basename($visionMission->image) }}</p>
+                                        <p class="text-xs text-gray-500">Upload gambar baru untuk mengganti</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        
+                        <div>
+                            <label for="image" class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ $visionMission->image ? 'Upload Gambar Baru' : 'Upload Gambar' }}
+                            </label>
+                            <input type="file" 
+                                   id="image" 
+                                   name="image" 
+                                   accept="image/*"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('image') border-red-500 @enderror">
+                            <p class="mt-1 text-xs text-gray-500">Format yang didukung: JPEG, PNG, JPG, GIF. Maksimal 2MB</p>
+                            @error('image')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        
+                        <!-- Image Preview -->
+                        <div id="image-preview" class="mt-4 hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Preview Gambar Baru:</label>
+                            <img id="preview-img" src="" alt="Preview" class="max-w-xs h-auto rounded-lg border border-gray-300">
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Action Buttons -->
                 <div class="border-t border-gray-200 pt-8">
                     <div class="flex justify-between items-center">
@@ -172,6 +221,24 @@ function removeMission(button) {
         alert('Minimal harus ada 1 misi');
     }
 }
+
+// Image preview functionality
+document.getElementById('image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const preview = document.getElementById('image-preview');
+    const previewImg = document.getElementById('preview-img');
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            preview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.classList.add('hidden');
+    }
+});
 </script>
 @endpush
 

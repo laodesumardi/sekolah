@@ -65,8 +65,30 @@
     </div>
 
     <!-- Header -->
-    <div class="flex justify-between items-center">
-        <h2 class="text-2xl font-bold text-gray-900">Kelas Saya</h2>
+    <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="flex-1">
+                <h1 class="text-2xl font-bold text-gray-900 flex items-center">
+                    <i class="fas fa-graduation-cap mr-3 text-primary-600"></i>
+                    Kelas Saya
+                </h1>
+                <p class="text-gray-600 mt-1">Kelas yang Anda kelola</p>
+                <div class="flex items-center mt-2 text-sm text-gray-500">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    <span>Total {{ $courses->count() }} kelas</span>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <a href="{{ route('teacher.courses.create') }}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                    <i class="fas fa-plus-circle mr-2"></i>
+                    <span>Buat Kelas Baru</span>
+                </a>
+                <a href="{{ route('teacher.assignments.overview') }}" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                    <i class="fas fa-tasks mr-2"></i>
+                    <span>Semua Tugas</span>
+                </a>
+            </div>
+        </div>
     </div>
 
     <!-- Courses Grid -->
@@ -111,41 +133,62 @@
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between">
+                <div class="space-y-3">
                     <div class="text-sm text-gray-500">
                         {{ $course->subject }} • {{ $course->class_level }}
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <a href="{{ route('teacher.courses.show', $course) }}" class="text-primary-600 hover:text-primary-700 font-medium">
-                            Lihat Detail
+                    
+                    <!-- Action Buttons -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="{{ route('teacher.courses.show', $course) }}" class="inline-flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                            <i class="fas fa-door-open mr-2"></i>
+                            <span>Masuk Kelas</span>
+                        </a>
+                        
+                        <a href="{{ route('teacher.courses.assignments.index', $course) }}" class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                            <i class="fas fa-tasks mr-2"></i>
+                            <span>Tugas</span>
+                        </a>
+                        
+                        <a href="{{ route('teacher.courses.forums.index', $course) }}" class="inline-flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-black px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                            <i class="fas fa-comments mr-2"></i>
+                            <span>Forum</span>
+                        </a>
+                        
+                        <a href="{{ route('teacher.courses.edit', $course) }}" class="inline-flex items-center justify-center bg-orange-600 hover:bg-orange-700 text-black px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                            <i class="fas fa-edit mr-2"></i>
+                            <span>Edit</span>
                         </a>
                     </div>
                 </div>
             </div>
 
-            <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                    <form action="{{ route('teacher.courses.toggle-status', $course) }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="text-sm text-gray-600 hover:text-gray-800">
-                            @if($course->status === 'active')
-                                Nonaktifkan
-                            @else
-                                Aktifkan
-                            @endif
+            <div class="px-6 py-3 bg-gray-50 border-t border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div class="text-xs text-gray-500">
+                        Dibuat: {{ $course->created_at->format('d M Y') }}
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <form action="{{ route('teacher.courses.toggle-status', $course) }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full transition-colors duration-200
+                                @if($course->status === 'active') bg-yellow-100 text-yellow-800 hover:bg-yellow-200
+                                @else bg-green-100 text-green-800 hover:bg-green-200
+                                @endif">
+                                <i class="fas fa-power-off mr-1"></i>
+                                @if($course->status === 'active')
+                                    Nonaktifkan
+                                @else
+                                    Aktifkan
+                                @endif
+                            </button>
+                        </form>
+                        
+                        <button onclick="confirmDelete('{{ $course->id }}', '{{ $course->title }}')" class="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 hover:bg-red-200 transition-colors duration-200">
+                            <i class="fas fa-trash mr-1"></i>
+                            Hapus
                         </button>
-                    </form>
-                    <span class="text-gray-300">•</span>
-                    <a href="{{ route('teacher.courses.edit', $course) }}" class="text-sm text-gray-600 hover:text-gray-800">
-                        Edit
-                    </a>
-                    <span class="text-gray-300">•</span>
-                    <button onclick="confirmDelete('{{ $course->id }}', '{{ $course->title }}')" class="text-sm text-red-600 hover:text-red-800">
-                        Hapus
-                    </button>
-                </div>
-                <div class="text-xs text-gray-500">
-                    {{ $course->created_at->format('d M Y') }}
+                    </div>
                 </div>
             </div>
         </div>

@@ -333,13 +333,6 @@
                             <span class="text-sm">Perpustakaan</span>
                         </a>
                         
-                        <a href="{{ route('admin.vision-missions.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-primary-500 transition-colors {{ request()->routeIs('admin.vision-missions.*') ? 'bg-primary-500' : '' }}">
-                            <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                            <span class="text-sm">Visi & Misi</span>
-                        </a>
                     </div>
                 </div>
 
@@ -449,11 +442,12 @@
                                 </div>
                             </div>
                             
-                            <!-- Profile Dropdown -->
+                            <!-- Admin Profile Dropdown -->
                             <div class="relative">
                                 <button onclick="toggleProfileDropdown()" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-                                    <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-                                        <span class="text-white font-semibold text-sm">{{ substr(auth()->user()->name, 0, 1) }}</span>
+                                    <div class="w-8 h-8 rounded-full overflow-hidden border border-gray-200 bg-primary-500 flex items-center justify-center">
+                                        <img src="{{ auth()->user()->photo_url }}" alt="{{ auth()->user()->name }}" class="w-8 h-8 object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                                        <span class="text-white font-semibold text-sm hidden">{{ substr(auth()->user()->name, 0, 1) }}</span>
                                     </div>
                                     <div class="text-left hidden sm:block">
                                         <p class="text-sm font-medium text-gray-900">{{ auth()->user()->name }}</p>
@@ -465,10 +459,19 @@
                                 </button>
                                 
                                 <!-- Profile Dropdown Menu -->
-                                <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                                    <div class="px-4 py-2 border-b border-gray-100">
-                                        <p class="text-sm font-medium text-gray-900">{{ auth()->user()->name }}</p>
-                                        <p class="text-xs text-gray-500">{{ auth()->user()->email }}</p>
+                                <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                                    <div class="px-4 py-3 border-b border-gray-100">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 rounded-full overflow-hidden border border-gray-200 bg-primary-500 flex items-center justify-center">
+                                                <img src="{{ auth()->user()->photo_url }}" alt="{{ auth()->user()->name }}" class="w-10 h-10 object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                                                <span class="text-white font-semibold text-sm hidden">{{ substr(auth()->user()->name, 0, 1) }}</span>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="text-sm font-medium text-gray-900">{{ auth()->user()->name }}</p>
+                                                <p class="text-xs text-gray-500">{{ auth()->user()->email }}</p>
+                                                <p class="text-xs text-primary-600">Administrator</p>
+                                            </div>
+                                        </div>
                                     </div>
                                     <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -494,6 +497,7 @@
                                     </form>
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -658,11 +662,6 @@
                 }
             }
 
-            // Profile Dropdown toggle
-            window.toggleProfileDropdown = function() {
-                const dropdown = document.getElementById('profile-dropdown');
-                dropdown.classList.toggle('hidden');
-            }
 
             // Auto-collapse dropdowns when clicking on links
             document.addEventListener('click', function(event) {
@@ -698,15 +697,8 @@
 
             // Close dropdowns when clicking outside
             document.addEventListener('click', function(event) {
-                const profileDropdown = document.getElementById('profile-dropdown');
-                const profileButton = event.target.closest('[onclick="toggleProfileDropdown()"]');
                 const contentButton = event.target.closest('[onclick="toggleContentDropdown()"]');
                 const ppdbButton = event.target.closest('[onclick="togglePPDBDropdown()"]');
-                
-                // Close profile dropdown if clicking outside
-                if (!profileButton && profileDropdown && !profileDropdown.contains(event.target)) {
-                    profileDropdown.classList.add('hidden');
-                }
                 
                 // Close sidebar dropdowns if clicking outside sidebar
                 if (!contentButton && !ppdbButton && !event.target.closest('#sidebar')) {
@@ -940,6 +932,24 @@
             
             if (!notificationButton && !event.target.closest('#notification-dropdown')) {
                 notificationDropdown.classList.add('hidden');
+            }
+        });
+
+        // Profile Dropdown toggle
+        window.toggleProfileDropdown = function() {
+            const dropdown = document.getElementById('profile-dropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('hidden');
+            }
+        }
+
+        // Close profile dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profile-dropdown');
+            const profileButton = event.target.closest('[onclick="toggleProfileDropdown()"]');
+            
+            if (!profileButton && profileDropdown && !profileDropdown.contains(event.target)) {
+                profileDropdown.classList.add('hidden');
             }
         });
     </script>

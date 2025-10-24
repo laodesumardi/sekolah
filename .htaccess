@@ -1,0 +1,18 @@
+# Root bridge .htaccess
+# Forward all requests to the public/ directory where Laravel's front controller lives
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # If the request is not already pointing to /public, redirect it there
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
+
+    # Optional: handle existing files/directories before forwarding (defensive)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ public/index.php [L]
+</IfModule>
+
+# Prevent directory listing at root
+Options -Indexes

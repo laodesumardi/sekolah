@@ -6,6 +6,7 @@
     <title>Login - SMP Negeri 01 Namrole</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         .bg-primary-600 { background-color: #14213d; }
         .text-primary-600 { color: #14213d; }
@@ -35,6 +36,7 @@
         <!-- Login Form -->
         <form class="mt-8 space-y-6" action="{{ route('login.submit') }}" method="POST">
             @csrf
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
             
             <div class="bg-white py-8 px-6 shadow rounded-lg">
                 @if ($errors->any())
@@ -48,6 +50,12 @@
                                         <li>• {{ $error }}</li>
                                     @endforeach
                                 </ul>
+                                @if($errors->has('_token') || session('error') == 'CSRF token mismatch')
+                                    <div class="mt-2 text-xs text-red-600">
+                                        <strong>CSRF Token Error:</strong> Halaman telah kedaluwarsa. Silakan refresh halaman dan coba lagi.
+                                        <button type="button" onclick="location.reload()" class="ml-2 text-blue-600 underline">Refresh Halaman</button>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -119,6 +127,80 @@
             </p>
         </div>
     </div>
+
+    <script>
+        // CSRF Token Management
+        function getCSRFToken() {
+            return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        }
+
+        // Track ongoing refresh request to avoid duplicates
+        let csrfRefreshController = null;
+        let isUnloading = false;
+        window.addEventListener('beforeunload', () => {
+            isUnloading = true;
+            try { if (csrfRefreshController) csrfRefreshController.abort(); } catch (e) {}
+        });
+
+        function updateCSRFToken() {
+            // Avoid refreshing when page is hidden or unloading
+            if (document.visibilityState === 'hidden' || isUnloading) { return; }
+
+            // Abort previous pending request
+            if (csrfRefreshController) { try { csrfRefreshController.abort(); } catch (e) {} }
+            csrfRefreshController = new AbortController();
+            const { signal } = csrfRefreshController;
+
+            fetch("{{ route('login.refresh-token') }}", {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                credentials: 'same-origin',
+                cache: 'no-store',
+                mode: 'same-origin',
+                keepalive: true,
+                signal
+            })
+            .then(response => {
+                if (!response.ok) { throw new Error(`HTTP ${response.status}`); }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && data.token) {
+                    document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.token);
+                    const tokenInput = document.querySelector('input[name="_token"]');
+                    if (tokenInput) { tokenInput.value = data.token; }
+                }
+            })
+            .catch(error => {
+                // Ignore intentional aborts to prevent noisy console errors
+                if (error && error.name === 'AbortError') { return; }
+                console.error('Error refreshing CSRF token:', error);
+            })
+            .finally(() => { csrfRefreshController = null; });
+        }
+
+        // Refresh token every 5 minutes
+        setInterval(updateCSRFToken, 300000);
+
+        // Handle form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form[action="{{ route('login.submit') }}"]');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const tokenInput = form.querySelector('input[name="_token"]');
+                    if (tokenInput) { tokenInput.value = getCSRFToken(); }
+                });
+            }
+        });
+
+        // Auto-refresh token on page focus (for mobile)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) { updateCSRFToken(); }
+        });
+    </script>
 </body>
 </html>
 

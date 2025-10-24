@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class UserManagementController extends Controller
@@ -71,15 +72,21 @@ class UserManagementController extends Controller
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
             'date_of_birth' => 'nullable|date',
-            'gender' => 'nullable|in:Laki-laki,Perempuan',
+            'gender' => 'nullable|in:male,female',
             'religion' => 'nullable|string|max:100',
-            'class' => 'nullable|string|max:50',
-            'student_id' => 'nullable|string|max:50',
+            // Teacher specific fields
+            'subject' => 'nullable|string|max:255',
+            'education_level' => 'nullable|string|max:100',
+            'education' => 'nullable|string|max:255',
+            'type' => 'nullable|string|max:255',
+            'classes' => 'nullable|array',
+            'classes.*' => 'string|in:1,2,3,4,5,6,7,8,9',
+            // Student specific fields
+            'student_class' => 'nullable|string|max:50',
             'parent_name' => 'nullable|string|max:255',
             'parent_phone' => 'nullable|string|max:20',
-            'employment_status' => 'nullable|in:PNS,Honorer,Kontrak',
-            'subject_specialization' => 'nullable|string|max:255',
-            'education_level' => 'nullable|string|max:100',
+            'parent_occupation' => 'nullable|string|max:255',
+            'parent_address' => 'nullable|string|max:500',
         ]);
 
         $userData = $request->all();
@@ -115,15 +122,22 @@ class UserManagementController extends Controller
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
             'date_of_birth' => 'nullable|date',
-            'gender' => 'nullable|in:Laki-laki,Perempuan',
+            'gender' => 'nullable|in:male,female',
             'religion' => 'nullable|string|max:100',
-            'class' => 'nullable|string|max:50',
-            'student_id' => 'nullable|string|max:50',
+            // Teacher specific fields
+            'subject' => 'nullable|string|max:255',
+            'education_level' => 'nullable|string|max:100',
+            'education' => 'nullable|string|max:255',
+            'type' => 'nullable|string|max:255',
+            'classes' => 'nullable|array',
+            'classes.*' => 'string|in:1,2,3,4,5,6,7,8,9',
+            // Student specific fields
+            'student_class' => 'nullable|string|max:50',
             'parent_name' => 'nullable|string|max:255',
             'parent_phone' => 'nullable|string|max:20',
-            'employment_status' => 'nullable|in:PNS,Honorer,Kontrak',
-            'subject_specialization' => 'nullable|string|max:255',
-            'education_level' => 'nullable|string|max:100',
+            'parent_occupation' => 'nullable|string|max:255',
+            'parent_address' => 'nullable|string|max:500',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $userData = $request->except('password');
@@ -133,10 +147,52 @@ class UserManagementController extends Controller
             $userData['password'] = Hash::make($request->password);
         }
 
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+                Storage::disk('public')->delete($user->photo);
+            }
+            
+            // Store new photo based on user role
+            if ($user->role === 'teacher') {
+                $photoPath = $request->file('photo')->store('teachers/photos', 'public');
+            } elseif ($user->role === 'student') {
+                $photoPath = $request->file('photo')->store('students/photos', 'public');
+            } else {
+                $photoPath = $request->file('photo')->store('admins/photos', 'public');
+            }
+            
+            $userData['photo'] = $photoPath;
+            
+            // Ensure the file is accessible via public storage
+            $this->syncFileToPublicStorage($photoPath);
+        }
+
         $user->update($userData);
 
         return redirect()->route('admin.user-management.index')
             ->with('success', 'User berhasil diperbarui!');
+    }
+
+    /**
+     * Sync file from storage to public storage
+     */
+    private function syncFileToPublicStorage($filePath)
+    {
+        $sourcePath = storage_path('app/public/' . $filePath);
+        $targetPath = public_path('storage/' . $filePath);
+        
+        // Create target directory if it doesn't exist
+        $targetDir = dirname($targetPath);
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0755, true);
+        }
+        
+        // Copy file if source exists and target doesn't
+        if (file_exists($sourcePath) && !file_exists($targetPath)) {
+            copy($sourcePath, $targetPath);
+        }
     }
 
     /**

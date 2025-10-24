@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Teacher;
+use App\Models\User;
 
 class TeacherSeeder extends Seeder
 {
@@ -20,7 +20,7 @@ class TeacherSeeder extends Seeder
                 'email' => 'ahmad.susanto@smpnamrole.sch.id',
                 'phone' => '081234567890',
                 'address' => 'Jl. Pendidikan No. 15, Namrole',
-                'birth_date' => '1965-12-12',
+                'date_of_birth' => '1965-12-12',
                 'gender' => 'male',
                 'subject' => 'Matematika',
                 'education' => 'S2 Pendidikan Matematika',
@@ -37,7 +37,7 @@ class TeacherSeeder extends Seeder
                 'email' => 'siti.nurhaliza@smpnamrole.sch.id',
                 'phone' => '081234567891',
                 'address' => 'Jl. Merdeka No. 25, Namrole',
-                'birth_date' => '1972-03-15',
+                'date_of_birth' => '1972-03-15',
                 'gender' => 'female',
                 'subject' => 'Bahasa Indonesia',
                 'education' => 'S1 Pendidikan Bahasa Indonesia',
@@ -54,7 +54,7 @@ class TeacherSeeder extends Seeder
                 'email' => 'budi.santoso@smpnamrole.sch.id',
                 'phone' => '081234567892',
                 'address' => 'Jl. Sudirman No. 10, Namrole',
-                'birth_date' => '1980-05-20',
+                'date_of_birth' => '1980-05-20',
                 'gender' => 'male',
                 'subject' => 'IPA',
                 'education' => 'S1 Pendidikan IPA',
@@ -71,7 +71,7 @@ class TeacherSeeder extends Seeder
                 'email' => 'rina.wulandari@smpnamrole.sch.id',
                 'phone' => '081234567893',
                 'address' => 'Jl. Gatot Subroto No. 5, Namrole',
-                'birth_date' => '1985-12-10',
+                'date_of_birth' => '1985-12-10',
                 'gender' => 'female',
                 'subject' => 'Bahasa Inggris',
                 'education' => 'S1 Pendidikan Bahasa Inggris',
@@ -88,7 +88,7 @@ class TeacherSeeder extends Seeder
                 'email' => 'eko.prasetyo@smpnamrole.sch.id',
                 'phone' => '081234567894',
                 'address' => 'Jl. Diponegoro No. 20, Namrole',
-                'birth_date' => '1990-03-15',
+                'date_of_birth' => '1990-03-15',
                 'gender' => 'male',
                 'subject' => 'IPS',
                 'education' => 'S1 Pendidikan IPS',
@@ -106,7 +106,7 @@ class TeacherSeeder extends Seeder
             $teacher['password'] = bcrypt('password123');
             $teacher['role'] = 'teacher';
             
-            Teacher::updateOrCreate(
+            User::updateOrCreate(
                 ['nip' => $teacher['nip']],
                 $teacher
             );

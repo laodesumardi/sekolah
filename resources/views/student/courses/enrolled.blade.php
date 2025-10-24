@@ -7,14 +7,28 @@
 <div class="space-y-6">
     <!-- Header -->
     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Kelas Saya</h1>
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="flex-1">
+                <h1 class="text-2xl font-bold text-gray-900 flex items-center">
+                    <i class="fas fa-graduation-cap mr-3 text-primary-600"></i>
+                    Kelas Saya
+                </h1>
                 <p class="text-gray-600 mt-1">Kelas yang sedang Anda ikuti</p>
+                <div class="flex items-center mt-2 text-sm text-gray-500">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    <span>Total {{ $enrolledCourses->count() }} kelas aktif</span>
+                </div>
             </div>
-            <a href="{{ route('student.courses.index') }}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                Daftar Kelas Baru
-            </a>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <a href="{{ route('student.courses.index') }}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                    <i class="fas fa-plus-circle mr-2"></i>
+                    <span>Daftar Kelas Baru</span>
+                </a>
+                <a href="{{ route('student.assignments.index') }}" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                    <i class="fas fa-tasks mr-2"></i>
+                    <span>Semua Tugas</span>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -57,15 +71,35 @@
                         </div>
                     </div>
                     
-                    <div class="flex items-center justify-between">
+                    <div class="space-y-3">
                         <div class="text-sm text-gray-500">
                             @if($course->start_date)
                                 Dimulai: {{ $course->start_date->format('d M Y') }}
                             @endif
                         </div>
-                        <a href="{{ route('student.courses.show', $course) }}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                            Masuk Kelas
-                        </a>
+                        
+                        <!-- Action Buttons -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <a href="{{ route('student.courses.show', $course) }}" class="inline-flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                                <i class="fas fa-door-open mr-2"></i>
+                                <span>Masuk Kelas</span>
+                            </a>
+                            
+                            <a href="{{ route('student.assignments.index', ['course' => $course->id]) }}" class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                                <i class="fas fa-tasks mr-2"></i>
+                                <span>Tugas</span>
+                            </a>
+                            
+                            <a href="{{ route('student.forums.index', ['course' => $course->id]) }}" class="inline-flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-black px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                                <i class="fas fa-comments mr-2"></i>
+                                <span>Forum</span>
+                            </a>
+                            
+                            <a href="{{ route('student.grades.index', ['course' => $course->id]) }}" class="inline-flex items-center justify-center bg-orange-600 hover:bg-orange-700 text-black px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                                <i class="fas fa-chart-line mr-2"></i>
+                                <span>Nilai</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -76,8 +110,9 @@
             <i class="fas fa-graduation-cap text-6xl text-gray-300 mb-4"></i>
             <h3 class="text-xl font-semibold text-gray-900 mb-2">Belum ada kelas</h3>
             <p class="text-gray-600 mb-6">Daftar ke kelas untuk memulai pembelajaran.</p>
-            <a href="{{ route('student.courses.index') }}" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
-                Lihat Kelas Tersedia
+            <a href="{{ route('student.courses.index') }}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                <i class="fas fa-search mr-3"></i>
+                <span>Lihat Kelas Tersedia</span>
             </a>
         </div>
     @endif

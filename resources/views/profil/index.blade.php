@@ -38,11 +38,11 @@ use Illuminate\Support\Facades\Storage;
                 <button onclick="showSection('sejarah')" class="tab-button active py-4 px-1 border-b-2 border-primary-500 text-primary-600 font-medium text-sm whitespace-nowrap">
                     Sejarah
                 </button>
-                <button onclick="showSection('visi-misi')" class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm whitespace-nowrap">
-                    Visi & Misi
-                </button>
                 <button onclick="showSection('struktur')" class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm whitespace-nowrap">
                     Struktur Organisasi
+                </button>
+                <button onclick="showSection('visi-misi')" class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm whitespace-nowrap">
+                    Visi & Misi
                 </button>
                 <button onclick="showSection('akreditasi')" class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm whitespace-nowrap">
                     Akreditasi & Prestasi
@@ -69,25 +69,6 @@ use Illuminate\Support\Facades\Storage;
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-2">
                         <p class="text-gray-700 leading-relaxed text-lg mb-6">{{ $profilData['sejarah']['konten'] }}</p>
-                        
-                        <div class="bg-primary-50 rounded-lg p-6">
-                            <h3 class="text-xl font-semibold text-primary-800 mb-4">Informasi Sekolah</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="flex items-center">
-                                    <svg class="w-5 h-5 text-primary-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>
-                                    <span class="text-gray-700"><strong>Tahun Berdiri:</strong> {{ $profilData['sejarah']['tahun_berdiri'] }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <svg class="w-5 h-5 text-primary-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    </svg>
-                                    <span class="text-gray-700"><strong>Lokasi:</strong> {{ $profilData['sejarah']['lokasi'] }}</span>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     
                     <div class="lg:col-span-1">
@@ -125,52 +106,6 @@ use Illuminate\Support\Facades\Storage;
             </div>
         </div>
 
-        <!-- Visi Misi Section -->
-        <div id="visi-misi" class="content-section hidden">
-            <div class="bg-white rounded-lg shadow-lg p-8">
-                <div class="flex items-center mb-6">
-                    <div class="bg-primary-100 p-3 rounded-full mr-4">
-                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                        </svg>
-                    </div>
-                    <h2 class="text-3xl font-bold text-gray-900">Visi & Misi Sekolah</h2>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Visi -->
-                    <div class="bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg p-6 text-white">
-                        <h3 class="text-2xl font-bold mb-4 flex items-center">
-                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                            Visi
-                        </h3>
-                        <p class="text-lg leading-relaxed">{{ $profilData['visi_misi']['visi'] }}</p>
-                    </div>
-
-                    <!-- Misi -->
-                    <div class="bg-gray-50 rounded-lg p-6">
-                        <h3 class="text-2xl font-bold mb-4 text-gray-900 flex items-center">
-                            <svg class="w-6 h-6 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                            </svg>
-                            Misi
-                        </h3>
-                        <ul class="space-y-3">
-                            @foreach($profilData['visi_misi']['misi'] as $index => $misi)
-                            <li class="flex items-start">
-                                <span class="bg-primary-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">{{ $index + 1 }}</span>
-                                <span class="text-gray-700">{{ $misi }}</span>
-                            </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Struktur Organisasi Section -->
         <div id="struktur" class="content-section hidden">
@@ -197,6 +132,57 @@ use Illuminate\Support\Facades\Storage;
             </div>
         </div>
 
+        <!-- Visi & Misi Section -->
+        <div id="visi-misi" class="content-section hidden">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <div class="flex items-center mb-6">
+                    <div class="bg-primary-100 p-3 rounded-full mr-4">
+                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900">Visi & Misi</h2>
+                </div>
+
+                <!-- Gambar Visi Misi -->
+                @if(isset($profilData['visi_misi']['gambar']) && count($profilData['visi_misi']['gambar']) > 0)
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    @foreach($profilData['visi_misi']['gambar'] as $index => $gambar)
+                    <div class="bg-gray-50 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer" 
+                         onclick="openImageModal('{{ $gambar['url'] }}', '{{ $gambar['alt'] ?: 'Dokumentasi Visi Misi ' . ($index + 1) }}', '{{ $gambar['title'] ?: 'Dokumentasi Visi Misi ' . ($index + 1) }}')">
+                        <div class="aspect-w-16 aspect-h-12">
+                            <img src="{{ $gambar['url'] }}" 
+                                 alt="{{ $gambar['alt'] ?: 'Dokumentasi Visi Misi ' . ($index + 1) }}" 
+                                 class="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
+                                 onerror="this.src='{{ asset('images/default-school-profile.png') }}'">
+                        </div>
+                        <div class="p-4">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ $gambar['title'] ?: 'Dokumentasi Visi Misi ' . ($index + 1) }}</h4>
+                            @if($gambar['alt'])
+                            <p class="text-sm text-gray-600">{{ $gambar['alt'] }}</p>
+                            @endif
+                            <div class="mt-2 flex items-center text-blue-600 text-sm">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                </svg>
+                                Klik untuk memperbesar
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @else
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada gambar</h3>
+                    <p class="mt-1 text-sm text-gray-500">Gambar Visi & Misi akan ditampilkan di sini.</p>
+                </div>
+                @endif
+            </div>
+        </div>
 
         <!-- Akreditasi & Prestasi Section -->
         <div id="akreditasi" class="content-section hidden">
@@ -323,6 +309,7 @@ use Illuminate\Support\Facades\Storage;
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
@@ -362,6 +349,67 @@ document.addEventListener('DOMContentLoaded', function() {
                 button.click();
             }
         });
+    }
+});
+</script>
+
+<!-- Image Modal -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
+    <div class="relative max-w-4xl max-h-full w-full h-full flex items-center justify-center">
+        <!-- Close button -->
+        <button onclick="closeImageModal()" class="absolute top-4 right-4 z-10 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-full p-2 transition-all duration-200">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        
+        <!-- Image container -->
+        <div class="relative w-full h-full flex items-center justify-center">
+            <img id="modalImage" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
+        </div>
+        
+        <!-- Image info -->
+        <div id="modalImageInfo" class="absolute bottom-4 left-4 right-4 bg-black bg-opacity-50 text-white p-4 rounded-lg">
+            <h3 id="modalImageTitle" class="text-lg font-semibold mb-2"></h3>
+            <p id="modalImageAlt" class="text-sm opacity-90"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Image modal functions
+function openImageModal(imageUrl, imageAlt, imageTitle) {
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalImageTitle = document.getElementById('modalImageTitle');
+    const modalImageAlt = document.getElementById('modalImageAlt');
+    
+    modalImage.src = imageUrl;
+    modalImage.alt = imageAlt;
+    modalImageTitle.textContent = imageTitle;
+    modalImageAlt.textContent = imageAlt;
+    
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto'; // Restore scrolling
+}
+
+// Close modal when clicking outside the image
+document.getElementById('imageModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeImageModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeImageModal();
     }
 });
 </script>

@@ -178,9 +178,9 @@
                                 <div class="flex items-center space-x-4">
                                     <input type="color" name="color" id="color" value="{{ old('color', '#3B82F6') }}" 
                                            class="w-12 h-10 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 @error('color') border-red-500 @enderror" required>
-                                    <input type="text" name="color_text" id="color_text" value="{{ old('color', '#3B82F6') }}" 
+                                    <input type="text" id="color_text" value="{{ old('color', '#3B82F6') }}" 
                                            class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 @error('color') border-red-500 @enderror"
-                                           placeholder="#3B82F6">
+                                           placeholder="#3B82F6" readonly>
                                 </div>
                                 @error('color')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -203,7 +203,15 @@
                     </div>
 
                     <!-- Checkboxes -->
-                    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="flex items-center">
+                            <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}
+                                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                            <label for="is_active" class="ml-2 block text-sm text-gray-900">
+                                Status Aktif
+                            </label>
+                        </div>
+
                         <div class="flex items-center">
                             <input type="checkbox" name="is_all_day" id="is_all_day" value="1" {{ old('is_all_day') ? 'checked' : '' }}
                                    class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
@@ -269,10 +277,11 @@ document.getElementById('color').addEventListener('input', function() {
     document.getElementById('color_text').value = this.value;
 });
 
-document.getElementById('color_text').addEventListener('input', function() {
-    if (this.value.match(/^#[0-9A-F]{6}$/i)) {
-        document.getElementById('color').value = this.value;
-    }
+// Initialize color text on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const colorPicker = document.getElementById('color');
+    const colorText = document.getElementById('color_text');
+    colorText.value = colorPicker.value;
 });
 
 // Show/hide file upload based on downloadable checkbox

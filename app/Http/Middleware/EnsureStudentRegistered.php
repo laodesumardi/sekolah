@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\PPDBRegistration;
 
 class EnsureStudentRegistered
 {
@@ -25,6 +26,16 @@ class EnsureStudentRegistered
         // Check if user is a student
         if ($user->role !== 'student') {
             return redirect()->route('login');
+        }
+
+        // Check if student has PPDB registration that is approved
+        $ppdbRegistration = PPDBRegistration::where('user_id', $user->id)
+            ->orWhere('email', $user->email)
+            ->first();
+
+        // If student has approved PPDB registration, they don't need to complete registration form
+        if ($ppdbRegistration && $ppdbRegistration->status === 'approved') {
+            return $next($request);
         }
 
         // Check if student has completed registration (has student_id and class_level)

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\PPDB;
 use App\Models\PPDBRegistration;
 use App\Models\Notification;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class PPDBController extends Controller
 {
@@ -109,7 +111,8 @@ class PPDBController extends Controller
         }
 
         return redirect()->route('ppdb.success')
-                       ->with('success', 'Pendaftaran berhasil! Nomor pendaftaran Anda: ' . $data['registration_number']);
+                       ->with('success', 'Pendaftaran berhasil! Nomor pendaftaran Anda: ' . $data['registration_number'])
+                       ->with('registration_number', $data['registration_number']);
     }
 
     /**
@@ -138,7 +141,7 @@ class PPDBController extends Controller
             return view('ppdb.check-status');
         }
 
-        $registration = PPDBRegistration::where('registration_number', $registrationNumber)->first();
+        $registration = PPDBRegistration::with('user')->where('registration_number', $registrationNumber)->first();
         
         return view('ppdb.check-status', compact('registration'));
     }
@@ -152,6 +155,102 @@ class PPDBController extends Controller
             'token' => csrf_token(),
             'success' => true
         ]);
+    }
+
+    /**
+     * Download registration form as PDF
+     */
+    public function downloadForm(Request $request)
+    {
+        $registrationNumber = $request->input('registration_number');
+        
+        if (!$registrationNumber) {
+            return redirect()->route('ppdb.success')
+                           ->with('error', 'Nomor pendaftaran tidak ditemukan!');
+        }
+
+        $registration = PPDBRegistration::where('registration_number', $registrationNumber)->first();
+        
+        if (!$registration) {
+            return redirect()->route('ppdb.success')
+                           ->with('error', 'Data pendaftaran tidak ditemukan!');
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('ppdb.pdf-form', compact('registration'));
+        
+        return $pdf->download('Form_Pendaftaran_PPDB_' . $registrationNumber . '.pdf');
+    }
+
+    /**
+     * Create student account automatically when registration is approved
+     */
+    public function createStudentAccount(PPDBRegistration $registration)
+    {
+        // Check if student account already exists
+        $existingUser = User::where('email', $registration->email)
+                           ->orWhere('nip', $registration->registration_number)
+                           ->first();
+        
+        if ($existingUser) {
+            return $existingUser;
+        }
+
+        // Generate NIS (Nomor Induk Siswa)
+        $nis = $this->generateNIS();
+        
+        // Create student account
+        $user = User::create([
+            'name' => $registration->student_name,
+            'email' => $registration->email ?: $registration->registration_number . '@student.smpnamrole.sch.id',
+            'password' => Hash::make($nis), // Password is the same as NIS
+            'role' => 'student',
+            'nip' => $nis,
+            'student_id' => $nis, // Use NIS as student_id
+            'class_level' => 'SMP', // Default class level for PPDB students
+            'phone' => $registration->phone_number,
+            'address' => $registration->address,
+            'date_of_birth' => $registration->birth_date,
+            'gender' => $registration->gender == 'L' ? 'male' : 'female',
+            'religion' => $registration->religion,
+            'parent_name' => $registration->parent_name,
+            'parent_phone' => $registration->parent_phone,
+            'parent_occupation' => $registration->parent_occupation,
+            'parent_address' => $registration->address, // Using student address as parent address
+            'student_class' => null, // Will be assigned later by admin
+            'is_active' => true,
+        ]);
+
+        // Update registration with user ID and NIS
+        $registration->update([
+            'user_id' => $user->id,
+            'nis' => $nis,
+            'status' => 'approved'
+        ]);
+
+        return $user;
+    }
+
+    /**
+     * Generate NIS (Nomor Induk Siswa)
+     */
+    private function generateNIS()
+    {
+        // Format: YYYY + 4 digit sequential number
+        $currentYear = date('Y');
+        $lastStudent = User::where('role', 'student')
+                          ->where('nip', 'like', $currentYear . '%')
+                          ->orderBy('nip', 'desc')
+                          ->first();
+        
+        if ($lastStudent && $lastStudent->nip) {
+            $lastNIS = $lastStudent->nip;
+            $lastNumber = (int) substr($lastNIS, 4);
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+        
+        return $currentYear . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 
     /**

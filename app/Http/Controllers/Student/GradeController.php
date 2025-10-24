@@ -52,7 +52,9 @@ class GradeController extends Controller
         }])
         ->get()
         ->map(function($course) {
-            $gradedSubmissions = $course->assignments->flatMap->submissions;
+            $gradedSubmissions = $course->assignments->flatMap(function($assignment) {
+                return $assignment->submissions->where('status', 'graded');
+            });
             $totalPoints = $gradedSubmissions->sum('score');
             $maxPoints = $course->assignments->sum('points');
             

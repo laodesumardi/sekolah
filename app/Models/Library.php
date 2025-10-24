@@ -39,12 +39,47 @@ class Library extends Model
     public function getOrganizationChartUrlAttribute()
     {
         if (!$this->organization_chart) {
-            return null;
+            return asset('struktur-organisasi-perpustakaan.png');
         }
         
         // Check if it's already a full URL
         if (filter_var($this->organization_chart, FILTER_VALIDATE_URL)) {
             return $this->organization_chart;
+        }
+        
+        // Check if it's a storage path
+        if (str_starts_with($this->organization_chart, 'libraries/')) {
+            // Check if file exists in public storage symlink
+            $publicStoragePath = public_path('storage/' . $this->organization_chart);
+            if (file_exists($publicStoragePath)) {
+                return asset('storage/' . $this->organization_chart);
+            }
+
+            // Check if file exists in public/libraries (direct symlink mapping)
+            $publicLibrariesPath = public_path($this->organization_chart);
+            if (file_exists($publicLibrariesPath)) {
+                return asset($this->organization_chart);
+            }
+            
+            // Check if file exists in storage/app/public
+            $storagePath = storage_path('app/public/' . $this->organization_chart);
+            if (file_exists($storagePath)) {
+                // Try to copy file to public storage for hosting without symlink
+                $publicDir = dirname($publicStoragePath);
+                if (!is_dir($publicDir)) {
+                    mkdir($publicDir, 0755, true);
+                }
+                @copy($storagePath, $publicStoragePath);
+                return asset('storage/' . $this->organization_chart);
+            }
+            
+            // Fallback to public file
+            return asset('struktur-organisasi-perpustakaan.png');
+        }
+        
+        // Check if it's a storage path with storage/ prefix
+        if (str_starts_with($this->organization_chart, 'storage/')) {
+            return asset($this->organization_chart);
         }
         
         // Check if it's a public file (not in storage)
@@ -54,7 +89,7 @@ class Library extends Model
             return asset($this->organization_chart);
         }
         
-        // Return the storage URL
-        return asset('storage/' . $this->organization_chart);
+        // Default fallback
+        return asset('struktur-organisasi-perpustakaan.png');
     }
 }

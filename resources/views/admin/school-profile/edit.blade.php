@@ -11,7 +11,7 @@
             <p class="text-sm text-gray-500">Perbarui informasi sekolah</p>
         </div>
         
-        <form action="{{ route('admin.school-profile.update', $schoolProfile) }}" method="POST" class="p-6 space-y-6">
+        <form action="{{ route('admin.school-profile.update', $schoolProfile) }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
             @csrf
             @method('PUT')
             
@@ -165,6 +165,126 @@
                         @error('accreditation_valid_until')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Upload Section -->
+            <div>
+                <h4 class="text-lg font-semibold text-gray-900 mb-4">Gambar Sekolah</h4>
+                <div class="space-y-6">
+                    <!-- Main Image -->
+                    <div>
+                        <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Gambar Utama</label>
+                        @if($schoolProfile->image)
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Saat Ini</label>
+                            <div class="flex items-center space-x-4">
+                                <img src="{{ $schoolProfile->image_url }}" alt="{{ $schoolProfile->image_alt }}" class="h-32 w-48 object-cover rounded-lg">
+                                <div>
+                                    <p class="text-sm text-gray-600">{{ basename($schoolProfile->image) }}</p>
+                                    <p class="text-xs text-gray-500">Upload gambar baru untuk mengganti</p>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                        <input type="file" name="image" id="image" accept="image/*"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 @error('image') border-red-500 @enderror">
+                        @error('image')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                        <p class="text-xs text-gray-500 mt-1">Max size: 5MB. Supported formats: JPEG, PNG, JPG, GIF, SVG, WEBP</p>
+                    </div>
+
+                    <!-- Image Alt Text -->
+                    <div>
+                        <label for="image_alt" class="block text-sm font-medium text-gray-700 mb-2">Alt Text untuk Gambar Utama</label>
+                        <input type="text" name="image_alt" id="image_alt" value="{{ old('image_alt', $schoolProfile->image_alt) }}"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 @error('image_alt') border-red-500 @enderror"
+                               placeholder="Deskripsi gambar untuk aksesibilitas">
+                        @error('image_alt')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Additional Images for Visi Misi -->
+                    <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                        <h4 class="text-lg font-semibold text-blue-800 mb-4">Gambar Visi & Misi</h4>
+                        <p class="text-sm text-blue-600 mb-4">Upload 3 gambar untuk ditampilkan di bagian Visi & Misi pada halaman profil sekolah.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Image 2 -->
+                            <div>
+                                <label for="image_2" class="block text-sm font-medium text-gray-700 mb-2">Gambar Visi & Misi 1</label>
+                                @if($schoolProfile->image_2)
+                                <div class="mb-2">
+                                    <img src="{{ $schoolProfile->image_2_url }}" alt="{{ $schoolProfile->image_2_alt }}" class="h-24 w-32 object-cover rounded-lg">
+                                    <p class="text-xs text-gray-500 mt-1">{{ basename($schoolProfile->image_2) }}</p>
+                                </div>
+                                @else
+                                <div class="mb-2">
+                                    <img src="{{ asset('visi-misi-1.jpg') }}" alt="Gambar Default 1" class="h-24 w-32 object-cover rounded-lg">
+                                    <p class="text-xs text-gray-500 mt-1">visi-misi-1.jpg</p>
+                                </div>
+                                @endif
+                                <input type="file" name="image_2" id="image_2" accept="image/*"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 @error('image_2') border-red-500 @enderror">
+                                @error('image_2')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                                <input type="text" name="image_2_alt" id="image_2_alt" value="{{ old('image_2_alt', $schoolProfile->image_2_alt ?: 'Dokumentasi Visi Misi SMP Negeri 01 Namrole') }}"
+                                       class="w-full px-2 py-1 mt-2 text-sm border border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500"
+                                       placeholder="Deskripsi gambar">
+                            </div>
+
+                            <!-- Image 3 -->
+                            <div>
+                                <label for="image_3" class="block text-sm font-medium text-gray-700 mb-2">Gambar Visi & Misi 2</label>
+                                @if($schoolProfile->image_3)
+                                <div class="mb-2">
+                                    <img src="{{ $schoolProfile->image_3_url }}" alt="{{ $schoolProfile->image_3_alt }}" class="h-24 w-32 object-cover rounded-lg">
+                                    <p class="text-xs text-gray-500 mt-1">{{ basename($schoolProfile->image_3) }}</p>
+                                </div>
+                                @else
+                                <div class="mb-2">
+                                    <img src="{{ asset('visi-misi-2.jpg') }}" alt="Gambar Default 2" class="h-24 w-32 object-cover rounded-lg">
+                                    <p class="text-xs text-gray-500 mt-1">visi-misi-2.jpg</p>
+                                </div>
+                                @endif
+                                <input type="file" name="image_3" id="image_3" accept="image/*"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 @error('image_3') border-red-500 @enderror">
+                                @error('image_3')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                                <input type="text" name="image_3_alt" id="image_3_alt" value="{{ old('image_3_alt', $schoolProfile->image_3_alt ?: 'Visi dan Misi SMP Negeri 01 Namrole') }}"
+                                       class="w-full px-2 py-1 mt-2 text-sm border border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500"
+                                       placeholder="Deskripsi gambar">
+                            </div>
+
+                            <!-- Image 4 -->
+                            <div>
+                                <label for="image_4" class="block text-sm font-medium text-gray-700 mb-2">Gambar Visi & Misi 3</label>
+                                @if($schoolProfile->image_4)
+                                <div class="mb-2">
+                                    <img src="{{ $schoolProfile->image_4_url }}" alt="{{ $schoolProfile->image_4_alt }}" class="h-24 w-32 object-cover rounded-lg">
+                                    <p class="text-xs text-gray-500 mt-1">{{ basename($schoolProfile->image_4) }}</p>
+                                </div>
+                                @else
+                                <div class="mb-2">
+                                    <img src="{{ asset('visi-misi-3.jpg') }}" alt="Gambar Default 3" class="h-24 w-32 object-cover rounded-lg">
+                                    <p class="text-xs text-gray-500 mt-1">visi-misi-3.jpg</p>
+                                </div>
+                                @endif
+                                <input type="file" name="image_4" id="image_4" accept="image/*"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 @error('image_4') border-red-500 @enderror">
+                                @error('image_4')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                                <input type="text" name="image_4_alt" id="image_4_alt" value="{{ old('image_4_alt', $schoolProfile->image_4_alt ?: 'Tujuan Sekolah SMP Negeri 01 Namrole') }}"
+                                       class="w-full px-2 py-1 mt-2 text-sm border border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500"
+                                       placeholder="Deskripsi gambar">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

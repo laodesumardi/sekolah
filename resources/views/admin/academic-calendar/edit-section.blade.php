@@ -30,18 +30,17 @@ use Illuminate\Support\Facades\Storage;
                 <form action="{{ route('admin.academic-calendar.update-section') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
-                    
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <!-- Left Column - Form Fields -->
-                        <div class="space-y-6">
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Left: Form Fields -->
+                        <div class="lg:col-span-2 space-y-6">
                             <!-- Title -->
                             <div>
                                 <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Judul Section <span class="text-red-500">*</span>
+                                    Judul <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="title" id="title" value="{{ old('title', $section->title) }}" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 @error('title') border-red-500 @enderror"
-                                       placeholder="Masukkan judul section" required>
+                                <input type="text" name="title" id="title" value="{{ old('title', $section->title) }}"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 @error('title') border-red-500 @enderror" required>
                                 @error('title')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -50,121 +49,54 @@ use Illuminate\Support\Facades\Storage;
                             <!-- Subtitle -->
                             <div>
                                 <label for="subtitle" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Subtitle
+                                    Subjudul
                                 </label>
-                                <input type="text" name="subtitle" id="subtitle" value="{{ old('subtitle', $section->subtitle) }}" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 @error('subtitle') border-red-500 @enderror"
-                                       placeholder="Masukkan subtitle section">
+                                <input type="text" name="subtitle" id="subtitle" value="{{ old('subtitle', $section->subtitle) }}"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 @error('subtitle') border-red-500 @enderror">
                                 @error('subtitle')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <!-- Content -->
+                            <!-- Description -->
                             <div>
-                                <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Konten
+                                <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Deskripsi
                                 </label>
-                                <textarea name="content" id="content" rows="6" 
-                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 @error('content') border-red-500 @enderror"
-                                          placeholder="Masukkan konten section">{{ old('content', $section->content) }}</textarea>
-                                @error('content')
+                                <textarea name="description" id="description" rows="6"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 @error('description') border-red-500 @enderror"
+                                          placeholder="Masukkan deskripsi section">{{ old('description', $section->description) }}</textarea>
+                                @error('description')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <!-- Image Upload -->
-                            <div>
-                                <label for="image" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Gambar Section
-                                </label>
-                                @if($section->image)
-                                <div class="mb-3">
-                                    <img src="{{ Storage::url($section->image) }}" alt="{{ $section->image_alt }}" 
-                                         class="w-32 h-20 object-cover rounded-lg border border-gray-300"
-                                         onerror="this.src='{{ asset('images/default-section.png') }}'">
-                                    <p class="text-sm text-gray-500 mt-1">Gambar saat ini</p>
-                                    <p class="text-xs text-blue-600">URL: {{ Storage::url($section->image) }}</p>
-                                </div>
-                                @endif
-                                <input type="file" name="image" id="image" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 @error('image') border-red-500 @enderror"
-                                       accept="image/*">
-                                @error('image')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                                <p class="mt-1 text-sm text-gray-500">Format yang didukung: JPEG, PNG, JPG, GIF, WebP (Max: 5MB)</p>
-                            </div>
 
-                            <!-- Image Alt Text -->
-                            <div>
-                                <label for="image_alt" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Alt Text Gambar
-                                </label>
-                                <input type="text" name="image_alt" id="image_alt" value="{{ old('image_alt', $section->image_alt) }}" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 @error('image_alt') border-red-500 @enderror"
-                                       placeholder="Masukkan alt text untuk gambar">
-                                @error('image_alt')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Image Position -->
-                            <div>
-                                <label for="image_position" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Posisi Gambar
-                                </label>
-                                <select name="image_position" id="image_position" 
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 @error('image_position') border-red-500 @enderror">
-                                    <option value="">Pilih posisi gambar</option>
-                                    <option value="left" {{ old('image_position', $section->image_position) == 'left' ? 'selected' : '' }}>Kiri</option>
-                                    <option value="right" {{ old('image_position', $section->image_position) == 'right' ? 'selected' : '' }}>Kanan</option>
-                                    <option value="center" {{ old('image_position', $section->image_position) == 'center' ? 'selected' : '' }}>Tengah</option>
-                                    <option value="top" {{ old('image_position', $section->image_position) == 'top' ? 'selected' : '' }}>Atas</option>
-                                    <option value="bottom" {{ old('image_position', $section->image_position) == 'bottom' ? 'selected' : '' }}>Bawah</option>
-                                </select>
-                                @error('image_position')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Active Status -->
+                            <!-- Active -->
                             <div class="flex items-center">
-                                <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $section->is_active) ? 'checked' : '' }}
+                                <input type="checkbox" name="is_active" id="is_active" {{ old('is_active', $section->is_active) ? 'checked' : '' }}
                                        class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
-                                <label for="is_active" class="ml-2 block text-sm text-gray-900">
-                                    Aktifkan Section
-                                </label>
+                                <label for="is_active" class="ml-2 block text-sm text-gray-700">Aktif</label>
                             </div>
                         </div>
 
-                        <!-- Right Column - Preview -->
+                        <!-- Right: Live Preview & Info -->
                         <div class="space-y-6">
-                            <div class="bg-gray-50 rounded-lg p-6">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Preview Section</h3>
-                                <div class="bg-white border border-gray-200 rounded-lg p-4">
-                                    <h4 class="text-xl font-bold text-gray-900 mb-2" id="preview-title">
-                                        {{ $section->title }}
-                                    </h4>
-                                    <p class="text-gray-600 mb-3" id="preview-subtitle">
-                                        {{ $section->subtitle }}
-                                    </p>
-                                    <p class="text-gray-700 text-sm" id="preview-content">
-                                        {{ $section->content }}
-                                    </p>
-                                    @if($section->image)
-                                    <div class="mt-4">
-                                        <img src="{{ asset('storage/' . $section->image) }}" alt="{{ $section->image_alt }}" 
-                                             class="w-full h-32 object-cover rounded-lg">
-                                    </div>
-                                    @endif
+                            <!-- Live Preview -->
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-blue-900 mb-3">Pratinjau Section</h3>
+                                <div class="space-y-2">
+                                    <h4 class="text-blue-900 font-bold" id="preview-title">{{ $section->title }}</h4>
+                                    <p class="text-blue-700" id="preview-subtitle">{{ $section->subtitle }}</p>
+                                    <p class="text-gray-700 text-sm" id="preview-description">{{ $section->description }}</p>
                                 </div>
                             </div>
 
+
                             <!-- Section Info -->
-                            <div class="bg-blue-50 rounded-lg p-6">
-                                <h3 class="text-lg font-semibold text-blue-900 mb-4">Informasi Section</h3>
-                                <div class="space-y-2 text-sm">
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-blue-900 mb-3">Informasi Section</h3>
+                                <div class="space-y-2">
                                     <div class="flex justify-between">
                                         <span class="text-blue-700">Section Key:</span>
                                         <span class="text-blue-900 font-medium">academic-calendar</span>
@@ -220,27 +152,10 @@ document.getElementById('subtitle').addEventListener('input', function() {
     document.getElementById('preview-subtitle').textContent = this.value;
 });
 
-document.getElementById('content').addEventListener('input', function() {
-    document.getElementById('preview-content').textContent = this.value;
+document.getElementById('description').addEventListener('input', function() {
+    document.getElementById('preview-description').textContent = this.value;
 });
 
-// Image preview
-document.getElementById('image').addEventListener('change', function() {
-    const file = this.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const previewContainer = document.querySelector('.bg-white.border.border-gray-200.rounded-lg.p-4');
-            let imgElement = previewContainer.querySelector('img');
-            if (!imgElement) {
-                imgElement = document.createElement('img');
-                imgElement.className = 'w-full h-32 object-cover rounded-lg mt-4';
-                previewContainer.appendChild(imgElement);
-            }
-            imgElement.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-});
+// Tidak ada pratinjau gambar di halaman edit
 </script>
 @endsection

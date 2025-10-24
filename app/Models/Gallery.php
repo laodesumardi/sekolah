@@ -85,39 +85,40 @@ class Gallery extends Model
     public function getCoverImageUrlAttribute()
     {
         if ($this->cover_image) {
-            return asset('storage/' . str_replace('public/', '', $this->cover_image));
+            $imagePath = str_replace('public/', '', $this->cover_image);
+            return get_correct_asset_url('storage/' . $imagePath);
         }
-        return asset('images/default-gallery.jpg');
+        return get_correct_asset_url('images/default-gallery.jpg');
     }
 
     public function getImageUrlAttribute()
     {
         if (!$this->image) {
-            return asset('images/default-gallery.png');
+            return get_correct_asset_url('images/default-gallery.png');
         }
-        
+
         if (filter_var($this->image, FILTER_VALIDATE_URL)) {
             return $this->image;
         }
-        
+
         if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
             return $this->image;
         }
-        
+
         if (str_starts_with($this->image, 'gallery/')) {
-            return asset('storage/' . $this->image);
+            return get_correct_asset_url('storage/' . $this->image);
         }
-        
+
+        if (str_starts_with($this->image, 'uploads/gallery/')) {
+            return get_correct_asset_url($this->image);
+        }
+
         if (str_starts_with($this->image, 'storage/')) {
-            return asset($this->image);
+            return get_correct_asset_url($this->image);
         }
-        
-        if (!str_starts_with($this->image, 'gallery/') && 
-            !str_starts_with($this->image, 'storage/')) {
-            return asset('storage/' . $this->image);
-        }
-        
-        return asset('images/default-gallery.png');
+
+        // Default: treat as stored under gallery
+        return get_correct_asset_url('storage/' . $this->image);
     }
 
     public function getTypeLabelAttribute()
