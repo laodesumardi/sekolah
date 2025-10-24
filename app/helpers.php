@@ -93,7 +93,7 @@ if (!function_exists('get_correct_asset_url')) {
     function get_correct_asset_url($path)
     {
         if (!$path) {
-            return asset('images/default-section.png');
+            return asset('images/logo.png');
         }
 
         // Already a full URL

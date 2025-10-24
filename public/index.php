@@ -1,8 +1,5 @@
 <?php
 
-// Emergency fix for DomPDF ServiceProvider not found error
-// This file should replace the original index.php
-
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 
@@ -35,22 +32,6 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
 */
 
 require __DIR__.'/../vendor/autoload.php';
-
-/*
-|--------------------------------------------------------------------------
-| EMERGENCY FIX: Manually Load DomPDF ServiceProvider
-|--------------------------------------------------------------------------
-|
-| This is an emergency fix for the DomPDF ServiceProvider not found error.
-| We manually require the service provider file to ensure it's loaded.
-|
-*/
-
-$dompdfServiceProviderPath = __DIR__.'/../vendor/barryvdh/laravel-dompdf/src/ServiceProvider.php';
-if (file_exists($dompdfServiceProviderPath)) {
-    require_once $dompdfServiceProviderPath;
-    echo "<!-- DomPDF ServiceProvider loaded manually -->\n";
-}
 
 /*
 |--------------------------------------------------------------------------

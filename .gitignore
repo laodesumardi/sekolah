@@ -21,3 +21,38 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Temporary fix files
+*_fix.php
+*_FIX.php
+*_fix.ps1
+*_fix.sh
+*_fix.md
+debug_*.php
+quick_*.php
+apply_*.php
+emergency_*.php
+fix_*.php
+FIX_*.php
+CHECK_*.php
+UPDATE_*.php
+DIAGNOSE_*.php
+INTEGRATE_*.php
+switch_*.php
+
+# Log files
+/storage/logs/*.log
+/storage/logs/laravel.log
+
+# Cache files
+/storage/framework/cache/*
+/storage/framework/views/*
+/storage/framework/sessions/*
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Database files
+/database/database.sqlite
