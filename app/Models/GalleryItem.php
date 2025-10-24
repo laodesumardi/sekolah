@@ -95,23 +95,27 @@ class GalleryItem extends Model
             'document' => 'Dokumen'
         ];
 
-        return $types[$this->type] ?? ucfirst($this->type);
+        $type = $this->type ?: $this->file_type;
+        return $types[$type] ?? ucfirst((string)$type);
     }
 
     // Methods
     public function isImage()
     {
-        return $this->type === 'image';
+        $type = $this->type ?: $this->file_type;
+        return $type === 'image';
     }
 
     public function isVideo()
     {
-        return $this->type === 'video';
+        $type = $this->type ?: $this->file_type;
+        return $type === 'video';
     }
 
     public function isDocument()
     {
-        return $this->type === 'document';
+        $type = $this->type ?: $this->file_type;
+        return $type === 'document';
     }
 
     // Additional accessors for view compatibility

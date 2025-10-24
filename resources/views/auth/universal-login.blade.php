@@ -134,30 +134,52 @@
             return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         }
 
+        // Track ongoing refresh request to avoid duplicates
+        let csrfRefreshController = null;
+        let isUnloading = false;
+        window.addEventListener('beforeunload', () => {
+            isUnloading = true;
+            try { if (csrfRefreshController) csrfRefreshController.abort(); } catch (e) {}
+        });
+
         function updateCSRFToken() {
-            fetch('/login/refresh-token', {
+            // Avoid refreshing when page is hidden or unloading
+            if (document.visibilityState === 'hidden' || isUnloading) { return; }
+
+            // Abort previous pending request
+            if (csrfRefreshController) { try { csrfRefreshController.abort(); } catch (e) {} }
+            csrfRefreshController = new AbortController();
+            const { signal } = csrfRefreshController;
+
+            fetch("{{ route('login.refresh-token') }}", {
                 method: 'GET',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json'
-                }
+                },
+                credentials: 'same-origin',
+                cache: 'no-store',
+                mode: 'same-origin',
+                keepalive: true,
+                signal
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) { throw new Error(`HTTP ${response.status}`); }
+                return response.json();
+            })
             .then(data => {
                 if (data.success && data.token) {
-                    // Update meta tag
                     document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.token);
-                    // Update hidden input
                     const tokenInput = document.querySelector('input[name="_token"]');
-                    if (tokenInput) {
-                        tokenInput.value = data.token;
-                    }
-                    console.log('CSRF token refreshed');
+                    if (tokenInput) { tokenInput.value = data.token; }
                 }
             })
             .catch(error => {
+                // Ignore intentional aborts to prevent noisy console errors
+                if (error && error.name === 'AbortError') { return; }
                 console.error('Error refreshing CSRF token:', error);
-            });
+            })
+            .finally(() => { csrfRefreshController = null; });
         }
 
         // Refresh token every 5 minutes
@@ -168,20 +190,15 @@
             const form = document.querySelector('form[action="{{ route('login.submit') }}"]');
             if (form) {
                 form.addEventListener('submit', function(e) {
-                    // Ensure we have a fresh CSRF token
                     const tokenInput = form.querySelector('input[name="_token"]');
-                    if (tokenInput) {
-                        tokenInput.value = getCSRFToken();
-                    }
+                    if (tokenInput) { tokenInput.value = getCSRFToken(); }
                 });
             }
         });
 
         // Auto-refresh token on page focus (for mobile)
         document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                updateCSRFToken();
-            }
+            if (!document.hidden) { updateCSRFToken(); }
         });
     </script>
 </body>
