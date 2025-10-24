@@ -98,7 +98,7 @@ use Illuminate\Support\Facades\Storage;
                     </div>
                     <div class="ml-3 sm:ml-4">
                         <p class="text-xs sm:text-sm font-medium text-gray-600">Dengan Gambar</p>
-                        <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ $sections->whereNotNull('image')->count() }}</p>
+                        <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ $sections->whereNotNull('image')->whereNotIn('section_key', ['sejarah', 'visi-misi'])->count() }}</p>
                     </div>
                 </div>
             </div>
@@ -147,7 +147,7 @@ use Illuminate\Support\Facades\Storage;
                                     <div class="text-sm text-gray-900">{{ $section->title ?? 'No title' }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @if($section->image)
+                                    @if($section->image && !in_array($section->section_key, ['sejarah', 'visi-misi']))
                                         <img src="{{ $section->image_url }}" alt="{{ $section->image_alt ?: $section->title }}" class="h-12 w-12 object-cover rounded-lg" onerror="this.src='{{ asset('images/default-section.png') }}'">
                                     @else
                                         <span class="text-gray-400 text-sm">No image</span>
@@ -206,7 +206,7 @@ use Illuminate\Support\Facades\Storage;
                             </span>
                         </div>
                         
-                        @if($section->image)
+                        @if($section->image && !in_array($section->section_key, ['sejarah', 'visi-misi']))
                         <div class="mb-3">
                             <img src="{{ $section->image_url }}" alt="{{ $section->image_alt ?: $section->title }}" class="h-16 w-16 object-cover rounded-lg" onerror="this.src='{{ asset('images/default-section.png') }}'">
                         </div>
