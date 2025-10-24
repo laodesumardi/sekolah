@@ -122,18 +122,10 @@ class GalleryController extends Controller
 
         // Copy uploaded files to public/storage for immediate access
         if ($request->hasFile('cover_image')) {
-            $sourcePath = storage_path('app/public/' . $data['cover_image']);
-            $destPath = public_path('storage/' . $data['cover_image']);
-            $destDir = dirname($destPath);
-            
-            if (!is_dir($destDir)) {
-                mkdir($destDir, 0755, true);
-            }
-            
-            if (copy($sourcePath, $destPath)) {
-                Log::info('Gallery cover image copied to public storage: ' . $data['cover_image']);
+            if (copy_storage_to_public($data['cover_image'])) {
+                \Illuminate\Support\Facades\Log::info('Gallery cover image copied to public storage: ' . $data['cover_image']);
             } else {
-                Log::error('Failed to copy gallery cover image to public storage: ' . $data['cover_image']);
+                \Illuminate\Support\Facades\Log::error('Failed to copy gallery cover image to public storage: ' . $data['cover_image']);
             }
         }
 
@@ -213,18 +205,10 @@ class GalleryController extends Controller
 
         // Copy uploaded files to public/storage for immediate access
         if ($request->hasFile('cover_image')) {
-            $sourcePath = storage_path('app/public/' . $data['cover_image']);
-            $destPath = public_path('storage/' . $data['cover_image']);
-            $destDir = dirname($destPath);
-            
-            if (!is_dir($destDir)) {
-                mkdir($destDir, 0755, true);
-            }
-            
-            if (copy($sourcePath, $destPath)) {
-                Log::info('Gallery cover image copied to public storage: ' . $data['cover_image']);
+            if (copy_storage_to_public($data['cover_image'])) {
+                \Illuminate\Support\Facades\Log::info('Gallery cover image copied to public storage: ' . $data['cover_image']);
             } else {
-                Log::error('Failed to copy gallery cover image to public storage: ' . $data['cover_image']);
+                \Illuminate\Support\Facades\Log::error('Failed to copy gallery cover image to public storage: ' . $data['cover_image']);
             }
         }
 

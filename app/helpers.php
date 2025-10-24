@@ -44,12 +44,35 @@ if (!function_exists('copy_storage_to_public')) {
         
         // Create destination directory if it doesn't exist
         if (!is_dir($destDir)) {
-            mkdir($destDir, 0755, true);
+            @mkdir($destDir, 0755, true);
         }
         
-        // Copy file if source exists
+        // If destination already exists, treat as success
+        if (file_exists($destPath)) {
+            return true;
+        }
+        
+        // Preferred: copy via native file copy when allowed
         if (file_exists($sourcePath)) {
-            return copy($sourcePath, $destPath);
+            if (@copy($sourcePath, $destPath)) {
+                @chmod($destPath, 0644);
+                return true;
+            }
+        }
+        
+        // Fallback: stream copy via Storage facade (handles hosting restrictions)
+        try {
+            if (Storage::disk('public')->exists($storagePath)) {
+                $contents = Storage::disk('public')->get($storagePath);
+                if ($contents !== false) {
+                    if (@file_put_contents($destPath, $contents) !== false) {
+                        @chmod($destPath, 0644);
+                        return true;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // Swallow exceptions; return false below
         }
         
         return false;
@@ -110,6 +133,13 @@ if (!function_exists('get_correct_asset_url')) {
                         : 'uploads/' . $subPath;
                     return $useHttps ? secure_asset($legacyUrl) : asset($legacyUrl);
                 }
+                // Final fallback: default image for known galleries directories
+                if (str_starts_with($subPath, 'galleries/')) {
+                    return $useHttps ? secure_asset('images/default-gallery.jpg') : asset('images/default-gallery.jpg');
+                }
+                if (str_starts_with($subPath, 'gallery-items/')) {
+                    return $useHttps ? secure_asset('images/default-gallery-item.png') : asset('images/default-gallery-item.png');
+                }
             }
             return $useHttps ? secure_asset($trimmed) : asset($trimmed);
         }
@@ -129,6 +159,16 @@ if (!function_exists('get_correct_asset_url')) {
             // Try copying from storage/app/public when uploads was previously mirrored
             $storageSubPath = preg_replace('#^uploads/#', '', $trimmed);
             @copy_storage_to_public($storageSubPath);
+            // If still missing, final fallback for gallery paths
+            $finalStorage = public_path('storage/' . $storageSubPath);
+            if (!file_exists($finalStorage)) {
+                if (str_starts_with($storageSubPath, 'galleries/')) {
+                    return $useHttps ? secure_asset('images/default-gallery.jpg') : asset('images/default-gallery.jpg');
+                }
+                if (str_starts_with($storageSubPath, 'gallery-items/')) {
+                    return $useHttps ? secure_asset('images/default-gallery-item.png') : asset('images/default-gallery-item.png');
+                }
+            }
             return $useHttps ? secure_asset('storage/' . $storageSubPath) : asset('storage/' . $storageSubPath);
         }
 
@@ -152,6 +192,16 @@ if (!function_exists('get_correct_asset_url')) {
 
                 // Attempt to copy from storage to public/storage for hosts without symlink support
                 @copy_storage_to_public($trimmed);
+                $copiedPublic = public_path('storage/' . $trimmed);
+                if (!file_exists($copiedPublic)) {
+                    // Final fallback defaults for gallery-related dirs
+                    if ($dir === 'galleries') {
+                        return $useHttps ? secure_asset('images/default-gallery.jpg') : asset('images/default-gallery.jpg');
+                    }
+                    if ($dir === 'gallery-items') {
+                        return $useHttps ? secure_asset('images/default-gallery-item.png') : asset('images/default-gallery-item.png');
+                    }
+                }
                 return $useHttps ? secure_asset('storage/' . $trimmed) : asset('storage/' . $trimmed);
             }
         }
