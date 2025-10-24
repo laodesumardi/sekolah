@@ -1368,3 +1368,43 @@
 #19 D:\\laragon\\www\\website-sekolah-namrole21\\artisan(13): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
 #20 {main}
 "} 
+[2025-10-24 01:05:43] local.ERROR: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'image_2' in 'where clause' (Connection: mysql, SQL: update `home_sections` set `image_2` = visi-misi-1.jpg where `image_2` = WhatsApp Image 2025-10-23 at 17.16.29_1bc98572.jpg) {"exception":"[object] (Illuminate\\Database\\QueryException(code: 42S22): SQLSTATE[42S22]: Column not found: 1054 Unknown column 'image_2' in 'where clause' (Connection: mysql, SQL: update `home_sections` set `image_2` = visi-misi-1.jpg where `image_2` = WhatsApp Image 2025-10-23 at 17.16.29_1bc98572.jpg) at D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:825)
+[stacktrace]
+#0 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(779): Illuminate\\Database\\Connection->runQueryCallback('update `home_se...', Array, Object(Closure))
+#1 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(584): Illuminate\\Database\\Connection->run('update `home_se...', Array, Object(Closure))
+#2 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(536): Illuminate\\Database\\Connection->affectingStatement('update `home_se...', Array)
+#3 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php(3866): Illuminate\\Database\\Connection->update('update `home_se...', Array)
+#4 D:\\laragon\\www\\website-sekolah-namrole21\\UPDATE_WHATSAPP_DATABASE.php(49): Illuminate\\Database\\Query\\Builder->update(Object(Illuminate\\Support\\Collection))
+#5 {main}
+
+[previous exception] [object] (PDOException(code: 42S22): SQLSTATE[42S22]: Column not found: 1054 Unknown column 'image_2' in 'where clause' at D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:592)
+[stacktrace]
+#0 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(592): PDO->prepare('update `home_se...')
+#1 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(812): Illuminate\\Database\\Connection->Illuminate\\Database\\{closure}('update `home_se...', Array)
+#2 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(779): Illuminate\\Database\\Connection->runQueryCallback('update `home_se...', Array, Object(Closure))
+#3 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(584): Illuminate\\Database\\Connection->run('update `home_se...', Array, Object(Closure))
+#4 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(536): Illuminate\\Database\\Connection->affectingStatement('update `home_se...', Array)
+#5 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php(3866): Illuminate\\Database\\Connection->update('update `home_se...', Array)
+#6 D:\\laragon\\www\\website-sekolah-namrole21\\UPDATE_WHATSAPP_DATABASE.php(49): Illuminate\\Database\\Query\\Builder->update(Object(Illuminate\\Support\\Collection))
+#7 {main}
+"} 
+[2025-10-24 01:05:56] local.ERROR: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'image' in 'where clause' (Connection: mysql, SQL: update `galleries` set `image` = visi-misi-1.jpg where `image` = WhatsApp Image 2025-10-23 at 17.16.29_1bc98572.jpg) {"exception":"[object] (Illuminate\\Database\\QueryException(code: 42S22): SQLSTATE[42S22]: Column not found: 1054 Unknown column 'image' in 'where clause' (Connection: mysql, SQL: update `galleries` set `image` = visi-misi-1.jpg where `image` = WhatsApp Image 2025-10-23 at 17.16.29_1bc98572.jpg) at D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:825)
+[stacktrace]
+#0 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(779): Illuminate\\Database\\Connection->runQueryCallback('update `galleri...', Array, Object(Closure))
+#1 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(584): Illuminate\\Database\\Connection->run('update `galleri...', Array, Object(Closure))
+#2 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(536): Illuminate\\Database\\Connection->affectingStatement('update `galleri...', Array)
+#3 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php(3866): Illuminate\\Database\\Connection->update('update `galleri...', Array)
+#4 D:\\laragon\\www\\website-sekolah-namrole21\\UPDATE_WHATSAPP_DATABASE_FIXED.php(74): Illuminate\\Database\\Query\\Builder->update(Object(Illuminate\\Support\\Collection))
+#5 {main}
+
+[previous exception] [object] (PDOException(code: 42S22): SQLSTATE[42S22]: Column not found: 1054 Unknown column 'image' in 'where clause' at D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:592)
+[stacktrace]
+#0 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(592): PDO->prepare('update `galleri...')
+#1 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(812): Illuminate\\Database\\Connection->Illuminate\\Database\\{closure}('update `galleri...', Array)
+#2 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(779): Illuminate\\Database\\Connection->runQueryCallback('update `galleri...', Array, Object(Closure))
+#3 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(584): Illuminate\\Database\\Connection->run('update `galleri...', Array, Object(Closure))
+#4 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(536): Illuminate\\Database\\Connection->affectingStatement('update `galleri...', Array)
+#5 D:\\laragon\\www\\website-sekolah-namrole21\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php(3866): Illuminate\\Database\\Connection->update('update `galleri...', Array)
+#6 D:\\laragon\\www\\website-sekolah-namrole21\\UPDATE_WHATSAPP_DATABASE_FIXED.php(74): Illuminate\\Database\\Query\\Builder->update(Object(Illuminate\\Support\\Collection))
+#7 {main}
+"} 
