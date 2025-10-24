@@ -60,3 +60,6 @@ switch_*.php
 # Hosting setup files
 fix_hosting_cache_path.php
 hosting_setup.php
+fix_500_error.php
+hosting_500_fix.php
+.env.hosting
