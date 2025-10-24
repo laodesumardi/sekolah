@@ -56,3 +56,7 @@ switch_*.php
 
 # Database files
 /database/database.sqlite
+
+# Hosting setup files
+fix_hosting_cache_path.php
+hosting_setup.php
