@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Document;
 use App\Models\HomeSection;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class DocumentController extends Controller
@@ -183,7 +184,7 @@ class DocumentController extends Controller
     public function updateSection(Request $request)
     {
         // Debug: Log request method
-        \Log::info('updateSection called with method: ' . $request->method());
+        Log::info('updateSection called with method: ' . $request->method());
         
         $request->validate([
             'title' => 'required|string|max:255',

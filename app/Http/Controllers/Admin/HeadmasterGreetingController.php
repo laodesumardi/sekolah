@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\HeadmasterGreeting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class HeadmasterGreetingController extends Controller
 {
@@ -62,9 +63,9 @@ class HeadmasterGreetingController extends Controller
             }
             
             if (copy($sourcePath, $destPath)) {
-                \Log::info('Headmaster photo copied to public storage: ' . $data['photo']);
+                Log::info('Headmaster photo copied to public storage: ' . $data['photo']);
             } else {
-                \Log::error('Failed to copy headmaster photo to public storage: ' . $data['photo']);
+                Log::error('Failed to copy headmaster photo to public storage: ' . $data['photo']);
             }
         }
 
@@ -129,9 +130,9 @@ class HeadmasterGreetingController extends Controller
             }
             
             if (copy($sourcePath, $destPath)) {
-                \Log::info('Headmaster photo copied to public storage: ' . $data['photo']);
+                Log::info('Headmaster photo copied to public storage: ' . $data['photo']);
             } else {
-                \Log::error('Failed to copy headmaster photo to public storage: ' . $data['photo']);
+                Log::error('Failed to copy headmaster photo to public storage: ' . $data['photo']);
             }
         }
 

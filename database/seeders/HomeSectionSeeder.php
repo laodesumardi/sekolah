@@ -103,6 +103,21 @@ class HomeSectionSeeder extends Seeder
                 'text_color' => 'text-gray-900',
                 'is_active' => true,
                 'sort_order' => 6
+            ],
+            [
+                'section_key' => 'academic-calendar',
+                'title' => 'Kalender Akademik',
+                'subtitle' => 'Jadwal penting dan kegiatan sekolah',
+                'description' => 'Lihat jadwal lengkap kegiatan dan acara sekolah SMP Negeri 01 Namrole. Dapatkan informasi terbaru tentang ujian, libur, dan kegiatan penting lainnya.',
+                'image' => 'home-sections/academic-calendar-hero.jpg',
+                'image_alt' => 'Kalender Akademik',
+                'image_position' => 'center',
+                'button_text' => null,
+                'button_link' => null,
+                'background_color' => 'bg-gradient-to-r from-primary-600 to-primary-800',
+                'text_color' => 'text-white',
+                'is_active' => true,
+                'sort_order' => 7
             ]
         ];
 

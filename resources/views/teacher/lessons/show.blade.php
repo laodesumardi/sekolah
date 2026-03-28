@@ -95,29 +95,97 @@
     </div>
 
     <!-- Attachments -->
-    @if($lesson->attachments && count($lesson->attachments) > 0)
     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Lampiran</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            @foreach($lesson->attachments as $attachment)
-            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-300">
-                <div class="flex items-center">
-                    <svg class="w-8 h-8 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                    </svg>
-                    <div class="flex-1">
-                        <p class="text-sm font-medium text-gray-900">{{ basename($attachment) }}</p>
-                        <p class="text-xs text-gray-500">Lampiran</p>
-                    </div>
-                    <a href="{{ Storage::url($attachment) }}" target="_blank" class="text-primary-600 hover:text-primary-700 text-sm">
-                        Download
-                    </a>
-                </div>
-            </div>
-            @endforeach
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-900">Lampiran</h2>
+            <span class="text-sm text-gray-500">{{ $lesson->attachments ? count($lesson->attachments) : 0 }} file</span>
         </div>
+        
+        @if($lesson->attachments && count($lesson->attachments) > 0)
+            <div class="space-y-3">
+                @foreach($lesson->attachments as $index => $attachment)
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-300 bg-gradient-to-br from-white to-gray-50">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center flex-1">
+                            <div class="flex-shrink-0">
+                                @php
+                                    $extension = strtolower(pathinfo($attachment, PATHINFO_EXTENSION));
+                                @endphp
+                                @if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-image text-green-600"></i>
+                                    </div>
+                                @elseif(in_array($extension, ['pdf']))
+                                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-file-pdf text-red-600"></i>
+                                    </div>
+                                @elseif(in_array($extension, ['doc', 'docx']))
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-file-word text-blue-600"></i>
+                                    </div>
+                                @elseif(in_array($extension, ['xls', 'xlsx']))
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-file-excel text-green-600"></i>
+                                    </div>
+                                @elseif(in_array($extension, ['ppt', 'pptx']))
+                                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-file-powerpoint text-orange-600"></i>
+                                    </div>
+                                @elseif(in_array($extension, ['zip', 'rar', '7z']))
+                                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-file-archive text-purple-600"></i>
+                                    </div>
+                                @else
+                                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-file text-gray-600"></i>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <p class="text-sm font-medium text-gray-900">{{ basename($attachment) }}</p>
+                                <p class="text-xs text-gray-500">
+                                    @if(file_exists(storage_path('app/public/' . $attachment)))
+                                        {{ number_format(filesize(storage_path('app/public/' . $attachment)) / 1024, 1) }} KB
+                                    @endif
+                                    • {{ strtoupper($extension) }}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-2">
+                            <a href="{{ Storage::url($attachment) }}" target="_blank" class="inline-flex items-center px-3 py-1 text-sm bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                                <i class="fas fa-eye mr-1"></i>
+                                Lihat
+                            </a>
+                            
+                            <a href="{{ Storage::url($attachment) }}" download class="inline-flex items-center px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                                <i class="fas fa-download mr-1"></i>
+                                Download
+                            </a>
+                            
+                            <button onclick="confirmDeleteAttachment('{{ $index }}', '{{ basename($attachment) }}')" class="inline-flex items-center px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                                <i class="fas fa-trash mr-1"></i>
+                                Hapus
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        @else
+            <div class="text-center py-8">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-paperclip text-gray-400 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada lampiran</h3>
+                <p class="text-gray-500 mb-4">Tambahkan lampiran untuk melengkapi materi ini.</p>
+                <a href="{{ route('teacher.courses.lessons.edit', [$course, $lesson]) }}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                    <i class="fas fa-plus mr-2"></i>
+                    Tambah Lampiran
+                </a>
+            </div>
+        @endif
     </div>
-    @endif
 
     <!-- Settings -->
     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
@@ -179,4 +247,20 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Attachment Form (Hidden) -->
+<form id="delete-attachment-form" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
+<script>
+function confirmDeleteAttachment(attachmentIndex, fileName) {
+    if (confirm(`Apakah Anda yakin ingin menghapus lampiran "${fileName}"?\n\nTindakan ini tidak dapat dibatalkan.`)) {
+        const form = document.getElementById('delete-attachment-form');
+        form.action = `/teacher/courses/{{ $course->id }}/lessons/{{ $lesson->id }}/attachments/${attachmentIndex}`;
+        form.submit();
+    }
+}
+</script>
 @endsection

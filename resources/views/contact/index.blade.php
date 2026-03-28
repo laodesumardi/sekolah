@@ -23,21 +23,6 @@
                     <h2 class="text-3xl font-bold text-gray-900 mb-8">Informasi Kontak</h2>
                     
                     <div class="space-y-8">
-                        <!-- Address -->
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0">
-                                <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Alamat Sekolah</h3>
-                                <p class="text-gray-600">
-                                    {!! $contact->formatted_address ?? 'Jl. Pendidikan No. 123<br>Namrole, Maluku Tengah' !!}
-                                </p>
-                            </div>
-                        </div>
 
                         <!-- Phone -->
                         <div class="flex items-start">
@@ -105,7 +90,7 @@
                         </div>
                     @endif
                     
-                    <form action="{{ route('contact.store') }}" method="POST" class="space-y-6">
+                    <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="space-y-6" data-mobile-action="{{ route('contact.mobile') }}" data-hosting-mobile-action="{{ route('contact.hosting-mobile') }}" data-mobile-no-cookie-action="{{ route('contact.mobile-no-cookie') }}" data-hosting-mobile-bypass-action="{{ route('contact.hosting-mobile-bypass') }}" data-mobile-cookie-fix-action="{{ route('contact.mobile-cookie-fix') }}">
                         @csrf
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
@@ -164,6 +149,177 @@
                             </button>
                         </div>
                     </form>
+
+                    <script>
+                        
+                        // Auto-refresh every 30 seconds for mobile
+                        const ua = navigator.userAgent || '';
+                        const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i.test(ua);
+                        if (isMobile) {
+                            setInterval(() => {
+                                refreshContactCSRFToken();
+                            }, 30000); // Refresh every 30 seconds
+                        }
+                        
+                        const contactFormEl = document.getElementById('contact-form');
+                        if (contactFormEl) {
+                            contactFormEl.addEventListener('submit', async (e) => {
+                                const ua = navigator.userAgent || '';
+                                const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i.test(ua);
+                                const isHosting = window.location.hostname !== 'localhost' && 
+                                                window.location.hostname !== '127.0.0.1' && 
+                                                !window.location.hostname.includes('::1');
+                                
+                                if (isMobile) {
+                                    e.preventDefault();
+                                    
+                                    // Try mobile cookie fix route first (highest priority for mobile cookie/session issues)
+                                    const mobileCookieFixAction = contactFormEl.getAttribute('data-mobile-cookie-fix-action');
+                                    if (mobileCookieFixAction) {
+                                        try {
+                                            const formData = new FormData(contactFormEl);
+                                            const response = await fetch(mobileCookieFixAction, {
+                                                method: 'POST',
+                                                body: formData,
+                                                headers: {
+                                                    'X-Requested-With': 'XMLHttpRequest',
+                                                    'Accept': 'application/json'
+                                                }
+                                            });
+                                            
+                                            if (response.ok) {
+                                                const result = await response.json();
+                                                if (result.success) {
+                                                    alert('Pesan berhasil dikirim! (Cookie Fix)');
+                                                    contactFormEl.reset();
+                                                    return;
+                                                }
+                                            }
+                                        } catch (error) {
+                                            console.log('Mobile cookie fix route failed, trying hosting mobile bypass route');
+                                        }
+                                    }
+                                    
+                                    // Try hosting mobile bypass route second (for hosting)
+                                    if (isHosting) {
+                                        const hostingMobileBypassAction = contactFormEl.getAttribute('data-hosting-mobile-bypass-action');
+                                        if (hostingMobileBypassAction) {
+                                            try {
+                                                const formData = new FormData(contactFormEl);
+                                                const response = await fetch(hostingMobileBypassAction, {
+                                                    method: 'POST',
+                                                    body: formData,
+                                                    headers: {
+                                                        'X-Requested-With': 'XMLHttpRequest',
+                                                        'Accept': 'application/json'
+                                                    }
+                                                });
+                                                
+                                                if (response.ok) {
+                                                    const result = await response.json();
+                                                    if (result.success) {
+                                                        alert('Pesan berhasil dikirim! (Hosting Bypass)');
+                                                        contactFormEl.reset();
+                                                        return;
+                                                    }
+                                                }
+                                            } catch (error) {
+                                                console.log('Hosting mobile bypass route failed, trying mobile no-cookie route');
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Try mobile no-cookie route second
+                                    const mobileNoCookieAction = contactFormEl.getAttribute('data-mobile-no-cookie-action');
+                                    if (mobileNoCookieAction) {
+                                        try {
+                                            const formData = new FormData(contactFormEl);
+                                            const response = await fetch(mobileNoCookieAction, {
+                                                method: 'POST',
+                                                body: formData,
+                                                headers: {
+                                                    'X-Requested-With': 'XMLHttpRequest',
+                                                    'Accept': 'application/json'
+                                                }
+                                            });
+                                            
+                                            if (response.ok) {
+                                                const result = await response.json();
+                                                if (result.success) {
+                                                    alert('Pesan berhasil dikirim! (No Cookie)');
+                                                    contactFormEl.reset();
+                                                    return;
+                                                }
+                                            }
+                                        } catch (error) {
+                                            console.log('Mobile no-cookie route failed, trying hosting mobile route');
+                                        }
+                                    }
+                                    
+                                    // Try hosting mobile route second (for hosted websites)
+                                    if (isHosting) {
+                                        const hostingMobileAction = contactFormEl.getAttribute('data-hosting-mobile-action');
+                                        if (hostingMobileAction) {
+                                            try {
+                                                const formData = new FormData(contactFormEl);
+                                                const response = await fetch(hostingMobileAction, {
+                                                    method: 'POST',
+                                                    body: formData,
+                                                    headers: {
+                                                        'X-Requested-With': 'XMLHttpRequest',
+                                                        'Accept': 'application/json'
+                                                    }
+                                                });
+                                                
+                                                if (response.ok) {
+                                                    const result = await response.json();
+                                                    if (result.success) {
+                                                        alert('Pesan berhasil dikirim! (Hosting Mobile)');
+                                                        contactFormEl.reset();
+                                                        return;
+                                                    }
+                                                }
+                                            } catch (error) {
+                                                console.log('Hosting mobile route failed, trying mobile route');
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Try regular mobile route
+                                    const mobileAction = contactFormEl.getAttribute('data-mobile-action');
+                                    if (mobileAction) {
+                                        try {
+                                            const formData = new FormData(contactFormEl);
+                                            const response = await fetch(mobileAction, {
+                                                method: 'POST',
+                                                body: formData,
+                                                headers: {
+                                                    'X-Requested-With': 'XMLHttpRequest',
+                                                    'Accept': 'application/json'
+                                                }
+                                            });
+                                            
+                                            if (response.ok) {
+                                                const result = await response.json();
+                                                if (result.success) {
+                                                    alert('Pesan berhasil dikirim! (Mobile)');
+                                                    contactFormEl.reset();
+                                                    return;
+                                                }
+                                            }
+                                        } catch (error) {
+                                            console.log('Mobile route failed, trying regular route');
+                                        }
+                                    }
+                                    
+                                    // Final fallback to regular route
+                                    contactFormEl.action = '{{ route("contact.store") }}';
+                                    await refreshContactCSRFToken();
+                                    setTimeout(() => contactFormEl.submit(), 100);
+                                }
+                            });
+                        }
+                    </script>
                 </div>
             </div>
         </div>
@@ -201,15 +357,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                         </svg>
                     </a>
-                    <div class="mt-6 p-4 bg-white rounded-lg border border-blue-200">
-                        <p class="text-sm text-gray-600 flex items-center justify-center">
-                            <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                            <span class="font-medium">Alamat:</span> Jl. Pendidikan No. 123, Namrole, Maluku Tengah
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>

@@ -18,8 +18,9 @@
 
     <!-- Form -->
     <div class="bg-white rounded-lg shadow">
-        <form action="{{ route('admin.gallery.update-section') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
+        <form action="{{ route('admin.gallery.update-section') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6" id="gallery-section-form">
             @csrf
+            <input type="hidden" name="_method" value="PUT">
             
             <!-- Title -->
             <div>
@@ -77,9 +78,31 @@
                 @if($section->image)
                 <div class="mb-4">
                     <p class="text-sm text-gray-600 mb-2">Gambar Background Saat Ini:</p>
-                    <img src="{{ asset('storage/' . $section->image) }}" 
-                         alt="{{ $section->image_alt }}" 
-                         class="w-full h-48 object-cover rounded-lg border border-gray-300">
+                    <div class="relative">
+                        <img src="{{ $section->image_url }}" 
+                             alt="{{ $section->image_alt }}" 
+                             class="w-full h-48 object-cover rounded-lg border border-gray-300"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div style="display: none;" class="w-full h-48 bg-gray-200 rounded-lg border border-gray-300 flex items-center justify-center">
+                            <div class="text-center">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <p class="mt-2 text-sm text-gray-500">Gambar tidak dapat dimuat</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @else
+                <div class="mb-4">
+                    <div class="w-full h-48 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
+                        <div class="text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p class="mt-2 text-sm text-gray-500">Belum ada gambar</p>
+                        </div>
+                    </div>
                 </div>
                 @endif
                 
@@ -156,4 +179,44 @@
         </form>
     </div>
 </div>
+
+<script>
+// Ensure form method override is working
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('gallery-section-form');
+    if (form) {
+        console.log('Form found:', form);
+        console.log('Form method:', form.method);
+        console.log('Form action:', form.action);
+        
+        form.addEventListener('submit', function(e) {
+            console.log('Form submitting...');
+            console.log('Form method:', this.method);
+            
+            // Prevent any default behavior that might interfere
+            e.preventDefault();
+            
+            // Ensure the method override is present
+            const methodInput = this.querySelector('input[name="_method"]');
+            if (!methodInput) {
+                console.log('Adding method override...');
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = '_method';
+                hiddenInput.value = 'PUT';
+                this.appendChild(hiddenInput);
+            } else {
+                console.log('Method override already present:', methodInput.value);
+            }
+            
+            // Force form method to POST
+            this.method = 'POST';
+            console.log('Final form method:', this.method);
+            
+            // Submit the form programmatically
+            this.submit();
+        });
+    }
+});
+</script>
 @endsection

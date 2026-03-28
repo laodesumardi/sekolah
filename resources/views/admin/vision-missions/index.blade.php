@@ -2,6 +2,10 @@
 
 @section('title', 'Visi & Misi Sekolah')
 
+@php
+use Illuminate\Support\Facades\Storage;
+@endphp
+
 @section('content')
 <div class="bg-white">
     <!-- Header -->
@@ -96,6 +100,7 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gambar</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visi</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Misi</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -106,6 +111,19 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach($visionMissions as $visionMission)
                             <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if($visionMission->image)
+                                        <img src="{{ vision_mission_image_url($visionMission->image) }}" 
+                                             alt="Vision Mission Image" 
+                                             class="w-12 h-12 object-cover rounded-lg border border-gray-300">
+                                    @else
+                                        <div class="w-12 h-12 bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                    @endif
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">
                                         {{ Str::limit($visionMission->vision, 100) }}
@@ -165,12 +183,30 @@
                     @foreach($visionMissions as $visionMission)
                     <div class="border-b border-gray-200 p-4">
                         <div class="flex items-start justify-between mb-3">
-                            <div class="flex-1">
-                                <div class="text-sm font-medium text-gray-900 mb-1">
-                                    {{ Str::limit($visionMission->vision, 80) }}
+                            <div class="flex-1 flex items-start space-x-3">
+                                <!-- Image Thumbnail -->
+                                <div class="flex-shrink-0">
+                                    @if($visionMission->image)
+                                        <img src="{{ vision_mission_image_url($visionMission->image) }}" 
+                                             alt="Vision Mission Image" 
+                                             class="w-16 h-16 object-cover rounded-lg border border-gray-300">
+                                    @else
+                                        <div class="w-16 h-16 bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center">
+                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                    @endif
                                 </div>
-                                <div class="text-xs text-gray-500 mb-2">{{ count($visionMission->missions ?? []) }} misi</div>
-                                <div class="text-xs text-gray-500">{{ $visionMission->created_at->format('d M Y') }}</div>
+                                
+                                <!-- Content -->
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium text-gray-900 mb-1">
+                                        {{ Str::limit($visionMission->vision, 80) }}
+                                    </div>
+                                    <div class="text-xs text-gray-500 mb-2">{{ count($visionMission->missions ?? []) }} misi</div>
+                                    <div class="text-xs text-gray-500">{{ $visionMission->created_at->format('d M Y') }}</div>
+                                </div>
                             </div>
                             <div class="flex flex-col items-end space-y-2">
                                 @if($visionMission->is_active)

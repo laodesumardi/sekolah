@@ -28,7 +28,7 @@
             @foreach($featuredFacilities as $facility)
             <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
                 @if($facility->image)
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('{{ $facility->image_url }}'); background-size: cover; background-position: center;">
+                <div class="h-48 bg-gray-200 relative overflow-hidden">
                     <img src="{{ $facility->image_url }}" alt="{{ $facility->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div class="h-48 bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center hidden">
                         @if($facility->icon)
@@ -94,18 +94,35 @@
         @if($facilities->count() > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             @foreach($facilities as $facility)
-            <div class="bg-white rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+            <div class="bg-white rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+                @if($facility->image)
+                <div class="h-48 bg-gray-200 relative overflow-hidden">
+                    <img src="{{ $facility->image_url }}" alt="{{ $facility->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="h-48 bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center hidden">
+                        @if($facility->icon)
+                        <i class="{{ $facility->icon }} text-4xl text-white"></i>
+                        @else
+                        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        @endif
+                    </div>
+                </div>
+                @else
+                <div class="h-48 bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+                    @if($facility->icon)
+                    <i class="{{ $facility->icon }} text-4xl text-white"></i>
+                    @else
+                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                    @endif
+                </div>
+                @endif
+                
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-4">
-                        @if($facility->icon)
-                        <i class="{{ $facility->icon }} text-3xl text-primary-600"></i>
-                        @else
-                        <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                            </svg>
-                        </div>
-                        @endif
+                        <h3 class="text-lg font-semibold text-gray-900">{{ $facility->name }}</h3>
                         
                         @if($facility->is_featured)
                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
@@ -116,8 +133,6 @@
                         </span>
                         @endif
                     </div>
-                    
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $facility->name }}</h3>
                     
                     @if($facility->description)
                     <p class="text-gray-600 text-sm mb-4">{{ Str::limit($facility->description, 100) }}</p>

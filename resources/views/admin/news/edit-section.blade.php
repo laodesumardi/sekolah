@@ -76,7 +76,7 @@ use Illuminate\Support\Facades\Storage;
                                 <div class="flex items-center space-x-4">
                                     <img src="{{ Storage::url($newsSection->image) }}" alt="{{ $newsSection->image_alt }}" 
                                          class="h-24 w-24 object-cover rounded-lg"
-                                         onerror="this.src='{{ asset('images/default-section.png') }}'">
+                                         onerror="this.onerror=null; this.src='{{ asset('logo.png') }}'">
                                     <div>
                                         <p class="text-sm text-gray-600">Gambar section saat ini</p>
                                         <p class="text-xs text-gray-500">Upload gambar baru untuk mengganti</p>

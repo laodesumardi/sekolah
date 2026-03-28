@@ -7,7 +7,7 @@
     <!-- Hero Section with Full Width Image -->
     @if($gallerySection && $gallerySection->image)
     <div class="relative h-96 overflow-hidden">
-        <img src="{{ asset('storage/' . $gallerySection->image) }}" 
+        <img src="{{ $gallerySection->image_url ?? get_correct_asset_url('images/default-gallery.png') }}" 
              alt="{{ $gallerySection->image_alt }}" 
              class="w-full h-full object-cover">
         <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">

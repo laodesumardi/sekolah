@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\AcademicCalendar;
 use App\Models\HomeSection;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class AcademicCalendarController extends Controller
 {
@@ -45,7 +46,7 @@ class AcademicCalendarController extends Controller
             });
         }
 
-        $events = $query->orderBy('start_date')->get();
+        $events = $query->orderBy('start_date')->paginate(12);
 
         // Get current month and year
         $currentMonth = $request->get('month', now()->month);
@@ -85,9 +86,24 @@ class AcademicCalendarController extends Controller
         // Get academic calendar section data
         $academicCalendarSection = HomeSection::where('section_key', 'academic-calendar')->first();
 
+        // Hero image URL fallback for index page
+        $heroImageUrl = null;
+        if ($academicCalendarSection && $academicCalendarSection->image) {
+            $heroImageUrl = asset('uploads/' . $academicCalendarSection->image);
+        } else {
+            try {
+                $files = Storage::disk('public')->files('home-sections');
+                if (!empty($files)) {
+                    $heroImageUrl = asset('uploads/' . $files[0]);
+                }
+            } catch (\Exception $e) {
+                $heroImageUrl = null;
+            }
+        }
+
         return view('academic-calendar.index', compact(
             'events', 'months', 'years', 'types', 'priorities',
-            'currentMonth', 'currentYear', 'academicCalendarSection'
+            'currentMonth', 'currentYear', 'academicCalendarSection', 'heroImageUrl'
         ));
     }
 
@@ -125,8 +141,26 @@ class AcademicCalendarController extends Controller
         // Get academic calendar section data
         $academicCalendarSection = HomeSection::where('section_key', 'academic-calendar')->first();
 
+        // Get month name
+        $monthName = $months[$month];
+
+        // Hero image URL fallback
+        $heroImageUrl = null;
+        if ($academicCalendarSection && $academicCalendarSection->image) {
+            $heroImageUrl = asset('uploads/' . $academicCalendarSection->image);
+        } else {
+            try {
+                $files = Storage::disk('public')->files('home-sections');
+                if (!empty($files)) {
+                    $heroImageUrl = asset('uploads/' . $files[0]);
+                }
+            } catch (\Exception $e) {
+                $heroImageUrl = null;
+            }
+        }
+
         return view('academic-calendar.calendar', compact(
-            'calendarData', 'events', 'months', 'years', 'month', 'year', 'academicCalendarSection'
+            'calendarData', 'events', 'months', 'years', 'month', 'year', 'monthName', 'academicCalendarSection', 'heroImageUrl'
         ));
     }
 
@@ -139,7 +173,7 @@ class AcademicCalendarController extends Controller
             ->public()
             ->upcoming(30)
             ->orderBy('start_date')
-            ->get();
+            ->paginate(12);
 
         // Get academic calendar section data
         $academicCalendarSection = HomeSection::where('section_key', 'academic-calendar')->first();

@@ -48,7 +48,7 @@ class Facility extends Model
     public function getImageUrlAttribute()
     {
         if (!$this->image) {
-            return asset('images/default-facility.png');
+            return get_correct_asset_url('images/default-facility.png');
         }
         
         // Check if it's already a full URL (including https://)
@@ -63,23 +63,23 @@ class Facility extends Model
         
         // Check if it's a storage path
         if (str_starts_with($this->image, 'facilities/')) {
-            return asset('storage/' . $this->image);
+            return get_correct_asset_url('storage/' . $this->image);
         }
         
         // Check if it's a storage path with storage/ prefix
         if (str_starts_with($this->image, 'storage/')) {
-            return asset($this->image);
+            return get_correct_asset_url($this->image);
         }
         
         // Check if it's a public file (not in storage)
         if (!str_starts_with($this->image, 'facilities/') && 
             !str_starts_with($this->image, 'storage/')) {
             // It's a public file
-            return asset($this->image);
+            return get_correct_asset_url($this->image);
         }
         
         // Default fallback
-        return asset('images/default-facility.png');
+        return get_correct_asset_url('images/default-facility.png');
     }
 
     public function getCategoryLabelAttribute()

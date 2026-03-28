@@ -12,14 +12,14 @@
                 <h1 class="text-2xl font-bold text-gray-900 mb-2">Forum Diskusi</h1>
                 <p class="text-gray-600">Kelola forum diskusi untuk kelas {{ $course->title }}</p>
             </div>
-            <div class="flex items-center space-x-4">
-                <a href="{{ route('teacher.courses.forums.create', $course) }}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                    <i class="fas fa-plus mr-2"></i>
-                    Buat Forum
+            <div class="flex flex-col sm:flex-row gap-3">
+                <a href="{{ route('teacher.courses.forums.create', $course) }}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                    <i class="fas fa-plus-circle mr-2"></i>
+                    <span>Buat Forum</span>
                 </a>
-                <a href="{{ route('teacher.courses.show', $course) }}" class="text-gray-600 hover:text-gray-800 font-medium">
+                <a href="{{ route('teacher.courses.show', $course) }}" class="inline-flex items-center bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
                     <i class="fas fa-arrow-left mr-2"></i>
-                    Kembali ke Kelas
+                    <span>Kembali ke Kelas</span>
                 </a>
             </div>
         </div>
@@ -115,15 +115,20 @@
                             </div>
                         </div>
                         
-                        <div class="flex items-center space-x-2">
-                            <a href="{{ route('teacher.courses.forums.show', [$course, $forum]) }}" class="text-primary-600 hover:text-primary-700 font-medium">
-                                Lihat
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <a href="{{ route('teacher.courses.forums.show', [$course, $forum]) }}" class="inline-flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                                <i class="fas fa-eye mr-2"></i>
+                                <span>Lihat</span>
                             </a>
-                            <a href="{{ route('teacher.courses.forums.edit', [$course, $forum]) }}" class="text-gray-600 hover:text-gray-800 font-medium">
-                                Edit
+                            
+                            <a href="{{ route('teacher.courses.forums.edit', [$course, $forum]) }}" class="inline-flex items-center justify-center bg-orange-600 hover:bg-orange-700 text-black px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                                <i class="fas fa-edit mr-2"></i>
+                                <span>Edit</span>
                             </a>
-                            <button onclick="confirmDeleteForum('{{ $forum->id }}', '{{ $forum->title }}', '{{ $course->id }}')" class="text-red-600 hover:text-red-800 font-medium">
-                                Hapus
+                            
+                            <button onclick="confirmDeleteForum('{{ $forum->id }}', '{{ $forum->title }}', '{{ $course->id }}')" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                                <i class="fas fa-trash mr-2"></i>
+                                <span>Hapus</span>
                             </button>
                         </div>
                     </div>
@@ -135,9 +140,9 @@
                 <i class="fas fa-comments text-4xl text-gray-300 mb-4"></i>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada forum</h3>
                 <p class="text-gray-600 mb-6">Mulai dengan membuat forum diskusi pertama.</p>
-                <a href="{{ route('teacher.courses.forums.create', $course) }}" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
-                    <i class="fas fa-plus mr-2"></i>
-                    Buat Forum Pertama
+                <a href="{{ route('teacher.courses.forums.create', $course) }}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-plus-circle mr-3"></i>
+                    <span>Buat Forum Pertama</span>
                 </a>
             </div>
         @endif

@@ -126,10 +126,10 @@
                         </div>
                         <div class="text-right">
                             <div class="text-2xl font-bold text-blue-600">
-                                {{ $submission->grade }}/{{ $submission->assignment->points }}
+                                {{ $submission->score }}/{{ $submission->assignment->points }}
                             </div>
                             <div class="text-sm text-gray-500">
-                                {{ round(($submission->grade / $submission->assignment->points) * 100) }}%
+                                {{ round(($submission->score / $submission->assignment->points) * 100) }}%
                             </div>
                         </div>
                     </div>

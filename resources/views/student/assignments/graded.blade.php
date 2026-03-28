@@ -46,7 +46,7 @@
                     <p class="text-sm font-medium text-gray-600">Rata-rata</p>
                     <p class="text-2xl font-bold text-gray-900">
                         @if($submissions->count() > 0)
-                            {{ round($submissions->avg('grade')) }}
+                            {{ round($submissions->avg('score')) }}
                         @else
                             0
                         @endif
@@ -64,7 +64,7 @@
                     <p class="text-sm font-medium text-gray-600">Nilai Tertinggi</p>
                     <p class="text-2xl font-bold text-gray-900">
                         @if($submissions->count() > 0)
-                            {{ $submissions->max('grade') }}
+                            {{ $submissions->max('score') }}
                         @else
                             0
                         @endif
@@ -110,10 +110,10 @@
                             
                             <div class="text-right">
                                 <p class="text-3xl font-bold text-blue-600">
-                                    {{ $submission->grade }}/{{ $submission->assignment->points }}
+                                    {{ $submission->score }}/{{ $submission->assignment->points }}
                                 </p>
                                 <p class="text-sm text-gray-600">
-                                    {{ round(($submission->grade / $submission->assignment->points) * 100) }}%
+                                    {{ round(($submission->score / $submission->assignment->points) * 100) }}%
                                 </p>
                             </div>
                         </div>
@@ -127,11 +127,11 @@
                                 <div class="space-y-2">
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-600">Nilai:</span>
-                                        <span class="font-medium">{{ $submission->grade }}/{{ $submission->assignment->points }}</span>
+                                        <span class="font-medium">{{ $submission->score }}/{{ $submission->assignment->points }}</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-600">Persentase:</span>
-                                        <span class="font-medium">{{ round(($submission->grade / $submission->assignment->points) * 100) }}%</span>
+                                        <span class="font-medium">{{ round(($submission->score / $submission->assignment->points) * 100) }}%</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-600">Status:</span>
@@ -143,10 +143,10 @@
                             <div>
                                 <h4 class="text-sm font-medium text-gray-900 mb-2">Progress</h4>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-blue-600 h-2 rounded-full" style="width: {{ ($submission->grade / $submission->assignment->points) * 100 }}%"></div>
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: {{ ($submission->score / $submission->assignment->points) * 100 }}%"></div>
                                 </div>
                                 <p class="text-xs text-gray-600 mt-1">
-                                    {{ round(($submission->grade / $submission->assignment->points) * 100) }}% dari nilai maksimal
+                                    {{ round(($submission->score / $submission->assignment->points) * 100) }}% dari nilai maksimal
                                 </p>
                             </div>
                         </div>

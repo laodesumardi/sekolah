@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -34,22 +37,33 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = User::findOrFail(Auth::id());
         
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'nip' => 'nullable|string|max:255',
             'student_id' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
             'class_level' => 'required|string|in:VII,VIII,IX',
             'class_section' => 'nullable|string|in:A,B,C,D',
+            'student_class' => 'nullable|string|max:50',
             'date_of_birth' => 'nullable|date',
-            'gender' => 'nullable|string|in:Laki-laki,Perempuan',
+            'gender' => 'nullable|string|in:male,female',
             'religion' => 'nullable|string|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
+            'previous_school' => 'nullable|string|max:255',
+            'previous_school_address' => 'nullable|string|max:500',
+            'graduation_year' => 'nullable|integer|min:2000|max:' . (date('Y') + 1),
+            'transfer_reason' => 'nullable|string|max:500',
+            'blood_type' => 'nullable|string|in:A,B,AB,O',
+            'allergies' => 'nullable|string|max:255',
+            'medical_conditions' => 'nullable|string|max:500',
             'parent_name' => 'nullable|string|max:255',
             'parent_phone' => 'nullable|string|max:20',
             'parent_email' => 'nullable|email|max:255',
+            'parent_occupation' => 'nullable|string|max:255',
+            'parent_address' => 'nullable|string|max:500',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Max 2MB
             'current_password' => 'nullable|string',
             'password' => 'nullable|string|min:8|confirmed',
@@ -60,6 +74,7 @@ class ProfileController extends Controller
         $user->email = $request->email;
         
         // Update student information
+        $user->nip = $request->nip;
         $user->student_id = $request->student_id;
         $user->phone = $request->phone;
         $user->address = $request->address;
@@ -67,22 +82,36 @@ class ProfileController extends Controller
         // Update class information
         $user->class_level = $request->class_level;
         $user->class_section = $request->class_section;
+        $user->student_class = $request->student_class;
         
         // Update personal information
         $user->date_of_birth = $request->date_of_birth;
         $user->gender = $request->gender;
         $user->religion = $request->religion;
         
+        // Update previous school information
+        $user->previous_school = $request->previous_school;
+        $user->previous_school_address = $request->previous_school_address;
+        $user->graduation_year = $request->graduation_year;
+        $user->transfer_reason = $request->transfer_reason;
+        
+        // Update medical information
+        $user->blood_type = $request->blood_type;
+        $user->allergies = $request->allergies;
+        $user->medical_conditions = $request->medical_conditions;
+        
         // Update parent information
         $user->parent_name = $request->parent_name;
         $user->parent_phone = $request->parent_phone;
         $user->parent_email = $request->parent_email;
+        $user->parent_occupation = $request->parent_occupation;
+        $user->parent_address = $request->parent_address;
 
         // Handle photo upload
         if ($request->hasFile('photo')) {
             // Delete old photo if exists
-            if ($user->photo && \Storage::disk('public')->exists($user->photo)) {
-                \Storage::disk('public')->delete($user->photo);
+            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+                Storage::disk('public')->delete($user->photo);
             }
             
             // Store new photo
@@ -99,9 +128,9 @@ class ProfileController extends Controller
             }
             
             if (copy($sourcePath, $destPath)) {
-                \Log::info('Student photo copied to public storage: ' . $path);
+                Log::info('Student photo copied to public storage: ' . $path);
             } else {
-                \Log::error('Failed to copy student photo to public storage: ' . $path);
+                Log::error('Failed to copy student photo to public storage: ' . $path);
             }
         }
 
@@ -129,10 +158,10 @@ class ProfileController extends Controller
      */
     public function deletePhoto()
     {
-        $user = Auth::user();
+        $user = User::findOrFail(Auth::id());
 
-        if ($user->photo && \Storage::disk('public')->exists($user->photo)) {
-            \Storage::disk('public')->delete($user->photo);
+        if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+            Storage::disk('public')->delete($user->photo);
             $user->photo = null;
             $user->save();
             return redirect()->route('student.profile.edit')->with('success', 'Foto profil berhasil dihapus.');

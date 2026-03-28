@@ -166,12 +166,51 @@ class AssignmentController extends Controller
             abort(403, 'Anda tidak terdaftar di kelas ini.');
         }
 
-        $filePath = 'assignments/' . $filename;
-        
-        if (!Storage::disk('public')->exists($filePath)) {
-            abort(404, 'File tidak ditemukan.');
+        // Check if assignment is published
+        if (!$assignment->is_published) {
+            abort(404, 'Tugas ini belum tersedia.');
         }
 
-        return Storage::disk('public')->download($filePath);
+        // Find the full path of the attachment by matching the filename
+        $fullPath = null;
+        if ($assignment->attachments) {
+            foreach ($assignment->attachments as $attachment) {
+                if (basename($attachment) === $filename) {
+                    $fullPath = $attachment;
+                    break;
+                }
+            }
+        }
+
+        if (!$fullPath) {
+            abort(404, 'Lampiran tidak ditemukan.');
+        }
+
+        // Use the full path from attachments array
+        $filePath = $fullPath;
+        
+        // Check if file exists in storage/app/public
+        $storagePath = storage_path('app/public/' . $filePath);
+        $publicPath = public_path('storage/' . $filePath);
+        
+        // If file exists in storage but not in public, copy it
+        if (file_exists($storagePath) && !file_exists($publicPath)) {
+            // Create directory if it doesn't exist
+            $publicDir = dirname($publicPath);
+            if (!is_dir($publicDir)) {
+                mkdir($publicDir, 0755, true);
+            }
+            // Copy file to public storage
+            if (!copy($storagePath, $publicPath)) {
+                abort(500, 'Gagal menyalin file ke public storage.');
+            }
+        }
+        
+        // Check if file exists in storage
+        if (!Storage::disk('public')->exists($filePath)) {
+            abort(404, 'File tidak ditemukan di storage.');
+        }
+
+        return Storage::disk('public')->download($filePath, $filename);
     }
 }

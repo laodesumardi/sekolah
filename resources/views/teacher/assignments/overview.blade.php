@@ -6,15 +6,29 @@
 @section('content')
 <div class="space-y-6">
     <!-- Header -->
-    <div class="flex justify-between items-center">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">Tugas & Penilaian</h1>
-            <p class="text-sm text-gray-600">Kelola semua tugas dan penilaian dari semua kelas</p>
-        </div>
-        <div class="flex items-center space-x-4">
-            <a href="{{ route('teacher.courses.index') }}" class="text-gray-600 hover:text-gray-800 font-medium">
-                Kelas Saya
-            </a>
+    <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="flex-1">
+                <h1 class="text-2xl font-bold text-gray-900 flex items-center">
+                    <i class="fas fa-tasks mr-3 text-primary-600"></i>
+                    Tugas & Penilaian
+                </h1>
+                <p class="text-gray-600 mt-1">Kelola semua tugas dan penilaian dari semua kelas</p>
+                <div class="flex items-center mt-2 text-sm text-gray-500">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    <span>Total {{ $assignments->count() }} tugas</span>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <a href="{{ route('teacher.courses.index') }}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                    <i class="fas fa-graduation-cap mr-2"></i>
+                    <span>Kelas Saya</span>
+                </a>
+                <a href="{{ route('teacher.courses.create') }}" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                    <i class="fas fa-plus-circle mr-2"></i>
+                    <span>Buat Kelas Baru</span>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -139,17 +153,35 @@
                         </div>
                     </div>
                     
-                    <div class="flex items-center space-x-2">
-                        <a href="{{ route('teacher.courses.assignments.show', [$assignment->course, $assignment]) }}" class="text-primary-600 hover:text-primary-700 font-medium">
-                            Lihat Detail
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="{{ route('teacher.courses.assignments.show', [$assignment->course, $assignment]) }}" class="inline-flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                            <i class="fas fa-eye mr-2"></i>
+                            <span>Lihat Detail</span>
                         </a>
-                        <span class="text-gray-300">•</span>
-                        <a href="{{ route('teacher.courses.assignments.edit', [$assignment->course, $assignment]) }}" class="text-gray-600 hover:text-gray-800">
-                            Edit
+                        
+                        <a href="{{ route('teacher.courses.assignments.edit', [$assignment->course, $assignment]) }}" class="inline-flex items-center justify-center bg-orange-600 hover:bg-orange-700 text-black px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                            <i class="fas fa-edit mr-2"></i>
+                            <span>Edit</span>
                         </a>
-                        <span class="text-gray-300">•</span>
-                        <button onclick="confirmDelete('{{ $assignment->id }}', '{{ $assignment->title }}', '{{ $assignment->course->id }}')" class="text-red-600 hover:text-red-800">
-                            Hapus
+                        
+                        <form action="{{ route('teacher.courses.assignments.toggle-published', [$assignment->course, $assignment]) }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg
+                                @if($assignment->is_published) bg-yellow-600 hover:bg-yellow-700 text-white
+                                @else bg-green-600 hover:bg-green-700 text-white
+                                @endif">
+                                <i class="fas fa-power-off mr-2"></i>
+                                @if($assignment->is_published)
+                                    <span>Nonaktifkan</span>
+                                @else
+                                    <span>Aktifkan</span>
+                                @endif
+                            </button>
+                        </form>
+                        
+                        <button onclick="confirmDelete('{{ $assignment->id }}', '{{ $assignment->title }}', '{{ $assignment->course->id }}')" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                            <i class="fas fa-trash mr-2"></i>
+                            <span>Hapus</span>
                         </button>
                     </div>
                 </div>
@@ -161,9 +193,14 @@
                 </svg>
                 <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada tugas</h3>
                 <p class="mt-1 text-sm text-gray-500">Mulai dengan membuat tugas di salah satu kelas Anda.</p>
-                <div class="mt-6">
-                    <a href="{{ route('teacher.courses.index') }}" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
-                        Lihat Kelas Saya
+                <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+                    <a href="{{ route('teacher.courses.index') }}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                        <i class="fas fa-graduation-cap mr-2"></i>
+                        <span>Lihat Kelas Saya</span>
+                    </a>
+                    <a href="{{ route('teacher.courses.create') }}" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                        <i class="fas fa-plus-circle mr-2"></i>
+                        <span>Buat Kelas Baru</span>
                     </a>
                 </div>
             </div>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Facility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class FacilityController extends Controller
 {
@@ -63,14 +64,14 @@ class FacilityController extends Controller
             }
             
             if (copy($sourcePath, $destPath)) {
-                \Log::info('Image uploaded and copied to public storage: ' . $filename);
+                Log::info('Image uploaded and copied to public storage: ' . $filename);
             } else {
-                \Log::error('Failed to copy image to public storage: ' . $filename);
+                Log::error('Failed to copy image to public storage: ' . $filename);
             }
         } else {
             // Set image to null if no image uploaded
             $data['image'] = null;
-            \Log::info('No image uploaded, setting to null');
+            Log::info('No image uploaded, setting to null');
         }
 
         Facility::create($data);
@@ -125,14 +126,14 @@ class FacilityController extends Controller
             $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             $file->storeAs('facilities', $filename, 'public');
             $data['image'] = 'facilities/' . $filename;
-            \Log::info('Image updated: ' . $filename);
+            Log::info('Image updated: ' . $filename);
         } else {
             // Keep existing image or use default if none
             if (!$facility->image || str_starts_with($facility->image, 'http')) {
                 $data['image'] = 'facilities/facility_technology_1760796308.png';
-                \Log::info('No image uploaded, using default');
+                Log::info('No image uploaded, using default');
             } else {
-                \Log::info('Keeping existing image: ' . $facility->image);
+                Log::info('Keeping existing image: ' . $facility->image);
             }
         }
 
@@ -149,9 +150,9 @@ class FacilityController extends Controller
             }
             
             if (copy($sourcePath, $destPath)) {
-                \Log::info('Facility image copied to public storage: ' . $data['image']);
+                Log::info('Facility image copied to public storage: ' . $data['image']);
             } else {
-                \Log::error('Failed to copy facility image to public storage: ' . $data['image']);
+                Log::error('Failed to copy facility image to public storage: ' . $data['image']);
             }
         }
 

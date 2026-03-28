@@ -101,7 +101,7 @@ class AcademicCalendarController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'start_time' => 'nullable|date_format:H:i',
-            'end_time' => 'nullable|date_format:H:i|after:start_time',
+            'end_time' => 'nullable|date_format:H:i',
             'type' => 'required|in:semester,ujian,libur,hari_besar,kegiatan,lainnya',
             'priority' => 'required|in:low,medium,high,critical',
             'location' => 'nullable|string|max:255',
@@ -114,6 +114,15 @@ class AcademicCalendarController extends Controller
             'notes' => 'nullable|string',
             'is_active' => 'boolean'
         ]);
+
+        // Custom validation for time comparison
+        if ($request->start_time && $request->end_time) {
+            if (strtotime($request->end_time) <= strtotime($request->start_time)) {
+                return redirect()->back()
+                    ->withErrors(['end_time' => 'Waktu selesai harus setelah waktu mulai.'])
+                    ->withInput();
+            }
+        }
 
         $data = $request->all();
         $data['is_all_day'] = $request->has('is_all_day');
@@ -178,7 +187,7 @@ class AcademicCalendarController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'start_time' => 'nullable|date_format:H:i',
-            'end_time' => 'nullable|date_format:H:i|after:start_time',
+            'end_time' => 'nullable|date_format:H:i',
             'type' => 'required|in:semester,ujian,libur,hari_besar,kegiatan,lainnya',
             'priority' => 'required|in:low,medium,high,critical',
             'location' => 'nullable|string|max:255',
@@ -191,6 +200,15 @@ class AcademicCalendarController extends Controller
             'notes' => 'nullable|string',
             'is_active' => 'boolean'
         ]);
+
+        // Custom validation for time comparison
+        if ($request->start_time && $request->end_time) {
+            if (strtotime($request->end_time) <= strtotime($request->start_time)) {
+                return redirect()->back()
+                    ->withErrors(['end_time' => 'Waktu selesai harus setelah waktu mulai.'])
+                    ->withInput();
+            }
+        }
 
         $data = $request->all();
         $data['is_all_day'] = $request->has('is_all_day');
@@ -246,7 +264,7 @@ class AcademicCalendarController extends Controller
                 'section_key' => 'academic-calendar',
                 'title' => 'Kalender Akademik',
                 'subtitle' => 'Jadwal penting dan kegiatan sekolah',
-                'content' => 'Lihat jadwal lengkap kegiatan dan acara sekolah SMP Negeri 01 Namrole',
+                'description' => 'Lihat jadwal lengkap kegiatan dan acara sekolah SMP Negeri 01 Namrole',
                 'is_active' => true,
                 'sort_order' => 5
             ]);
@@ -263,10 +281,7 @@ class AcademicCalendarController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'subtitle' => 'nullable|string|max:255',
-            'content' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'image_alt' => 'nullable|string|max:255',
-            'image_position' => 'nullable|in:left,right,center,top,bottom',
+            'description' => 'nullable|string',
             'is_active' => 'boolean'
         ]);
 
@@ -276,21 +291,8 @@ class AcademicCalendarController extends Controller
             return redirect()->back()->with('error', 'Section tidak ditemukan!');
         }
 
-        $data = $request->all();
+        $data = $request->only(['title', 'subtitle', 'description']);
         $data['is_active'] = $request->has('is_active');
-
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            // Delete old image
-            if ($section->image && Storage::disk('public')->exists($section->image)) {
-                Storage::disk('public')->delete($section->image);
-            }
-
-            $image = $request->file('image');
-            $filename = time() . '_academic_calendar.' . $image->getClientOriginalExtension();
-            $path = $image->storeAs('home-sections', $filename, 'public');
-            $data['image'] = $path;
-        }
 
         $section->update($data);
 

@@ -52,28 +52,35 @@
         </div>
         
         <!-- Action Buttons -->
-        <div class="flex items-center space-x-4">
-            <a href="{{ route('teacher.courses.edit', $course) }}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                Edit Kelas
+        <div class="flex flex-col sm:flex-row gap-3">
+            <a href="{{ route('teacher.courses.edit', $course) }}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                <i class="fas fa-edit mr-2"></i>
+                <span>Edit Kelas</span>
             </a>
             
             <form action="{{ route('teacher.courses.toggle-status', $course) }}" method="POST" class="inline">
                 @csrf
-                <button type="submit" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                <button type="submit" class="inline-flex items-center px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg
+                    @if($course->status === 'active') bg-yellow-600 hover:bg-yellow-700 text-white
+                    @else bg-green-600 hover:bg-green-700 text-white
+                    @endif">
+                    <i class="fas fa-power-off mr-2"></i>
                     @if($course->status === 'active')
-                        Nonaktifkan
+                        <span>Nonaktifkan</span>
                     @else
-                        Aktifkan
+                        <span>Aktifkan</span>
                     @endif
                 </button>
             </form>
             
-            <button onclick="confirmDelete('{{ $course->id }}', '{{ $course->title }}')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                Hapus Kelas
+            <button onclick="confirmDelete('{{ $course->id }}', '{{ $course->title }}')" class="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                <i class="fas fa-trash mr-2"></i>
+                <span>Hapus Kelas</span>
             </button>
             
-            <a href="{{ route('teacher.courses.index') }}" class="text-gray-600 hover:text-gray-800 font-medium">
-                Kembali ke Daftar Kelas
+            <a href="{{ route('teacher.courses.index') }}" class="inline-flex items-center bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                <i class="fas fa-arrow-left mr-2"></i>
+                <span>Kembali ke Daftar Kelas</span>
             </a>
         </div>
     </div>
@@ -162,8 +169,9 @@
             <div id="lessons" class="tab-content">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="text-lg font-semibold text-gray-900">Materi Kelas</h3>
-                    <a href="{{ route('teacher.courses.lessons.create', $course) }}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                        Tambah Materi
+                    <a href="{{ route('teacher.courses.lessons.create', $course) }}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                        <i class="fas fa-plus-circle mr-2"></i>
+                        <span>Tambah Materi</span>
                     </a>
                 </div>
                 
@@ -187,12 +195,14 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="flex items-center space-x-2">
-                                    <a href="{{ route('teacher.courses.lessons.show', [$course, $lesson]) }}" class="text-primary-600 hover:text-primary-700 font-medium">
-                                        Lihat
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <a href="{{ route('teacher.courses.lessons.show', [$course, $lesson]) }}" class="inline-flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                                        <i class="fas fa-eye mr-2"></i>
+                                        <span>Lihat</span>
                                     </a>
-                                    <a href="{{ route('teacher.courses.lessons.edit', [$course, $lesson]) }}" class="text-gray-600 hover:text-gray-800 font-medium">
-                                        Edit
+                                    <a href="{{ route('teacher.courses.lessons.edit', [$course, $lesson]) }}" class="inline-flex items-center justify-center bg-orange-600 hover:bg-orange-700 text-black px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                                        <i class="fas fa-edit mr-2"></i>
+                                        <span>Edit</span>
                                     </a>
                                 </div>
                             </div>
@@ -219,8 +229,9 @@
             <div id="assignments" class="tab-content" style="display: none;">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="text-lg font-semibold text-gray-900">Tugas Kelas</h3>
-                    <a href="{{ route('teacher.courses.assignments.create', $course) }}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                        Tambah Tugas
+                    <a href="{{ route('teacher.courses.assignments.create', $course) }}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                        <i class="fas fa-plus-circle mr-2"></i>
+                        <span>Tambah Tugas</span>
                     </a>
                 </div>
                 
@@ -247,15 +258,18 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="flex items-center space-x-2">
-                                    <a href="{{ route('teacher.courses.assignments.show', [$course, $assignment]) }}" class="text-primary-600 hover:text-primary-700 font-medium">
-                                        Lihat
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <a href="{{ route('teacher.courses.assignments.show', [$course, $assignment]) }}" class="inline-flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                                        <i class="fas fa-eye mr-2"></i>
+                                        <span>Lihat</span>
                                     </a>
-                                    <a href="{{ route('teacher.courses.assignments.edit', [$course, $assignment]) }}" class="text-gray-600 hover:text-gray-800 font-medium">
-                                        Edit
+                                    <a href="{{ route('teacher.courses.assignments.edit', [$course, $assignment]) }}" class="inline-flex items-center justify-center bg-orange-600 hover:bg-orange-700 text-black px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                                        <i class="fas fa-edit mr-2"></i>
+                                        <span>Edit</span>
                                     </a>
-                                    <button onclick="confirmDeleteAssignment('{{ $assignment->id }}', '{{ $assignment->title }}', '{{ $course->id }}')" class="text-red-600 hover:text-red-800 font-medium">
-                                        Hapus
+                                    <button onclick="confirmDeleteAssignment('{{ $assignment->id }}', '{{ $assignment->title }}', '{{ $course->id }}')" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                                        <i class="fas fa-trash mr-2"></i>
+                                        <span>Hapus</span>
                                     </button>
                                 </div>
                             </div>
@@ -282,8 +296,9 @@
             <div id="forums" class="tab-content" style="display: none;">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="text-lg font-semibold text-gray-900">Forum Diskusi</h3>
-                    <a href="{{ route('teacher.courses.forums.create', $course) }}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                        Buat Forum
+                    <a href="{{ route('teacher.courses.forums.create', $course) }}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                        <i class="fas fa-plus-circle mr-2"></i>
+                        <span>Buat Forum</span>
                     </a>
                 </div>
                 
@@ -308,12 +323,14 @@
                                         <span>Terakhir: {{ $forum->last_activity->format('d M Y, H:i') }}</span>
                                     </div>
                                 </div>
-                                <div class="flex items-center space-x-2">
-                                    <a href="{{ route('teacher.courses.forums.show', [$course, $forum]) }}" class="text-primary-600 hover:text-primary-700 font-medium">
-                                        Lihat
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <a href="{{ route('teacher.courses.forums.show', [$course, $forum]) }}" class="inline-flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                                        <i class="fas fa-eye mr-2"></i>
+                                        <span>Lihat</span>
                                     </a>
-                                    <a href="{{ route('teacher.courses.forums.edit', [$course, $forum]) }}" class="text-gray-600 hover:text-gray-800 font-medium">
-                                        Edit
+                                    <a href="{{ route('teacher.courses.forums.edit', [$course, $forum]) }}" class="inline-flex items-center justify-center bg-orange-600 hover:bg-orange-700 text-black px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                                        <i class="fas fa-edit mr-2"></i>
+                                        <span>Edit</span>
                                     </a>
                                 </div>
                             </div>

@@ -33,7 +33,8 @@ class HomeSection extends Model
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            return asset('storage/' . str_replace('public/', '', $this->image));
+            $imagePath = str_replace('public/', '', $this->image);
+            return get_correct_asset_url('storage/' . $imagePath);
         }
         return null;
     }

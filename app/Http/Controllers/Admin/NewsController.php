@@ -7,6 +7,7 @@ use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class NewsController extends Controller
 {
@@ -129,9 +130,9 @@ class NewsController extends Controller
             }
             
             if (copy($sourcePath, $destPath)) {
-                \Log::info('News featured image copied to public storage: ' . $data['featured_image']);
+                Log::info('News featured image copied to public storage: ' . $data['featured_image']);
             } else {
-                \Log::error('Failed to copy news featured image to public storage: ' . $data['featured_image']);
+                Log::error('Failed to copy news featured image to public storage: ' . $data['featured_image']);
             }
         }
 
@@ -226,9 +227,9 @@ class NewsController extends Controller
             }
             
             if (copy($sourcePath, $destPath)) {
-                \Log::info('News featured image copied to public storage: ' . $data['featured_image']);
+                Log::info('News featured image copied to public storage: ' . $data['featured_image']);
             } else {
-                \Log::error('Failed to copy news featured image to public storage: ' . $data['featured_image']);
+                Log::error('Failed to copy news featured image to public storage: ' . $data['featured_image']);
             }
         }
 

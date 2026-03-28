@@ -96,6 +96,21 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
+                        <label for="nip" class="block text-sm font-medium text-gray-700 mb-2">
+                            NIP (Nomor Induk Pegawai/Siswa)
+                        </label>
+                        <input type="text" 
+                               id="nip" 
+                               name="nip" 
+                               value="{{ old('nip', $user->nip) }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('nip') border-red-500 @enderror"
+                               placeholder="Masukkan NIP">
+                        @error('nip')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
                         <label for="student_id" class="block text-sm font-medium text-gray-700 mb-2">
                             NIS (Nomor Induk Siswa)
                         </label>
@@ -109,21 +124,21 @@
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
 
-                    <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
-                            Nomor Telepon
-                        </label>
-                        <input type="tel" 
-                               id="phone" 
-                               name="phone" 
-                               value="{{ old('phone', $user->phone) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('phone') border-red-500 @enderror"
-                               placeholder="Masukkan nomor telepon">
-                        @error('phone')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <div class="mt-6">
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                        Nomor Telepon
+                    </label>
+                    <input type="tel" 
+                           id="phone" 
+                           name="phone" 
+                           value="{{ old('phone', $user->phone) }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('phone') border-red-500 @enderror"
+                           placeholder="Masukkan nomor telepon">
+                    @error('phone')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="mt-6">
@@ -182,6 +197,22 @@
                         @enderror
                     </div>
                 </div>
+
+                <div class="mt-6">
+                    <label for="student_class" class="block text-sm font-medium text-gray-700 mb-2">
+                        Kelas Lengkap
+                    </label>
+                    <input type="text" 
+                           id="student_class" 
+                           name="student_class" 
+                           value="{{ old('student_class', $user->student_class) }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('student_class') border-red-500 @enderror"
+                           placeholder="Contoh: VII-A, VIII-B, IX-C">
+                    <p class="mt-1 text-sm text-gray-500">Format: Tingkat-Rombel (Contoh: VII-A, VIII-B, IX-C)</p>
+                    @error('student_class')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
 
             <!-- Personal Information -->
@@ -211,8 +242,8 @@
                                 name="gender" 
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('gender') border-red-500 @enderror">
                             <option value="">Pilih jenis kelamin</option>
-                            <option value="Laki-laki" {{ old('gender', $user->gender) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
-                            <option value="Perempuan" {{ old('gender', $user->gender) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                            <option value="male" {{ old('gender', $user->gender) == 'male' ? 'selected' : '' }}>Laki-laki</option>
+                            <option value="female" {{ old('gender', $user->gender) == 'female' ? 'selected' : '' }}>Perempuan</option>
                         </select>
                         @error('gender')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -236,6 +267,126 @@
                         <option value="Konghucu" {{ old('religion', $user->religion) == 'Konghucu' ? 'selected' : '' }}>Konghucu</option>
                     </select>
                     @error('religion')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            <!-- Previous School Information -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Informasi Sekolah Sebelumnya</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="previous_school" class="block text-sm font-medium text-gray-700 mb-2">
+                            Nama Sekolah Sebelumnya
+                        </label>
+                        <input type="text" 
+                               id="previous_school" 
+                               name="previous_school" 
+                               value="{{ old('previous_school', $user->previous_school) }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('previous_school') border-red-500 @enderror"
+                               placeholder="Masukkan nama sekolah sebelumnya">
+                        @error('previous_school')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="graduation_year" class="block text-sm font-medium text-gray-700 mb-2">
+                            Tahun Lulus
+                        </label>
+                        <input type="number" 
+                               id="graduation_year" 
+                               name="graduation_year" 
+                               value="{{ old('graduation_year', $user->graduation_year) }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('graduation_year') border-red-500 @enderror"
+                               placeholder="Contoh: 2023"
+                               min="2000" max="{{ date('Y') + 1 }}">
+                        @error('graduation_year')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <label for="previous_school_address" class="block text-sm font-medium text-gray-700 mb-2">
+                        Alamat Sekolah Sebelumnya
+                    </label>
+                    <textarea id="previous_school_address" 
+                              name="previous_school_address" 
+                              rows="3"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('previous_school_address') border-red-500 @enderror"
+                              placeholder="Masukkan alamat sekolah sebelumnya">{{ old('previous_school_address', $user->previous_school_address) }}</textarea>
+                    @error('previous_school_address')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mt-6">
+                    <label for="transfer_reason" class="block text-sm font-medium text-gray-700 mb-2">
+                        Alasan Pindah Sekolah
+                    </label>
+                    <textarea id="transfer_reason" 
+                              name="transfer_reason" 
+                              rows="3"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('transfer_reason') border-red-500 @enderror"
+                              placeholder="Masukkan alasan pindah sekolah">{{ old('transfer_reason', $user->transfer_reason) }}</textarea>
+                    @error('transfer_reason')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            <!-- Medical Information -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Informasi Kesehatan</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="blood_type" class="block text-sm font-medium text-gray-700 mb-2">
+                            Golongan Darah
+                        </label>
+                        <select id="blood_type" 
+                                name="blood_type" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('blood_type') border-red-500 @enderror">
+                            <option value="">Pilih golongan darah</option>
+                            <option value="A" {{ old('blood_type', $user->blood_type) == 'A' ? 'selected' : '' }}>A</option>
+                            <option value="B" {{ old('blood_type', $user->blood_type) == 'B' ? 'selected' : '' }}>B</option>
+                            <option value="AB" {{ old('blood_type', $user->blood_type) == 'AB' ? 'selected' : '' }}>AB</option>
+                            <option value="O" {{ old('blood_type', $user->blood_type) == 'O' ? 'selected' : '' }}>O</option>
+                        </select>
+                        @error('blood_type')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="allergies" class="block text-sm font-medium text-gray-700 mb-2">
+                            Alergi
+                        </label>
+                        <input type="text" 
+                               id="allergies" 
+                               name="allergies" 
+                               value="{{ old('allergies', $user->allergies) }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('allergies') border-red-500 @enderror"
+                               placeholder="Masukkan alergi (jika ada)">
+                        @error('allergies')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <label for="medical_conditions" class="block text-sm font-medium text-gray-700 mb-2">
+                        Kondisi Kesehatan Khusus
+                    </label>
+                    <textarea id="medical_conditions" 
+                              name="medical_conditions" 
+                              rows="3"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('medical_conditions') border-red-500 @enderror"
+                              placeholder="Masukkan kondisi kesehatan khusus (jika ada)">{{ old('medical_conditions', $user->medical_conditions) }}</textarea>
+                    @error('medical_conditions')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
@@ -288,6 +439,35 @@
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('parent_email') border-red-500 @enderror"
                            placeholder="Masukkan email orang tua">
                     @error('parent_email')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mt-6">
+                    <label for="parent_occupation" class="block text-sm font-medium text-gray-700 mb-2">
+                        Pekerjaan Orang Tua
+                    </label>
+                    <input type="text" 
+                           id="parent_occupation" 
+                           name="parent_occupation" 
+                           value="{{ old('parent_occupation', $user->parent_occupation) }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('parent_occupation') border-red-500 @enderror"
+                           placeholder="Masukkan pekerjaan orang tua">
+                    @error('parent_occupation')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mt-6">
+                    <label for="parent_address" class="block text-sm font-medium text-gray-700 mb-2">
+                        Alamat Orang Tua
+                    </label>
+                    <textarea id="parent_address" 
+                              name="parent_address" 
+                              rows="3"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('parent_address') border-red-500 @enderror"
+                              placeholder="Masukkan alamat orang tua">{{ old('parent_address', $user->parent_address) }}</textarea>
+                    @error('parent_address')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>

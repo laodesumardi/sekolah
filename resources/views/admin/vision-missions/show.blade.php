@@ -2,6 +2,10 @@
 
 @section('title', 'Detail Visi & Misi Sekolah')
 
+@php
+use Illuminate\Support\Facades\Storage;
+@endphp
+
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <div class="max-w-4xl mx-auto">
@@ -55,6 +59,27 @@
                     @endforeach
                 </div>
             </div>
+
+            <!-- Image Section -->
+            @if($visionMission->image)
+            <div class="p-8 border-b border-gray-200">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                    <i class="fas fa-image text-orange-600 mr-3"></i>
+                    Gambar Visi & Misi
+                </h3>
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <div class="flex justify-center">
+                        <img src="{{ vision_mission_image_url($visionMission->image) }}" 
+                             alt="Vision Mission Image" 
+                             class="max-w-full h-auto rounded-lg shadow-lg border border-gray-300">
+                    </div>
+                    <div class="mt-4 text-center">
+                        <p class="text-sm text-gray-600">File: {{ basename($visionMission->image) }}</p>
+                        <p class="text-xs text-gray-500">Uploaded: {{ $visionMission->updated_at->format('d M Y, H:i') }}</p>
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <!-- Status and Info -->
             <div class="p-8">

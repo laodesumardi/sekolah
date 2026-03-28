@@ -49,11 +49,17 @@ class User extends Authenticatable
         'employment_status',
         'join_date',
         'education',
+        'education_level',
+        'type',
         'certification',
         'experience_years',
         'bio',
         'photo',
         'classes',
+        // Student fields
+        'student_class',
+        'parent_occupation',
+        'parent_address',
     ];
 
     /**
@@ -111,8 +117,7 @@ class User extends Authenticatable
 
     public function ppdbRegistration()
     {
-        return $this->hasOne(PPDBRegistration::class, 'email', 'email')
-            ->orWhere('phone_number', $this->phone);
+        return $this->hasOne(PPDBRegistration::class, 'email', 'email');
     }
 
     // Scopes
@@ -202,18 +207,18 @@ class User extends Authenticatable
         }
         
         // Check if it's a storage path without 'storage/' prefix
-        if (str_starts_with($this->photo, 'teachers/') || str_starts_with($this->photo, 'students/')) {
-            return asset('storage/' . $this->photo);
+        if (str_starts_with($this->photo, 'teachers/') || str_starts_with($this->photo, 'students/') || str_starts_with($this->photo, 'admins/')) {
+            return \Illuminate\Support\Facades\Storage::url($this->photo);
         }
         
         // Check if it's just a filename (old format)
         if (!str_contains($this->photo, '/')) {
             if ($this->role === 'student') {
-                return asset('storage/students/photos/' . $this->photo);
+                return \Illuminate\Support\Facades\Storage::url('students/photos/' . $this->photo);
             } elseif ($this->role === 'teacher') {
-                return asset('storage/teachers/' . $this->photo);
+                return \Illuminate\Support\Facades\Storage::url('teachers/' . $this->photo);
             } else {
-                return asset('storage/' . $this->photo);
+                return \Illuminate\Support\Facades\Storage::url($this->photo);
             }
         }
         

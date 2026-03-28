@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\HomeSection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class HomeSectionController extends Controller
 {
@@ -165,9 +166,9 @@ class HomeSectionController extends Controller
                 }
                 
                 if (copy($sourcePath, $destPath)) {
-                    \Log::info('Image uploaded and copied to public storage: ' . $path);
+                    Log::info('Image uploaded and copied to public storage: ' . $path);
                 } else {
-                    \Log::error('Failed to copy image to public storage: ' . $path);
+                    Log::error('Failed to copy image to public storage: ' . $path);
                 }
             } catch (\Exception $e) {
                 return redirect()->back()->withErrors(['image' => 'Failed to upload image: ' . $e->getMessage()]);

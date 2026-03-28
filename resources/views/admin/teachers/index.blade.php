@@ -1,5 +1,9 @@
 @extends('layouts.admin')
 
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 @section('title', 'Data Guru')
 
 @section('content')
@@ -127,14 +131,21 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <img src="{{ $teacher->photo_url }}" alt="{{ $teacher->name }}" 
-                                             class="h-10 w-10 rounded-full object-cover border-2 border-gray-200"
-                                             onerror="this.src='{{ url('images/default-teacher.png') }}'">
+                                        <img src="{{ $teacher->photo_url }}?v={{ time() }}" alt="{{ $teacher->name }}" 
+                                             class="h-10 w-10 rounded-full object-cover border-2 border-gray-200" 
+                                             onerror="this.onerror=null; this.src='{{ get_correct_asset_url('images/default-user.png') }}';"
+                                             onload="console.log('Image loaded: {{ $teacher->name }}')"
+                                             onerror="console.log('Image error: {{ $teacher->name }}')">
                                         @if($teacher->photo)
                                             <span class="ml-2 text-xs text-green-600">✓ Custom</span>
                                         @else
                                             <span class="ml-2 text-xs text-gray-500">Default</span>
                                         @endif
+                                        <!-- Debug info -->
+                                        <div class="ml-2 text-xs text-gray-400">
+                                            <div>URL: {{ $teacher->photo_url }}</div>
+                                            <div>Photo: {{ $teacher->photo ? 'YES' : 'NO' }}</div>
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -192,9 +203,9 @@
                             <div class="flex-1">
                                 <div class="flex items-center mb-2">
                                     <div class="flex-shrink-0 h-12 w-12 mr-3">
-                                        <img src="{{ $teacher->photo_url }}" alt="{{ $teacher->name }}" 
-                                             class="h-12 w-12 rounded-full object-cover border-2 border-gray-200"
-                                             onerror="this.src='{{ url('images/default-teacher.png') }}'">
+                                        <img src="{{ $teacher->photo_url }}?v={{ time() }}" alt="{{ $teacher->name }}" 
+                                             class="h-12 w-12 rounded-full object-cover border-2 border-gray-200" 
+                                             onerror="this.onerror=null; this.src='{{ get_correct_asset_url('images/default-user.png') }}';">
                                     </div>
                                     <div class="flex-1">
                                         <div class="text-sm font-medium text-gray-900 mb-1">

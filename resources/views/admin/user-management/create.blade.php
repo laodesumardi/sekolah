@@ -194,6 +194,217 @@
                     </div>
                 </div>
 
+                <!-- Teacher Specific Fields -->
+                <div id="teacher-fields" class="border-t border-gray-200 pt-6" style="display: none;">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Informasi Guru</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
+                                Mata Pelajaran
+                            </label>
+                            <select id="subject" name="subject"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('subject') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
+                                <option value="">Pilih Mata Pelajaran</option>
+                                <option value="Matematika" {{ old('subject') === 'Matematika' ? 'selected' : '' }}>Matematika</option>
+                                <option value="Bahasa Indonesia" {{ old('subject') === 'Bahasa Indonesia' ? 'selected' : '' }}>Bahasa Indonesia</option>
+                                <option value="Bahasa Inggris" {{ old('subject') === 'Bahasa Inggris' ? 'selected' : '' }}>Bahasa Inggris</option>
+                                <option value="IPA" {{ old('subject') === 'IPA' ? 'selected' : '' }}>IPA</option>
+                                <option value="IPS" {{ old('subject') === 'IPS' ? 'selected' : '' }}>IPS</option>
+                                <option value="Pendidikan Agama" {{ old('subject') === 'Pendidikan Agama' ? 'selected' : '' }}>Pendidikan Agama</option>
+                                <option value="PJOK" {{ old('subject') === 'PJOK' ? 'selected' : '' }}>PJOK</option>
+                                <option value="Seni Budaya" {{ old('subject') === 'Seni Budaya' ? 'selected' : '' }}>Seni Budaya</option>
+                                <option value="Prakarya" {{ old('subject') === 'Prakarya' ? 'selected' : '' }}>Prakarya</option>
+                            </select>
+                            @error('subject')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="education_level" class="block text-sm font-medium text-gray-700 mb-2">
+                                Tingkat Pendidikan
+                            </label>
+                            <select id="education_level" name="education_level"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('education_level') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
+                                <option value="">Pilih Tingkat Pendidikan</option>
+                                <option value="SD" {{ old('education_level') === 'SD' ? 'selected' : '' }}>SD</option>
+                                <option value="SMP" {{ old('education_level') === 'SMP' ? 'selected' : '' }}>SMP</option>
+                                <option value="SMA" {{ old('education_level') === 'SMA' ? 'selected' : '' }}>SMA</option>
+                            </select>
+                            @error('education_level')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <div>
+                            <label for="education" class="block text-sm font-medium text-gray-700 mb-2">
+                                Pendidikan Terakhir
+                            </label>
+                            <input type="text" id="education" name="education" value="{{ old('education') }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('education') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror"
+                                   placeholder="Contoh: S1 Matematika">
+                            @error('education')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="type" class="block text-sm font-medium text-gray-700 mb-2">
+                                Jenis Guru
+                            </label>
+                            <select id="type" name="type"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('type') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
+                                <option value="">Pilih Jenis Guru</option>
+                                <option value="Guru Kelas" {{ old('type') === 'Guru Kelas' ? 'selected' : '' }}>Guru Kelas</option>
+                                <option value="Guru Mata Pelajaran" {{ old('type') === 'Guru Mata Pelajaran' ? 'selected' : '' }}>Guru Mata Pelajaran</option>
+                                <option value="Guru BK" {{ old('type') === 'Guru BK' ? 'selected' : '' }}>Guru BK</option>
+                                <option value="Guru Agama" {{ old('type') === 'Guru Agama' ? 'selected' : '' }}>Guru Agama</option>
+                            </select>
+                            @error('type')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="classes" class="block text-sm font-medium text-gray-700 mb-2">
+                            Kelas yang Diampu
+                        </label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="classes[]" value="1" {{ in_array('1', old('classes', [])) ? 'checked' : '' }}
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Kelas 1</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="classes[]" value="2" {{ in_array('2', old('classes', [])) ? 'checked' : '' }}
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Kelas 2</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="classes[]" value="3" {{ in_array('3', old('classes', [])) ? 'checked' : '' }}
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Kelas 3</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="classes[]" value="4" {{ in_array('4', old('classes', [])) ? 'checked' : '' }}
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Kelas 4</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="classes[]" value="5" {{ in_array('5', old('classes', [])) ? 'checked' : '' }}
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Kelas 5</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="classes[]" value="6" {{ in_array('6', old('classes', [])) ? 'checked' : '' }}
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Kelas 6</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="classes[]" value="7" {{ in_array('7', old('classes', [])) ? 'checked' : '' }}
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Kelas 7</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="classes[]" value="8" {{ in_array('8', old('classes', [])) ? 'checked' : '' }}
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Kelas 8</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="classes[]" value="9" {{ in_array('9', old('classes', [])) ? 'checked' : '' }}
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Kelas 9</span>
+                            </label>
+                        </div>
+                        @error('classes')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Student Specific Fields -->
+                <div id="student-fields" class="border-t border-gray-200 pt-6" style="display: none;">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Informasi Siswa</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="student_class" class="block text-sm font-medium text-gray-700 mb-2">
+                                Kelas
+                            </label>
+                            <select id="student_class" name="student_class"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('student_class') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror">
+                                <option value="">Pilih Kelas</option>
+                                <option value="1" {{ old('student_class') === '1' ? 'selected' : '' }}>Kelas 1</option>
+                                <option value="2" {{ old('student_class') === '2' ? 'selected' : '' }}>Kelas 2</option>
+                                <option value="3" {{ old('student_class') === '3' ? 'selected' : '' }}>Kelas 3</option>
+                                <option value="4" {{ old('student_class') === '4' ? 'selected' : '' }}>Kelas 4</option>
+                                <option value="5" {{ old('student_class') === '5' ? 'selected' : '' }}>Kelas 5</option>
+                                <option value="6" {{ old('student_class') === '6' ? 'selected' : '' }}>Kelas 6</option>
+                                <option value="7" {{ old('student_class') === '7' ? 'selected' : '' }}>Kelas 7</option>
+                                <option value="8" {{ old('student_class') === '8' ? 'selected' : '' }}>Kelas 8</option>
+                                <option value="9" {{ old('student_class') === '9' ? 'selected' : '' }}>Kelas 9</option>
+                            </select>
+                            @error('student_class')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="parent_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                Nama Orang Tua
+                            </label>
+                            <input type="text" id="parent_name" name="parent_name" value="{{ old('parent_name') }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('parent_name') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror"
+                                   placeholder="Masukkan nama orang tua">
+                            @error('parent_name')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <div>
+                            <label for="parent_phone" class="block text-sm font-medium text-gray-700 mb-2">
+                                No. Telepon Orang Tua
+                            </label>
+                            <input type="tel" id="parent_phone" name="parent_phone" value="{{ old('parent_phone') }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('parent_phone') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror"
+                                   placeholder="Masukkan nomor telepon orang tua">
+                            @error('parent_phone')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="parent_occupation" class="block text-sm font-medium text-gray-700 mb-2">
+                                Pekerjaan Orang Tua
+                            </label>
+                            <input type="text" id="parent_occupation" name="parent_occupation" value="{{ old('parent_occupation') }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('parent_occupation') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror"
+                                   placeholder="Masukkan pekerjaan orang tua">
+                            @error('parent_occupation')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="parent_address" class="block text-sm font-medium text-gray-700 mb-2">
+                            Alamat Orang Tua
+                        </label>
+                        <textarea id="parent_address" name="parent_address" rows="3"
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('parent_address') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror"
+                                  placeholder="Masukkan alamat orang tua">{{ old('parent_address') }}</textarea>
+                        @error('parent_address')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
                 <!-- Status -->
                 <div class="border-t border-gray-200 pt-6">
                     <div class="flex items-center">
@@ -225,4 +436,33 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('role');
+    const teacherFields = document.getElementById('teacher-fields');
+    const studentFields = document.getElementById('student-fields');
+    
+    function toggleFields() {
+        const selectedRole = roleSelect.value;
+        
+        // Hide all specific fields first
+        teacherFields.style.display = 'none';
+        studentFields.style.display = 'none';
+        
+        // Show relevant fields based on role
+        if (selectedRole === 'teacher') {
+            teacherFields.style.display = 'block';
+        } else if (selectedRole === 'student') {
+            studentFields.style.display = 'block';
+        }
+    }
+    
+    // Add event listener to role select
+    roleSelect.addEventListener('change', toggleFields);
+    
+    // Initialize on page load
+    toggleFields();
+});
+</script>
 @endsection
